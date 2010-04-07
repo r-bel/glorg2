@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Glorg2.Graphics;
+using Glorg2.Graphics.OpenGL;
 
 namespace Glorg2
 {
@@ -10,6 +12,10 @@ namespace Glorg2
 	/// </summary>
 	public struct Vector2
 	{
+		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
+		{
+		  ElementType.Position | ElementType.TwoDimension | ElementType.Float | ElementType.Bits32
+		}, typeof(Vector2));
 		public float x, y;
 		public Vector2(float x, float y)
 		{
@@ -73,6 +79,11 @@ namespace Glorg2
 	/// </summary>
 	public struct Vector3
 	{
+		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
+		{
+		  ElementType.Position | ElementType.ThreeDimension | ElementType.Float | ElementType.Bits32
+		}, typeof(Vector3));
+
 		public float x, y, z;
 		public Vector3(float x, float y, float z)
 		{
@@ -140,6 +151,11 @@ namespace Glorg2
 	/// </summary>
 	public struct Vector4
 	{
+		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
+		{
+		  ElementType.Position | ElementType.FourDimension | ElementType.Float | ElementType.Bits32
+		}, typeof(Vector4));
+
 		public float x, y, z, w;
 		public Vector4(float x, float y, float z)
 		{

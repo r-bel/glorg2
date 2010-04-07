@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Glorg2.Graphics
 {
-	public sealed class GraphicsDevice
+	public sealed class GraphicsDevice : IDisposable
 	{
 		private OpenGL.OpenGLContext context;
 		
@@ -137,6 +137,21 @@ namespace Glorg2.Graphics
 		public void Present()
 		{
 			context.Swap();
+		}
+
+		private void Cleanup()
+		{
+			context.Dispose();
+		}
+
+		public void Dispose()
+		{
+			Cleanup();
+			GC.SuppressFinalize(this);
+		}
+		~GraphicsDevice()
+		{
+			Cleanup();
 		}
 	}
 	public enum ClearFlags

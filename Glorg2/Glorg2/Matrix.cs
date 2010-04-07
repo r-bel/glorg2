@@ -209,6 +209,7 @@ namespace Glorg2
 		/// <param name="near">Near Z clipping plane. Cannot be zero or equal to far</param>
 		/// <param name="far">Far Z clipping plane. Cannot be zero or equal to near</param>
 		/// <returns>Perspective matrix</returns>
+		/// <remarks>This matrix setup is attained from gluPerspective function and wil work in a similar fashion</remarks>
 		public static Matrix Perspective(float fovy, float aspect, float near, float far)
 		{
 			float f = 1.0f / (float)Math.Tan(fovy / 2);
@@ -239,6 +240,7 @@ namespace Glorg2
 		public static Matrix operator *(Matrix a, Matrix b)
 		{
 			// TODO: Increase performance
+			// I have written it in a simple manner as manual matrix multiplication is very error prone.
 			var va = a.GetRows();
 			var vb = b.GetColumns();
 
@@ -267,6 +269,8 @@ namespace Glorg2
 		}
 		public static Vector4 operator * (Matrix a, Vector4 b)
 		{
+			// This is based on linear algebra (duh) idea that any matrix 
+			// represents a set of equations.
 			return new Vector4(
 				b.x * a.m11 + b.y * a.m21 + b.z * a.m31 + b.w * a.m41,
 				b.x * a.m12 + b.y * a.m22 + b.z * a.m32 + b.w * a.m42,

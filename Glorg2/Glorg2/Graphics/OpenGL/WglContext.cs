@@ -109,7 +109,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern IntPtr wglGetCurrentDC();
 		[DllImport(DllName)]
-		public static extern Delegate wglGetProcAddress(string proc);
+		public static extern IntPtr wglGetProcAddress(string proc);
 		[DllImport(DllName)]
 		public static extern bool wglMakeCurrent(IntPtr hDC, IntPtr hGL);
 		[DllImport(DllName)]
@@ -117,7 +117,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)
 				]
 		public static extern bool wglUseFontBitmaps(IntPtr hdc, int first, int count, int listbase);
-		[DllImport(DllName)]
+		[DllImport(GdiDllName)]
 		public static extern bool SwapBuffers(IntPtr hdc);
 
 		public struct POINTFLOAT
@@ -252,7 +252,8 @@ namespace Glorg2.Graphics.OpenGL
 
 		public override T GetProc<T>(string procname)
 		{
-			return (T)Convert.ChangeType(wglGetProcAddress(procname), typeof(T));
+			var d = Marshal.GetDelegateForFunctionPointer(wglGetProcAddress(procname), typeof(T));
+			return (T)Convert.ChangeType(d, typeof(T));
 		}
 
 
@@ -318,11 +319,21 @@ namespace Glorg2.Graphics.OpenGL
 			SwapBuffers(hdc);
 		}
 
-		public override void Dispose()
+		private void Cleanup()
 		{
 			wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 			wglDeleteContext(handle);
 			ReleaseDC(hdc);
+		}
+
+		public override void Dispose()
+		{
+			Cleanup();
+			GC.SuppressFinalize(this);
+		}
+		~WglContext()
+		{
+			Cleanup();
 		}
 	}
 }

@@ -139,7 +139,7 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			int tt = (int)t;
 			int dim = (tt & 0x00000ff0) >> 4;
-			int bits = ((tt & 0x00ff0000) >> 16) * 8;
+			int bits = ((tt & 0x00ff0000) >> 16);
 			return dim * bits;
 		}
 		public VertexBufferDescriptor(IEnumerable<ElementType> types, Type T)
