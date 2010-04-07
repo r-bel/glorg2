@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Glorg2.Graphics.OpenGL
 {
-	public class glXContext : OpenGLContext
+	public sealed class glXContext : OpenGLContext
 	{
 		public const string DllName = "libGL.so";
 		#region Xgl Implementation details
@@ -116,7 +116,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glXGetSelectedEvent(IntPtr dpy, IntPtr drawable,
 										 ref ulong mask);
-
+		[DllImport(DllName)]
 		public static extern Delegate glXGetProcAddressARB (string procname);
 		#endregion
 

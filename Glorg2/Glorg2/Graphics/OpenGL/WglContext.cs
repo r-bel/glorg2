@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Glorg2.Graphics.OpenGL
 {
-	public class WglContext : OpenGLContext
+	public sealed class WglContext : OpenGLContext
 	{
 		#region wgl Extensions
 

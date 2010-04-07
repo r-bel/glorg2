@@ -1270,7 +1270,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glColorMaterial(uint face, uint mode);
 		[DllImport(DllName)]
-		public static unsafe extern void glColorPointer(int size, uint type, int stride, void* pointer);
+		public static extern void glColorPointer(int size, uint type, int stride, IntPtr pointer);
 		[DllImport(DllName)]
 		public static extern void glCopyPixels(int x, int y, int width, int height, uint type);
 		[DllImport(DllName)]
@@ -1375,6 +1375,13 @@ namespace Glorg2.Graphics.OpenGL
 		public static extern uint glGetError();
 		[DllImport(DllName)]
 		public static extern void glGetFloatv(uint pname, float[] parameters);
+		[DllImport(DllName)]
+		public static unsafe extern void glGetFloatv(uint pname, float* parameters);
+		
+		[DllImport(DllName)]
+		internal static extern void glGetFloatv(uint pname, ref Matrix parameters);
+
+
 		[DllImport(DllName)]
 		public static extern void glGetIntegerv(uint pname, int[] parameters);
 		[DllImport(DllName)]
@@ -1488,6 +1495,12 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glLoadMatrixf(float[] m);
 		[DllImport(DllName)]
+		public static unsafe extern void glLoadMatrixf(float* m);
+
+		[DllImport(DllName)]
+		public static extern void glLoadMatrixf(ref Matrix m);
+
+		[DllImport(DllName)]
 		public static extern void glLoadName(uint name);
 		[DllImport(DllName)]
 		public static extern void glLogicOp(uint opcode);
@@ -1544,7 +1557,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glNormal3sv(short[] v);
 		[DllImport(DllName)]
-		public static unsafe extern void glNormalPointer(uint type, int stride, void* pointer);
+		public static extern void glNormalPointer(uint type, int stride, IntPtr pointer);
 		[DllImport(DllName)]
 		public static extern void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar);
 		[DllImport(DllName)]
@@ -1746,7 +1759,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glTexCoord4sv(short[] v);
 		[DllImport(DllName)]
-		public static unsafe extern void glTexCoordPointer(int size, uint type, int stride, void* pointer);
+		public static extern void glTexCoordPointer(int size, uint type, int stride, IntPtr pointer);
 		[DllImport(DllName)]
 		public static extern void glTexEnvf(uint target, uint pname, float param);
 		[DllImport(DllName)]
@@ -1836,7 +1849,7 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glVertex4sv(short[] v);
 		[DllImport(DllName)]
-		public static unsafe extern void glVertexPointer(int size, uint type, int stride, void* pointer);
+		public static extern void glVertexPointer(int size, uint type, int stride, IntPtr pointer);
 		[DllImport(DllName)]
 		public static extern void glViewport(int x, int y, int width, int height);
 

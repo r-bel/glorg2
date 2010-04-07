@@ -151,7 +151,7 @@ namespace Glorg2
 		}
 		public static float Dot(Vector4 a, Vector4 b)
 		{
-			return a.x * b.x + a.y + b.y + a.z * b.z;
+			return a.x * b.x + a.y + b.y + a.z * b.z + a.w * b.w;
 		}
 		public float Length
 		{
@@ -206,5 +206,73 @@ namespace Glorg2
 			return new Vector3(x, y, z);
 		}
 
+	}
+	/// <summary>
+	/// Represents a vector of 4 16-bit floating points
+	/// </summary>
+	/// <remarks>This datatype does not support any type of calculations, and is to be considered a strict storage type.</remarks>
+	public struct Vector4Half
+	{
+		public Half x, y, z, w;
+		public Vector4Half(float x, float y, float z, float w)
+		{
+			this.x = (Half)x;
+			this.y = (Half)y;
+			this.z = (Half)z;
+			this.w = (Half)w;
+		}
+		public static implicit operator Vector4(Vector4Half val)
+		{
+			return new Vector4((float)val.x, (float)val.y, (float)val.z, (float)val.w);
+		}
+		public static explicit operator Vector4Half(Vector4 val)
+		{
+			return new Vector4Half(val.x, val.y, val.z, val.w);
+		}
+
+	}
+	/// <summary>
+	/// Represents a vector of 3 16-bit floating points
+	/// </summary>
+	/// <remarks>This datatype does not support any type of calculations, and is to be considered a strict storage type.</remarks>
+	public struct Vector3Half
+	{
+		public Half x, y, z;
+		public Vector3Half(float x, float y, float z)
+		{
+			this.x = (Half)x;
+			this.y = (Half)y;
+			this.z = (Half)z;
+		}
+		public static implicit operator Vector3(Vector3Half val)
+		{
+			return new Vector3((float)val.x, (float)val.y, (float)val.z);
+		}
+		public static explicit operator Vector3Half(Vector3 val)
+		{
+			return new Vector3Half(val.x, val.y, val.z);
+		}
+
+	}
+	/// <summary>
+	/// Represents a vector of 2 16-bit floating points
+	/// </summary>
+	/// <remarks>This datatype does not support any type of calculations, and is to be considered a strict storage type.</remarks>
+	public struct Vector2Half
+	{
+		public Half x, y;
+		public Vector2Half(float x, float y)
+		{
+			this.x = (Half)x;
+			this.y = (Half)y;
+		}
+		public static implicit operator Vector2(Vector2Half val)
+		{
+			return new Vector2((float)val.x, (float)val.y);
+		}
+		public static explicit operator Vector2Half(Vector2 val)
+		{
+			return new Vector2Half(val.x, val.y);
+		}
 	}
 }

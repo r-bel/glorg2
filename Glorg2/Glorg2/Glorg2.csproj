@@ -48,9 +48,13 @@
   <ItemGroup>
     <Compile Include="DynamicLinking.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
+    <Compile Include="Graphics\OpenGL\BufferObject.cs" />
     <Compile Include="Graphics\OpenGL\OpenGL.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLContext.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLExt.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\Program.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\Shader.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\Uniform.cs" />
     <Compile Include="Graphics\OpenGL\WglContext.cs" />
     <Compile Include="Graphics\OpenGL\glXContext.cs" />
     <Compile Include="Half.cs" />

@@ -23,7 +23,7 @@ namespace Glorg2
 	/// <summary>
 	/// Implements LoadLibrary functions for Windows
 	/// </summary>
-	public class DllLinking : DynamicLinking
+	public sealed class DllLinking : DynamicLinking
 	{
 		[DllImport("kernel32")]
 		private static extern IntPtr LoadLibrary(string filename);
@@ -56,7 +56,7 @@ namespace Glorg2
 	/// <summary>
 	/// Implements loader functionality for Unix operating systems
 	/// </summary>
-	public class SoLinking : DynamicLinking
+	public sealed class SoLinking : DynamicLinking
 	{
 		private const string DllName = "libdl.so";
 		[DllImport(DllName)]
