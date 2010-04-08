@@ -57,6 +57,7 @@ namespace Glorg2.Graphics.OpenGL
 			public int dwLayerMask;
 			public int dwVisibleMask;
 			public int dwDamageMask;
+			public int transparency;
 		}
 
 		public enum PixelFormatFlags
@@ -89,12 +90,12 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport("User32")]
 		public static extern IntPtr GetDC(IntPtr hWnd);
 		[DllImport("User32")]
-		public static extern IntPtr ReleaseDC(IntPtr hDC);
+		public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
 
 		#endregion
 		#region WGL Platform specific
-		public const string DllName = "OpenGL32";
+		public const string DllName = "OpenGL32.dll";
 
 		[DllImport(DllName)]
 		public static extern bool wglCopyContext(IntPtr source, IntPtr dest, uint mask);
@@ -111,11 +112,10 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern IntPtr wglGetProcAddress(string proc);
 		[DllImport(DllName)]
-		public static extern bool wglMakeCurrent(IntPtr hDC, IntPtr hGL);
+		public static extern bool wglMakeCurrent(IntPtr hdc, IntPtr hglrc);
 		[DllImport(DllName)]
 		public static extern bool wglShareLists(IntPtr gla, IntPtr glb);
-		[DllImport(DllName)
-				]
+		[DllImport(DllName)]
 		public static extern bool wglUseFontBitmaps(IntPtr hdc, int first, int count, int listbase);
 		[DllImport(GdiDllName)]
 		public static extern bool SwapBuffers(IntPtr hdc);
@@ -252,25 +252,52 @@ namespace Glorg2.Graphics.OpenGL
 
 		public override T GetProc<T>(string procname)
 		{
-			var d = Marshal.GetDelegateForFunctionPointer(wglGetProcAddress(procname), typeof(T));
+			var ptr = wglGetProcAddress(procname);
+			if (ptr == IntPtr.Zero)
+				throw new MethodAccessException("Function not found, or no device context is current");
+			var d = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
 			return (T)Convert.ChangeType(d, typeof(T));
 		}
 
-
+		private IntPtr hwnd;
 		private IntPtr hdc;
-
 		public IntPtr Hdc { get { return hdc; } }
 
-		public override void CreateContext(IntPtr handle)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="wnd"></param>
+		/// <exception cref="AccessViolationException">OpenGL subsystem encountered an access violation, try updating graphics drivers</exception>
+		/// <exception cref="InvalidOperationException">Unable to create OpenGL context</exception>
+		/// <exception cref="NotSupportedException">OpenGL 3.2 is not supported by this system</exception>
+		/// <example>
+		/// public class DisplayForm : Form
+		/// {
+		///		private WglContext ctx;
+		///		protected override virtual void OnHandleCreated(EventArgs e)
+		///		{
+		///			ctx = new WglContext();
+		///			ctx.CreateContext(this.Handle);
+		///		}
+		///		protected override virtual void OnClosing(ClosingEventArgs e)
+		///		{
+		///			ctx.Dispose();
+		///		}
+		/// }
+		/// </example>
+		public override void CreateContext(IntPtr wnd)
 		{
 			// Force OpenGL library to link
 			// or we will not be able to create a context
 			linker = GetLinker();
 
+			hwnd = wnd;
+
+			// Setup pixel format
 			int pixelformat;
 			PIXELFORMATDESCRIPTOR desc = new PIXELFORMATDESCRIPTOR();
 
-			hdc = GetDC(handle);
+			hdc = GetDC(wnd);
 			desc.nSize = (short)Marshal.SizeOf(desc);
 			desc.nVersion = 1;
 			desc.dwFlags = PixelFormatFlags.PFD_DOUBLEBUFFER | PixelFormatFlags.PFD_DRAW_TO_WINDOW | PixelFormatFlags.PFD_SUPPORT_OPENGL;
@@ -281,9 +308,15 @@ namespace Glorg2.Graphics.OpenGL
 
 			SetPixelFormat(hdc, pixelformat, ref desc);
 
+			// Create legacy OpenGL context
 			handle = wglCreateContext(hdc);
-			wglMakeCurrent(hdc, handle);
-			var s = OpenGL.glGetString((uint)OpenGL.StringName.GL_VERSION);
+
+			if (handle != IntPtr.Zero)
+				wglMakeCurrent(hdc, handle);
+			else
+				throw new InvalidOperationException("Could not create OpenGL context");
+
+			var s = OpenGL.glGetString((uint)OpenGL.Const.GL_VERSION);
 			var str = Marshal.PtrToStringAnsi(s);
 			wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
 
@@ -300,7 +333,7 @@ namespace Glorg2.Graphics.OpenGL
 			if (newhandle == IntPtr.Zero)
 			{
 				wglDeleteContext(handle);
-				throw new InvalidOperationException("System does not support OpenGL 3.2");
+				throw new NotSupportedException("System does not support OpenGL 3.2");
 			}
 			handle = newhandle;
 			wglMakeCurrent(hdc, handle);
@@ -323,7 +356,7 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 			wglDeleteContext(handle);
-			ReleaseDC(hdc);
+			ReleaseDC(hwnd, hdc);
 		}
 
 		public override void Dispose()

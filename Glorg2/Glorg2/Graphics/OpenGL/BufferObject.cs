@@ -16,6 +16,7 @@ namespace Glorg2.Graphics.OpenGL
 	}
 	public interface IIndexBuffer : IBufferObject
 	{
+		uint Type { get; }
 	}
 	public abstract class BufferObject<T> : IDisposable, IBufferObject
 		where T : struct
@@ -197,57 +198,57 @@ namespace Glorg2.Graphics.OpenGL
 				uint gl_type = 0;
 
 				if(bits == 16 && type == ElementType.Integer)
-					gl_type = (uint)OpenGL.DataType.GL_SHORT;
+					gl_type = (uint)OpenGL.Const.GL_SHORT;
 				else if(bits == 32 && type == ElementType.Integer)
-					gl_type = (uint)OpenGL.DataType.GL_INT;
+					gl_type = (uint)OpenGL.Const.GL_INT;
 				else if(bits == 32 && type == ElementType.Float)
-					gl_type = (uint)OpenGL.DataType.GL_FLOAT;
+					gl_type = (uint)OpenGL.Const.GL_FLOAT;
 				else if(bits == 64 && type == ElementType.Float)
-					gl_type = (uint)OpenGL.DataType.GL_DOUBLE;
+					gl_type = (uint)OpenGL.Const.GL_DOUBLE;
 				switch (type)
 				{
 					case ElementType.Position:
 						initialize.Add(() =>
 						{
-							OpenGL.glEnableClientState((uint)OpenGL.VertexArray.GL_VERTEX_ARRAY);
+							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_VERTEX_ARRAY);
 							OpenGL.glVertexPointer(dim, gl_type, tot_size, new IntPtr(offset));
 						});
 						reset.Add(() =>
 						{
-							OpenGL.glDisableClientState((uint)OpenGL.VertexArray.GL_VERTEX_ARRAY);
+							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_VERTEX_ARRAY);
 						});
 						break;
 					case ElementType.Normals:
 						initialize.Add(() =>
 						{
-							OpenGL.glEnableClientState((uint)OpenGL.VertexArray.GL_NORMAL_ARRAY);
+							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_NORMAL_ARRAY);
 							OpenGL.glNormalPointer(gl_type, tot_size, new IntPtr(offset));
 						});
 						reset.Add(() =>
 						{
-							OpenGL.glDisableClientState((uint)OpenGL.VertexArray.GL_NORMAL_ARRAY);
+							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_NORMAL_ARRAY);
 						});
 						break;
 					case ElementType.TexCoord:
 						initialize.Add(() =>
 						{
-							OpenGL.glEnableClientState((uint)OpenGL.VertexArray.GL_TEXTURE_COORD_ARRAY);
+							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_TEXTURE_COORD_ARRAY);
 							OpenGL.glTexCoordPointer(dim, gl_type, tot_size, new IntPtr(offset));
 						});
 						reset.Add(() =>
 						{
-							OpenGL.glDisableClientState((uint)OpenGL.VertexArray.GL_TEXTURE_COORD_ARRAY);
+							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_TEXTURE_COORD_ARRAY);
 						});
 						break;
 					case ElementType.Color:
 						initialize.Add(() =>
 						{
-							OpenGL.glEnableClientState((uint)OpenGL.VertexArray.GL_COLOR_ARRAY);
+							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_COLOR_ARRAY);
 							OpenGL.glColorPointer(dim, gl_type, tot_size, new IntPtr(offset));
 						});
 						reset.Add(() =>
 						{
-							OpenGL.glDisableClientState((uint)OpenGL.VertexArray.GL_COLOR_ARRAY);
+							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_COLOR_ARRAY);
 						});
 						break;
 
@@ -259,10 +260,44 @@ namespace Glorg2.Graphics.OpenGL
 	public sealed class IndexBuffer<T> : BufferObject<T>, IIndexBuffer
 		where T : struct
 	{
+		private uint type;
+
+		public uint Type { get { return type; } }
+
 		public IndexBuffer()
 			: base()
 		{
 			target = (uint)OpenGL.VboTarget.GL_ELEMENT_ARRAY_BUFFER_ARB;
+			if (typeof(T) == typeof(byte))
+				type = (uint)OpenGL.Const.GL_UNSIGNED_BYTE;
+			else if (typeof(T) == typeof(sbyte))
+				type = (uint)OpenGL.Const.GL_BYTE;
+			else if (typeof(T) == typeof(short))
+				type = (uint)OpenGL.Const.GL_SHORT;
+			else if (typeof(T) == typeof(ushort))
+				type = (uint)OpenGL.Const.GL_UNSIGNED_SHORT;
+			else if (typeof(T) == typeof(int))
+				type = (uint)OpenGL.Const.GL_INT;
+			else if (typeof(T) == typeof(uint))
+				type = (uint)OpenGL.Const.GL_UNSIGNED_INT;
+			else
+			{
+				int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
+				switch (size)
+				{
+					case 1:
+						type = (uint)OpenGL.Const.GL_UNSIGNED_BYTE;
+						break;
+					case 2:
+						type = (uint)OpenGL.Const.GL_UNSIGNED_SHORT;
+						break;
+					case 4:
+						type = (uint)OpenGL.Const.GL_UNSIGNED_INT;
+						break;
+					default:
+						throw new NotSupportedException("Datatype is not supported");
+				}
+			}
 		}
 	}
 }

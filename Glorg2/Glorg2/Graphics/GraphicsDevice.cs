@@ -37,6 +37,10 @@ namespace Glorg2.Graphics
 		{
 			OpenGL.OpenGL.glUseProgramObjectARB(prog.Handle);
 		}
+		public void MakeCurrent(OpenGL.Texture texture)
+		{
+			OpenGL.OpenGL.glBindTexture((uint)texture.target, texture.Handle);
+		}
 		public void SetVertexBuffer(OpenGL.IVertexBuffer vert)
 		{
 			if (vertex_buffer != null)
@@ -80,16 +84,12 @@ namespace Glorg2.Graphics
 			OpenGL.OpenGL.glClear((uint)buffers);
 		}
 
-		public void Draw(uint mode)
+		public void Draw(DrawMode mode)
 		{
 			if (index_buffer != null)
-			{
-
-			}
+				OpenGL.OpenGL.glDrawElements((uint)mode, index_buffer.Count, index_buffer.Type, IntPtr.Zero);
 			else
-			{
-				OpenGL.OpenGL.glDrawArrays(mode, 0, vertex_buffer.Count);
-			}
+				OpenGL.OpenGL.glDrawArrays((uint)mode, 0, vertex_buffer.Count);
 		}
 
 		public unsafe Matrix ProjectionMatrix
@@ -97,12 +97,12 @@ namespace Glorg2.Graphics
 			get
 			{
 				Matrix ret = new Matrix();
-				OpenGL.OpenGL.glGetFloatv((uint)OpenGL.OpenGL.GetTarget.GL_PROJECTION_MATRIX, ref ret);
+				OpenGL.OpenGL.glGetFloatv((uint)OpenGL.OpenGL.Const.GL_PROJECTION_MATRIX, ref ret);
 				return ret;
 			}
 			set
 			{
-				OpenGL.OpenGL.glMatrixMode((uint)OpenGL.OpenGL.MatrixMode.GL_PROJECTION);
+				OpenGL.OpenGL.glMatrixMode((uint)OpenGL.OpenGL.Const.GL_PROJECTION);
 				OpenGL.OpenGL.glLoadMatrixf(ref value);
 			}
 		}
@@ -111,12 +111,12 @@ namespace Glorg2.Graphics
 			get
 			{
 				Matrix ret = new Matrix();
-				OpenGL.OpenGL.glGetFloatv((uint)OpenGL.OpenGL.GetTarget.GL_MODELVIEW_MATRIX, ref ret);
+				OpenGL.OpenGL.glGetFloatv((uint)OpenGL.OpenGL.Const.GL_MODELVIEW_MATRIX, ref ret);
 				return ret;
 			}
 			set
 			{
-				OpenGL.OpenGL.glMatrixMode((uint)OpenGL.OpenGL.MatrixMode.GL_MODELVIEW);
+				OpenGL.OpenGL.glMatrixMode((uint)OpenGL.OpenGL.Const.GL_MODELVIEW);
 				OpenGL.OpenGL.glLoadMatrixf(ref value);
 			}
 		}
@@ -125,12 +125,12 @@ namespace Glorg2.Graphics
 			get
 			{
 				Matrix ret = new Matrix();
-				OpenGL.OpenGL.glGetFloatv((uint)OpenGL.OpenGL.GetTarget.GL_TEXTURE_MATRIX, ref ret);
+				OpenGL.OpenGL.glGetFloatv((uint)OpenGL.OpenGL.Const.GL_TEXTURE_MATRIX, ref ret);
 				return ret;
 			}
 			set
 			{
-				OpenGL.OpenGL.glMatrixMode((uint)OpenGL.OpenGL.MatrixMode.GL_TEXTURE);
+				OpenGL.OpenGL.glMatrixMode((uint)OpenGL.OpenGL.Const.GL_TEXTURE);
 				OpenGL.OpenGL.glLoadMatrixf(ref value);
 			}
 		}
@@ -154,10 +154,23 @@ namespace Glorg2.Graphics
 			Cleanup();
 		}
 	}
-	public enum ClearFlags
+	public enum DrawMode : uint
 	{
-		Color = OpenGL.OpenGL.AttribMask.GL_COLOR_BUFFER_BIT,
-		Depth = OpenGL.OpenGL.AttribMask.GL_DEPTH_BUFFER_BIT,
-		Stencil = OpenGL.OpenGL.AttribMask.GL_STENCIL_BUFFER_BIT
+		Triangles = OpenGL.OpenGL.Const.GL_TRIANGLES,
+		TriangleFan = OpenGL.OpenGL.Const.GL_TRIANGLE_FAN,
+		TriangleStrip = OpenGL.OpenGL.Const.GL_TRIANGLE_STRIP,
+		Quads = OpenGL.OpenGL.Const.GL_QUADS,
+		QuadStrip = OpenGL.OpenGL.Const.GL_QUAD_STRIP,
+		Polygon = OpenGL.OpenGL.Const.GL_POLYGON,
+		Points = OpenGL.OpenGL.Const.GL_POINTS,
+		Lines = OpenGL.OpenGL.Const.GL_LINES,
+		LineLoop = OpenGL.OpenGL.Const.GL_LINE_LOOP,
+		LineStrip = OpenGL.OpenGL.Const.GL_LINE_STRIP
+	}
+	public enum ClearFlags : uint
+	{
+		Color = OpenGL.OpenGL.Const.GL_COLOR_BUFFER_BIT,
+		Depth = OpenGL.OpenGL.Const.GL_DEPTH_BUFFER_BIT,
+		Stencil = OpenGL.OpenGL.Const.GL_STENCIL_BUFFER_BIT
 	}
 }
