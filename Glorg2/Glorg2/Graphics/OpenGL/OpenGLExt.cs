@@ -489,11 +489,6 @@ public delegate void FramebufferTextureFaceARB(uint target, uint attachment, uin
 			glFramebufferTextureARB = ctx.GetProc<FramebufferTextureARB>("glFramebufferTextureARB");
 			glFramebufferTextureLayerARB = ctx.GetProc<FramebufferTextureLayerARB>("glFramebufferTextureLayerARB");
 			glFramebufferTextureFaceARB = ctx.GetProc<FramebufferTextureFaceARB>("glFramebufferTextureFaceARB");
-
-			glEnable(GL_SHADER_OBJECT_ARB);
-			glEnable(GL_VERTEX_SHADER_ARB);
-			glEnable(GL_FRAGMENT_SHADER_ARB);
-			glEnable(GL_GEOMETRY_SHADER_ARB);
 		}
 
 		#endregion

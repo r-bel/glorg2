@@ -237,12 +237,9 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glGetFloatv(uint pname, float[] parameters);
 		[DllImport(DllName)]
-		public static unsafe extern void glGetFloatv(uint pname, float* parameters);
-		
+		public static extern void glGetFloatv(uint pname, ref Matrix parameters);
 		[DllImport(DllName)]
-		internal static extern void glGetFloatv(uint pname, ref Matrix parameters);
-
-
+		public static unsafe extern void glGetFloatv(uint pname, float* parameters);
 		[DllImport(DllName)]
 		public static extern void glGetIntegerv(uint pname, int[] parameters);
 		[DllImport(DllName)]
@@ -356,11 +353,9 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName)]
 		public static extern void glLoadMatrixf(float[] m);
 		[DllImport(DllName)]
-		public static unsafe extern void glLoadMatrixf(float* m);
-
-		[DllImport(DllName)]
 		public static extern void glLoadMatrixf(ref Matrix m);
-
+		[DllImport(DllName)]
+		public static unsafe extern void glLoadMatrixf(float* m);
 		[DllImport(DllName)]
 		public static extern void glLoadName(uint name);
 		[DllImport(DllName)]

@@ -11,11 +11,11 @@ namespace Glorg2
 	/// </summary>
 	public struct Matrix
 	{
-		public float 
-			  m11, m12, m13, m14,
-			  m21, m22, m23, m24,
-			  m31, m32, m33, m34,
-			  m41, m42, m43, m44;
+		public float
+			  m11, m21, m31, m41,
+			  m12, m22, m32, m42,
+			  m13, m23, m33, m43,
+			  m14, m24, m34, m44;
 
 		/// <summary>
 		/// This matrix represents an identity matrix, with right to left diagonal set to 1.
@@ -86,7 +86,8 @@ namespace Glorg2
 			{
 				m11 = 1, m14 = x,
 				m22 = 1, m24 = y,
-				m33 = 1, m34 = z
+				m33 = 1, m34 = z,
+				m44 = 1
 			};
 		}
 		/// <summary>
@@ -244,28 +245,28 @@ namespace Glorg2
 			var va = a.GetRows();
 			var vb = b.GetColumns();
 
-			return new Matrix()
-			{
-				m11 = Vector4.Dot(va[0], vb[0]),
-				m12 = Vector4.Dot(va[0], vb[1]),
-				m13 = Vector4.Dot(va[0], vb[2]),
-				m14 = Vector4.Dot(va[0], vb[3]),
+			var ret = new Matrix();
+			
+				ret.m11 = Vector4.Dot(va[0], vb[0]);
+				ret.m12 = Vector4.Dot(va[0], vb[1]);
+				ret.m13 = Vector4.Dot(va[0], vb[2]);
+				ret.m14 = Vector4.Dot(va[0], vb[3]);
 
-				m21 = Vector4.Dot(va[1], vb[0]),
-				m22 = Vector4.Dot(va[1], vb[1]),
-				m23 = Vector4.Dot(va[1], vb[2]),
-				m24 = Vector4.Dot(va[1], vb[3]),
+				ret.m21 = Vector4.Dot(va[1], vb[0]);
+				ret.m22 = Vector4.Dot(va[1], vb[1]);
+				ret.m23 = Vector4.Dot(va[1], vb[2]);
+				ret.m24 = Vector4.Dot(va[1], vb[3]);
 
-				m31 = Vector4.Dot(va[2], vb[0]),
-				m32 = Vector4.Dot(va[2], vb[1]),
-				m33 = Vector4.Dot(va[2], vb[2]),
-				m34 = Vector4.Dot(va[2], vb[3]),
+				ret.m31 = Vector4.Dot(va[2], vb[0]);
+				ret.m32 = Vector4.Dot(va[2], vb[1]);
+				ret.m33 = Vector4.Dot(va[2], vb[2]);
+				ret.m34 = Vector4.Dot(va[2], vb[3]);
 
-				m41 = Vector4.Dot(va[3], vb[0]),
-				m42 = Vector4.Dot(va[3], vb[1]),
-				m43 = Vector4.Dot(va[3], vb[2]),
-				m44 = Vector4.Dot(va[3], vb[3]),
-			};
+				ret.m41 = Vector4.Dot(va[3], vb[0]);
+				ret.m42 = Vector4.Dot(va[3], vb[1]);
+				ret.m43 = Vector4.Dot(va[3], vb[2]);
+				ret.m44 = Vector4.Dot(va[3], vb[3]);
+				return ret;
 		}
 		public static Vector4 operator * (Matrix a, Vector4 b)
 		{

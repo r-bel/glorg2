@@ -1485,6 +1485,8 @@ namespace Glorg2.Graphics.OpenGL
 			public const uint GL_MAX_FRAGMENT_INPUT_COMPONENTS = 0x9125;
 			public const uint GL_CONTEXT_PROFILE_MASK = 0x9126;
 
+			public const uint GL_HALF_FLOAT_ARB = 0x140B;
+
 			// End of ARB 3.2 constants
 		}
 	}

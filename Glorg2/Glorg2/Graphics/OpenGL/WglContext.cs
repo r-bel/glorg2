@@ -10,16 +10,17 @@ namespace Glorg2.Graphics.OpenGL
 	{
 		#region wgl Extensions
 
-		public enum AttribBits
-		{
-			WGL_CONTEXT_DEBUG_BIT_ARB = 0x00000001,
-			WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = 0x00000002,
-			WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091,
-			WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092,
-			WGL_CONTEXT_LAYER_PLANE_ARB = 0x2093,
-			WGL_CONTEXT_FLAGS_ARB = 0x2094,
-			ERROR_INVALID_VERSION_ARB = 0x2095
-		}
+			public const int WGL_CONTEXT_DEBUG_BIT_ARB = 0x00000001;
+			public const int WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = 0x00000002;
+			public const int WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091;
+			public const int WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092;
+			public const int WGL_CONTEXT_LAYER_PLANE_ARB = 0x2093;
+			public const int WGL_CONTEXT_FLAGS_ARB = 0x2094;
+			public const int WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126;
+			public const int WGL_CONTEXT_CORE_PROFILE_BIT_ARB = 0x00000001;
+			public const int WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB = 0x00000002;
+			public const int ERROR_INVALID_VERSION_ARB = 0x2095;
+		
 
 		public delegate IntPtr CreateContextAttribsARB(IntPtr hDC, IntPtr hShareContext, int[] attribList);
 
@@ -322,14 +323,13 @@ namespace Glorg2.Graphics.OpenGL
 
 			int[] attribs = new int[]
 			{
-				(int)AttribBits.WGL_CONTEXT_MAJOR_VERSION_ARB,
-				3,
-				(int)AttribBits.WGL_CONTEXT_MINOR_VERSION_ARB,
-				2,
-				0
-			};
+WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 2, 
+			WGL_CONTEXT_FLAGS_ARB,0,
+			WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB, 
+			0			};
 
-			IntPtr newhandle = wglCreateContextAttribsARB(hdc, handle, attribs);
+			IntPtr newhandle = wglCreateContextAttribsARB(hdc, IntPtr.Zero, attribs);
 			if (newhandle == IntPtr.Zero)
 			{
 				wglDeleteContext(handle);

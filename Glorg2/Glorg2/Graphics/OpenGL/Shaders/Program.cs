@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL.Shaders
 {
-	public class Program : IDisposable
+	public class Program : Resource.Resource, IDisposable
 	{
 		private IntPtr handle;
 		internal List<Shader> shaders;

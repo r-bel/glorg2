@@ -72,6 +72,11 @@ namespace Glorg2
 		{
 			return new Vector2(a / b.x, a / b.y);
 		}
+		public override string ToString()
+		{
+			return "{" + x.ToString() + ", " + y.ToString() + "}";
+		}
+
 
 	}
 	/// <summary>
@@ -145,6 +150,11 @@ namespace Glorg2
 		{
 			return new Vector4(x, y, z);
 		}
+		public override string ToString()
+		{
+			return "{" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + "}";
+		}
+
 	}
 	/// <summary>
 	/// Represents a vector in 4D space
@@ -167,7 +177,7 @@ namespace Glorg2
 		}
 		public static float Dot(Vector4 a, Vector4 b)
 		{
-			return a.x * b.x + a.y + b.y + a.z * b.z + a.w * b.w;
+			return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 		}
 		public float Length
 		{
@@ -220,6 +230,10 @@ namespace Glorg2
 		public Vector3 ToVector3()
 		{
 			return new Vector3(x, y, z);
+		}
+		public override string ToString()
+		{
+			return "{" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString() + "}";
 		}
 
 	}

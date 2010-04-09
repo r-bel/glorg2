@@ -22,11 +22,9 @@ namespace Glorg2.Graphics.OpenGL
 		where T : struct
 	{
 		private uint handle;
-		private int size_of_t;
+		protected int size_of_t;
 		private int count;
 		private T[] internal_array;
-		internal List<Action> initialize;
-		internal List<Action> reset;
 		protected uint target;
 
 		public uint Handle { get { return handle; } }
@@ -35,8 +33,6 @@ namespace Glorg2.Graphics.OpenGL
 		protected BufferObject()
 		{
 			count = 0;
-			initialize = new List<Action>();
-			reset = new List<Action>();
 			size_of_t = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
 			uint[] buffers = new uint[1] { 0 };
 			OpenGL.glGenBuffersARB(1, buffers);
@@ -70,21 +66,19 @@ namespace Glorg2.Graphics.OpenGL
 
 		public void BufferData(OpenGL.VboUsage usage)
 		{
+			
 			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, handle);
 			var h = System.Runtime.InteropServices.GCHandle.Alloc(internal_array, System.Runtime.InteropServices.GCHandleType.Pinned);
 			OpenGL.glBufferDataARB((OpenGL.VboTarget)target, size_of_t * internal_array.Length, h.AddrOfPinnedObject(), usage);
 			h.Free();
 		}
-		public void MakeCurrent()
+		public virtual void MakeCurrent()
 		{
 			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, handle);
-			foreach (var act in initialize)
-				act();
 		}
-		public void Reset()
+		public virtual void Reset()
 		{
-			foreach (var act in reset)
-				act();
+			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, 0);
 		}
 		protected void Cleanup()
 		{
@@ -167,6 +161,34 @@ namespace Glorg2.Graphics.OpenGL
 	public sealed class VertexBuffer<T> : BufferObject<T>, IVertexBuffer
 		where T : struct
 	{
+		internal class ElementInfo
+		{
+			public int dimensions;
+			public uint gl_type;
+			public IntPtr offset_value;
+		}
+		internal List<ElementInfo> elements;
+		internal List<Action<ElementInfo>> initialize;
+		internal List<uint> types;
+
+		private void SetVertexPointer(ElementInfo info)
+		{
+			OpenGL.glVertexPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
+		}
+		private void SetNormalPointer(ElementInfo info)
+		{
+			OpenGL.glNormalPointer(info.gl_type, size_of_t, info.offset_value);
+		}
+		private void SetTexCoordPointer(ElementInfo info)
+		{
+			OpenGL.glTexCoordPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
+		}
+		private void SetColorPointer(ElementInfo info)
+		{
+			OpenGL.glColorPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
+		}
+		
+
 		private VertexBufferDescriptor desc;
 		/// <summary>
 		/// Standard constructor for vertex buffers
@@ -183,6 +205,14 @@ namespace Glorg2.Graphics.OpenGL
 			this.desc = desc;
 			int offset = 0;
 			int tot_size = desc.Types.Count() == 1 ? 0 : desc.TotalSize;
+
+			initialize = new List<Action<VertexBuffer<T>.ElementInfo>>();
+			elements = new List<VertexBuffer<T>.ElementInfo>();
+			types = new List<uint>();
+			uint gl_datatype = 0;
+
+			
+
 			foreach (var el in desc.Types)
 			{
 				int tt = (int)el;
@@ -192,69 +222,71 @@ namespace Glorg2.Graphics.OpenGL
 				data_type = (ElementType)(tt & 0x00003000);
 				type = (ElementType)(tt & 0xf);
 				int dim = (tt & 0x00000ff0) >> 4;
-				int bits = ((tt & 0x00ff0000) >> 16) * 8;
+				int bits = ((tt & 0x00ff0000) >> 16);
 				size = dim * bits;
-				
-				uint gl_type = 0;
 
-				if(bits == 16 && type == ElementType.Integer)
-					gl_type = (uint)OpenGL.Const.GL_SHORT;
-				else if(bits == 32 && type == ElementType.Integer)
-					gl_type = (uint)OpenGL.Const.GL_INT;
-				else if(bits == 32 && type == ElementType.Float)
-					gl_type = (uint)OpenGL.Const.GL_FLOAT;
-				else if(bits == 64 && type == ElementType.Float)
-					gl_type = (uint)OpenGL.Const.GL_DOUBLE;
+				if (bits == 2 && data_type == ElementType.Integer)
+					gl_datatype = (uint)OpenGL.Const.GL_SHORT;
+				else if (bits == 4 && data_type == ElementType.Integer)
+					gl_datatype = (uint)OpenGL.Const.GL_INT;
+				else if (bits == 2 && data_type == ElementType.Float)
+					gl_datatype = OpenGL.Const.GL_HALF_FLOAT_ARB;
+				else if (bits == 4 && data_type == ElementType.Float)
+					gl_datatype = (uint)OpenGL.Const.GL_FLOAT;
+				else if (bits == 8 && data_type == ElementType.Float)
+					gl_datatype = (uint)OpenGL.Const.GL_DOUBLE;
+				
+					
+
+				elements.Add(new VertexBuffer<T>.ElementInfo()
+				{
+					dimensions = dim,
+					gl_type = gl_datatype,
+					offset_value = new IntPtr(offset)
+				});
+
 				switch (type)
 				{
 					case ElementType.Position:
-						initialize.Add(() =>
-						{
-							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_VERTEX_ARRAY);
-							OpenGL.glVertexPointer(dim, gl_type, tot_size, new IntPtr(offset));
-						});
-						reset.Add(() =>
-						{
-							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_VERTEX_ARRAY);
-						});
+						initialize.Add(new Action<ElementInfo>(SetVertexPointer));
+						types.Add(OpenGL.Const.GL_VERTEX_ARRAY);
 						break;
 					case ElementType.Normals:
-						initialize.Add(() =>
-						{
-							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_NORMAL_ARRAY);
-							OpenGL.glNormalPointer(gl_type, tot_size, new IntPtr(offset));
-						});
-						reset.Add(() =>
-						{
-							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_NORMAL_ARRAY);
-						});
+						initialize.Add(new Action<ElementInfo>(SetNormalPointer));
+						types.Add(OpenGL.Const.GL_NORMAL_ARRAY);
 						break;
 					case ElementType.TexCoord:
-						initialize.Add(() =>
-						{
-							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_TEXTURE_COORD_ARRAY);
-							OpenGL.glTexCoordPointer(dim, gl_type, tot_size, new IntPtr(offset));
-						});
-						reset.Add(() =>
-						{
-							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_TEXTURE_COORD_ARRAY);
-						});
+						initialize.Add(new Action<ElementInfo>(SetTexCoordPointer));
+						types.Add(OpenGL.Const.GL_TEXTURE_COORD_ARRAY);
 						break;
 					case ElementType.Color:
-						initialize.Add(() =>
-						{
-							OpenGL.glEnableClientState((uint)OpenGL.Const.GL_COLOR_ARRAY);
-							OpenGL.glColorPointer(dim, gl_type, tot_size, new IntPtr(offset));
-						});
-						reset.Add(() =>
-						{
-							OpenGL.glDisableClientState((uint)OpenGL.Const.GL_COLOR_ARRAY);
-						});
+						initialize.Add(new Action<ElementInfo>(SetColorPointer));
+						types.Add(OpenGL.Const.GL_COLOR_ARRAY);
+						break;
+					default:
+						initialize.Add(null);
+						types.Add(0);
 						break;
 
 				}
 				offset += size;
 			}
+		}
+		public override void MakeCurrent()
+		{
+			base.MakeCurrent();
+			foreach (var t in types)
+				OpenGL.glEnableClientState(t);
+
+			for (int i = 0; i < initialize.Count; i++)
+				initialize[i](elements[i]);
+		}
+		public override void Reset()
+		{
+			base.Reset();
+			foreach (var act in types)
+				if (act != 0)
+					OpenGL.glDisableClientState(act);
 		}
 	}
 	public sealed class IndexBuffer<T> : BufferObject<T>, IIndexBuffer
