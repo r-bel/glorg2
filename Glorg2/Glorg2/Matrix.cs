@@ -221,8 +221,22 @@ namespace Glorg2
 				m33 = (far+ near) / (near - far), m34 = (2 * far * near) / (near - far),
 				m43 = -1, m44 = 0
 			};
-			
 		}
+
+		public static Matrix Orthographic(float left, float right, float top, float bottom, float near, float far)
+		{
+			return new Matrix()
+			{
+				m11 = 2 / (right - left),
+				m22 = 2 / (top - bottom),
+				m33 = -2 / (far - near),
+				m44 = 1,
+				m14 = (right + left) / (right - left),
+				m24 = (top + bottom) / (top - bottom),
+				m34 = (far + near) / (far  - near)
+			};
+		}
+
 		/// <summary>
 		/// Reverses the order of columns/rows
 		/// </summary>

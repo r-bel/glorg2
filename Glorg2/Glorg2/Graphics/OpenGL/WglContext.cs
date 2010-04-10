@@ -320,22 +320,23 @@ namespace Glorg2.Graphics.OpenGL
 			var s = OpenGL.glGetString((uint)OpenGL.Const.GL_VERSION);
 			var str = Marshal.PtrToStringAnsi(s);
 			wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
-
-			int[] attribs = new int[]
+			if (wglCreateContextAttribsARB != null)
 			{
-WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 2, 
-			WGL_CONTEXT_FLAGS_ARB,0,
-			WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB, 
-			0			};
 
-			IntPtr newhandle = wglCreateContextAttribsARB(hdc, IntPtr.Zero, attribs);
-			if (newhandle == IntPtr.Zero)
-			{
-				wglDeleteContext(handle);
-				throw new NotSupportedException("System does not support OpenGL 3.2");
+				int[] attribs = new int[]
+				{
+					WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+					WGL_CONTEXT_MINOR_VERSION_ARB, 0, 
+					WGL_CONTEXT_FLAGS_ARB,0,
+					WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB, 
+					0
+				};
+
+				IntPtr newhandle = wglCreateContextAttribsARB(hdc, IntPtr.Zero, attribs);
+				if (newhandle != IntPtr.Zero) // If OpenGL 3.0 context creation failed, fallback to legacy 2.x
+					handle = newhandle;
 			}
-			handle = newhandle;
+			
 			wglMakeCurrent(hdc, handle);
 
 		}

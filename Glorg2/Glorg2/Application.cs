@@ -17,8 +17,10 @@ namespace Glorg2
 		volatile float fps;
 		volatile float frame_time;
 		volatile float total_time;
-
+		Scene.Scene scene;
 		Queue<Action> graphic_invoke;
+
+		public Scene.Scene Scene { get { return scene; } }
 
 		/// <summary>
 		/// Retrieves frames per second of the rendering thread
@@ -34,13 +36,10 @@ namespace Glorg2
 		public float TotalTime { get { return total_time; } }
 
 		public Graphics.GraphicsDevice Device { get { return dev; } }
-
-		public Game()
-		{
-			graphic_invoke = new Queue<Action>();
-		}
 		private void StartInternal()
 		{
+			graphic_invoke = new Queue<Action>();
+			scene = new Glorg2.Scene.Scene(this);
 			RenderThread = new System.Threading.Thread(new System.Threading.ThreadStart(RenderLoop));
 			running = true;
 			target.Show();
@@ -121,11 +120,13 @@ namespace Glorg2
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
 				FrameStep(frame_time);
+				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;
 				System.Windows.Forms.Application.DoEvents();
 				old_time = new_time;				
 			}
+			scene.Dispose();
 			Closing();
 		}
 		private void RenderLoop()
@@ -168,6 +169,9 @@ namespace Glorg2
 
 		protected virtual void Render(Glorg2.Graphics.GraphicsDevice dev, float frame_time, float total_time)
 		{
+			dev.Clear(Glorg2.Graphics.ClearFlags.Color | Glorg2.Graphics.ClearFlags.Depth, new Vector4(0, 0, .4f, 0));
+			scene.ParentNode.InternalRender(frame_time, dev);			
+			dev.Present();
 		}
 	}
 }

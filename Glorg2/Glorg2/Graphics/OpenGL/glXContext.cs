@@ -129,7 +129,9 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			// Force loading of OpenGL library
 			// This is later used by the OpenGL class to implement extensions.
-			linker = GetLinker();
+			//linker = GetLinker();
+
+			throw new NotSupportedException("X Window System is not yet supported.");
 
 			// TODO: Add Xgl context creation
 

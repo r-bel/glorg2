@@ -15,10 +15,10 @@ namespace Glorg2
 		public float x, y, z, w;
 
 		public static readonly Quaternion Identity = new Quaternion(
-			1,
 			0,
 			0,
-			0
+			0,
+			1
 		);
 
 		public Quaternion(float x, float y, float z, float w)
@@ -125,7 +125,7 @@ namespace Glorg2
 				m24 = 0,
 				m31 = 2 * (x * z - w * y),
 				m32 = 2 * (y * x - w * x),
-				m33 = 1 - 2 * x*x - 2 * y * y,
+				m33 = 1 - 2 * (x * x - y * y),
 				m34 = 0,
 				m41 = 0,
 				m42 = 0,

@@ -17,13 +17,24 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			return new Uniform(OpenGL.glGetUniformLocationARB(handle, name));
 		}
 
-		public void Compile()
+		public bool Compile()
 		{
+			uint err = OpenGL.glGetError();
 			foreach (var shader in shaders)
 			{
 				shader.Compile();
 			}
 			OpenGL.glLinkProgramARB(handle);
+			err = OpenGL.glGetError();
+			return err == 0;			
+		}
+
+		public string GetCompileLog()
+		{
+			byte[] val = new byte[8192];
+			int len = 0;
+			OpenGL.glGetInfoLogARB(handle, val.Length, ref len, val);
+			return Encoding.ASCII.GetString(val);
 		}
 
 

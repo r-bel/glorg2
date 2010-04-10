@@ -25,7 +25,7 @@ namespace Glorg2.Graphics
 			else if ((Environment.OSVersion.Platform & PlatformID.Unix) == PlatformID.Unix)
 				context = new OpenGL.glXContext();
 			else if ((Environment.OSVersion.Platform & PlatformID.MacOSX) == PlatformID.MacOSX)
-				throw new NotImplementedException("Mac OS X not yet supported.");
+				throw new NotSupportedException("Mac OS X not yet supported.");
 			
 			// Create context using platform specific methods
 			context.CreateContext(target);
@@ -36,6 +36,9 @@ namespace Glorg2.Graphics
 			// Initialize shaders
 			
 			OpenGL.OpenGL.InitShaderProgram(context);
+			err = OpenGL.OpenGL.glGetError();
+
+			OpenGL.OpenGL.InitOcclusionQueries(context);
 			err = OpenGL.OpenGL.glGetError();
 
 			state = new OpenGLState(this);
