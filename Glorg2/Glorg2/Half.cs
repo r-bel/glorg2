@@ -198,6 +198,10 @@ namespace Glorg2
 			uint f = BitConverter.ToUInt32(bytes, 0);
 			return new Half((ushort)(base_table[(f >> 23) & 0x1ff] + ((f & 0x007fffff) >> shift_table[(f >> 23) & 0x1ff])));
 		}
+		public override string ToString()
+		{
+			return ((float)this).ToString();
+		}
 
 	}
 }

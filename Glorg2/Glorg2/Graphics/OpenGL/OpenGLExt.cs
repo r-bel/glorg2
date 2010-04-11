@@ -4,6 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
+/*
+public static {[a-zA-Z0-9]+} {[a-zA-Z0-9]+};			\2 = ctx.GetProc<\1>("\2");
+public delegate [a-zA-Z0-9]+ {[a-zA-Z0-9]+}\(.*\);		public static \1 gl\1;
+GLAPI {[a-zA-Z0-9]+} APIENTRY gl{[a-zA-Z0-9]+} \({.*}\);	public delegate \1 \2(\3);
+
+\#define:b{[a-zA-Z_0-9]+}:b{.*}$	public const uint \1 = \2;
+*/
+
 namespace Glorg2.Graphics.OpenGL
 {
 	public static partial class OpenGL

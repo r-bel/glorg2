@@ -50,7 +50,7 @@ namespace Glorg2
 			if (Math.Abs((other.Position - Position).Length) < (Radius + other.Radius))
 			{
 				// Spheres intersects
-				Plane ret = new Plane();
+				//Plane ret = new Plane();
 				//ret.Position = Position + (other.Position - Position) / 2;
 				//ret.Normal = (other.Position - Position).Normalize().ToVector3();
 				return true;

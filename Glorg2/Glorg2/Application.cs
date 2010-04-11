@@ -120,6 +120,7 @@ namespace Glorg2
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
 				FrameStep(frame_time);
+				scene.local_transform = Matrix.Identity;
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;
@@ -170,6 +171,8 @@ namespace Glorg2
 		protected virtual void Render(Glorg2.Graphics.GraphicsDevice dev, float frame_time, float total_time)
 		{
 			dev.Clear(Glorg2.Graphics.ClearFlags.Color | Glorg2.Graphics.ClearFlags.Depth, new Vector4(0, 0, .4f, 0));
+			if (scene.Camera != null)
+				dev.ProjectionMatrix = scene.Camera.GetProjectionMatrix();
 			scene.ParentNode.InternalRender(frame_time, dev);			
 			dev.Present();
 		}

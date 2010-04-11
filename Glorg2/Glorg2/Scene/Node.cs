@@ -6,7 +6,7 @@ using System.Text;
 namespace Glorg2.Scene
 {
 	[Serializable()]
-	public class Node : IDisposable, IEnumerable<Node>
+	public class Node : IDisposable
 	{
 		LinkedList<Node> children;
 		
@@ -25,10 +25,15 @@ namespace Glorg2.Scene
 
 		string name;
 		int hash_code;
-		Vector4 position;
-		Vector4 center_of_mass;
-		Vector4 velocity;
+		Physics.ObjectState linear_state;
+		Physics.ObjectState angualar_state;
 		Vector4 acceleration;
+		Vector4 center_of_mass;
+
+		[NonSerialized()]
+		Matrix absolute_transform;
+		
+
 		float radius;
 		Quaternion angular_momentum;
 		Quaternion orientation;
@@ -42,7 +47,17 @@ namespace Glorg2.Scene
 			Parent = null;
 		}
 
-		protected virtual void InitializeGraphics()
+		protected virtual Vector4 LinearAcceleratiom(Physics.ObjectState state, float t)
+		{
+			return acceleration * t;
+		}
+		protected virtual Vector4 AnguralAcceleration(Physics.ObjectState state, float t)
+		{
+			//return angular_momentum * t;
+			return new Vector4();
+		}
+
+		protected internal virtual void InitializeGraphics()
 		{
 
 		}
@@ -52,7 +67,20 @@ namespace Glorg2.Scene
 			
 		}
 
+		protected void EulerIntegrate()
+		{
+		}
+
 		public Node(Scene owner)
+			: this()
+		{
+			this.owner = owner;
+			if (owner.Owner != null)
+			{
+				owner.Owner.GraphicInvoke(() => { InitializeGraphics(); graphics_initialized = true; });
+			}
+		}
+		public Node()
 		{
 			angular_momentum = Quaternion.Identity;
 			orientation = Quaternion.Identity;
@@ -60,33 +88,37 @@ namespace Glorg2.Scene
 			children = new LinkedList<Node>();
 			remove_children = new List<Node>();
 			add_children = new List<Node>();
-			this.owner = owner;
-			if (owner.Owner != null)
-			{
-				owner.Owner.GraphicInvoke(() => { InitializeGraphics(); graphics_initialized = true; });
-			}
 		}
 
 		protected virtual void Process(float time)
 		{
-			position += velocity;
-			velocity += acceleration;
+			//position += velocity * time;
+			//velocity += acceleration * time;
+			Physics.Integration.RK4Integrate(ref linear_state, 0, time, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
 		}
 
 		public virtual void InternalProcess(float time)
 		{
+			Matrix old = owner.local_transform;
+			owner.local_transform = owner.local_transform * GetTransform();
+			absolute_transform = owner.local_transform;
 			Process(time);
 			foreach (var child in children)
 				child.InternalProcess(time);
+			owner.local_transform = old;
 			if (remove_children.Count > 0)
 			{
 				lock (children)
 				{
-					foreach (var child in remove_children)
+					lock (owner.items)
 					{
-						if (child.parent == this)
-							child.parent = null;
-						children.Remove(child);
+						foreach (var child in remove_children)
+						{
+							if (child.parent == this)
+								child.parent = null;
+							children.Remove(child);
+							owner.items.Add(child);
+						}
 					}
 				}
 				remove_children.Clear();
@@ -95,13 +127,19 @@ namespace Glorg2.Scene
 			{
 				lock (children)
 				{
-					foreach (var child in add_children)
+					lock (owner.items)
 					{
-						if (child.parent != this)
-							child.parent = this;
-						children.AddLast(child);
+						foreach (var child in add_children)
+						{
+							if (child.parent != this)
+								child.parent = this;
+							children.AddLast(child);
+							owner.items.Add(child);
+						}
+						
 					}
 				}
+				
 				add_children.Clear();
 			}
 			
@@ -114,14 +152,11 @@ namespace Glorg2.Scene
 
 		protected internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
 		{
-			var old_mat = dev.ModelviewMatrix;
-			var trans = GetTransform();
-			dev.ModelviewMatrix = old_mat * trans;
+			dev.ModelviewMatrix = absolute_transform;
 			if(graphics_initialized)
 				Render(time, dev);
 			foreach (var child in children)
 					child.InternalRender(time, dev);
-			dev.ModelviewMatrix = old_mat;
 		}
 
 		public IEnumerable<Node> Find(Predicate<Node> pred)
@@ -225,7 +260,7 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the position of this node
 		/// </summary>
-		public virtual Vector4 Position { get { return position; } set { position = value; } }
+		public virtual Vector4 Position { get { return linear_state.Value; } set { linear_state.Value = value; } }
 		/// <summary>
 		/// Gets or sets the orientation of this node
 		/// </summary>
@@ -233,7 +268,7 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the velocity of this node
 		/// </summary>
-		public virtual Vector4 Velocity { get { return velocity; } set { velocity = value; } }
+		public virtual Vector4 Velocity { get { return linear_state.Velocity; } set { linear_state.Velocity = value; } }
 		/// <summary>
 		/// Gets or sets the acceleration of this node
 		/// </summary>
@@ -258,9 +293,9 @@ namespace Glorg2.Scene
 		public virtual Matrix GetTransform()
 		{
 			var mat = orientation.ToMatrix();
-			mat.m14 = position.x;
-			mat.m24 = position.y;
-			mat.m34 = position.z;
+			mat.m14 = linear_state.Value.x;
+			mat.m24 = linear_state.Value.y;
+			mat.m34 = linear_state.Value.z;
 			return mat;
 		}
 
@@ -290,87 +325,7 @@ namespace Glorg2.Scene
 			} 
 		}
 
-		#region IEnumerable<Node> Members
 
-		public IEnumerator<Node> GetEnumerator()
-		{
-			return new NodeEnumerator(this);
-		}
-
-		#endregion
-
-		#region IEnumerable Members
-
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			return new NodeEnumerator(this);
-		}
-
-		#endregion
-
-		public class NodeEnumerator : IEnumerator<Node>, System.Collections.IEnumerator
-		{
-			Node parent;
-			Node current;
-
-			public NodeEnumerator(Node n)
-			{
-				parent = n;
-			}
-
-			#region IEnumerator<Node> Members
-
-			public Node Current
-			{
-				get { return current; }
-			}
-
-			#endregion
-
-			#region IDisposable Members
-
-			public void Dispose()
-			{
-				
-			}
-
-			#endregion
-
-			#region IEnumerator Members
-
-			object System.Collections.IEnumerator.Current
-			{
-				get { return current; }
-			}
-
-			public bool MoveNext()
-			{
-				throw new NotImplementedException();
-				
-			}
-
-			public void Reset()
-			{
-				current = null;
-			}
-
-			#endregion
-
-			#region IEnumerator Members
-
-
-			bool System.Collections.IEnumerator.MoveNext()
-			{
-				return MoveNext();
-			}
-
-			void System.Collections.IEnumerator.Reset()
-			{
-				Reset();
-			}
-
-			#endregion
-		}
 
 
 	}

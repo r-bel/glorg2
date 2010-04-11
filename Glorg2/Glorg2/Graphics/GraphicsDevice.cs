@@ -44,6 +44,7 @@ namespace Glorg2.Graphics
 			state = new OpenGLState(this);
 			state.Culling = true;
 			state.DepthTest = true;
+			state.Normalize = true;
 			
 			
 		}
@@ -267,6 +268,22 @@ namespace Glorg2.Graphics
 				OpenGL.OpenGL.glCullFace((uint)value);
 			}
 		}
+
+		public bool Normalize
+		{
+			get
+			{
+				return OpenGL.OpenGL.glIsEnabled(OpenGL.OpenGL.Const.GL_NORMALIZE) == Glorg2.Graphics.OpenGL.OpenGL.boolean.TRUE;
+			}
+			set
+			{
+				if (value)
+					OpenGL.OpenGL.glEnable(OpenGL.OpenGL.Const.GL_NORMALIZE);
+				else
+					OpenGL.OpenGL.glDisable(OpenGL.OpenGL.Const.GL_NORMALIZE);
+			}
+		}
+
 		public PolygonMode GetPolygonMode(CullFace face)
 		{
 				int[] vals = new int[1];

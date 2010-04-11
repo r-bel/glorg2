@@ -74,9 +74,29 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "{" + x.ToString() + ", " + y.ToString() + "}";
+			return "[" + x.ToString() + ", " + y.ToString() + "]";
 		}
-
+		public float this[int index]
+		{
+			get
+			{
+				if (index == 0)
+					return x;
+				else if (index == 1)
+					return y;
+				else
+					throw new IndexOutOfRangeException();
+			}
+			set
+			{
+				if (index == 0)
+					x = value;
+				else if (index == 1)
+					y = value;
+				else
+					throw new IndexOutOfRangeException();
+			}
+		}
 
 	}
 	/// <summary>
@@ -152,9 +172,33 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "{" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + "}";
+			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + "]";
 		}
-
+		public float this[int index]
+		{
+			get
+			{
+				if (index == 0)
+					return x;
+				else if (index == 1)
+					return y;
+				else if (index == 2)
+					return z;
+				else
+					throw new IndexOutOfRangeException();
+			}
+			set
+			{
+				if (index == 0)
+					x = value;
+				else if (index == 1)
+					y = value;
+				else if(index == 2)
+					z = value;
+				else
+					throw new IndexOutOfRangeException();
+			}
+		}
 	}
 	/// <summary>
 	/// Represents a vector in 4D space
@@ -233,7 +277,40 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "{" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString() + "}";
+			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString() + "]";
+		}
+		public float this[int index]
+		{
+			get
+			{
+				if (index == 0)
+					return x;
+				else if (index == 1)
+					return y;
+				else if (index == 2)
+					return z;
+				else if (index == 3)
+					return w;
+				else
+					throw new IndexOutOfRangeException();
+			}
+			set
+			{
+				if (index == 0)
+					x = value;
+				else if (index == 1)
+					y = value;
+				else if (index == 2)
+					z = value;
+				else if (index == 3)
+					w = value;
+				else
+					throw new IndexOutOfRangeException();
+			}
+		}
+		public static explicit operator Quaternion(Vector4 vec)
+		{
+			return new Quaternion(vec.x, vec.y, vec.z, vec.w);
 		}
 
 	}
@@ -259,6 +336,10 @@ namespace Glorg2
 		{
 			return new Vector4Half(val.x, val.y, val.z, val.w);
 		}
+		public override string ToString()
+		{
+			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString() + "]";
+		}
 
 	}
 	/// <summary>
@@ -282,6 +363,11 @@ namespace Glorg2
 		{
 			return new Vector3Half(val.x, val.y, val.z);
 		}
+		public override string ToString()
+		{
+			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + "]";
+		}
+
 
 	}
 	/// <summary>
@@ -303,6 +389,10 @@ namespace Glorg2
 		public static explicit operator Vector2Half(Vector2 val)
 		{
 			return new Vector2Half(val.x, val.y);
+		}
+		public override string ToString()
+		{
+			return "[" + x.ToString() + ", " + y.ToString() + "]";
 		}
 	}
 }

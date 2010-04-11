@@ -70,12 +70,15 @@
     <Compile Include="Graphics\OpenGL\glXContext.cs" />
     <Compile Include="Half.cs" />
     <Compile Include="Matrix.cs" />
+    <Compile Include="Physics\Integration.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quaternion.cs" />
     <Compile Include="Ray.cs" />
     <Compile Include="Resource\Resource.cs" />
+    <Compile Include="Resource\ResourceManager.cs" />
     <Compile Include="Scene\Camera.cs" />
+    <Compile Include="Scene\Light.cs" />
     <Compile Include="Scene\Node.cs" />
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="SubStream.cs" />

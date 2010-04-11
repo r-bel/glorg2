@@ -50,14 +50,14 @@ namespace Glorg2
 			float sx = (float)Math.Sin(0.5 * x_angle);
 			float sy = (float)Math.Sin(0.5 * y_angle);
 			float sz = (float)Math.Sin(0.5 * z_angle);
-			
+
 			x = cz * cy * sx - sz * sy * cx;
 			y = cz * sy * cx + sz * cy * sx;
 			z = sz * cy * cx - cz * sy * sx;
 			w = cz * cy * cx + sz * sy * sx;
 		}
 
-		public static Quaternion  operator -(Quaternion q)
+		public static Quaternion operator -(Quaternion q)
 		{
 			return new Quaternion(-q.x, -q.y, -q.z, q.w);
 		}
@@ -91,21 +91,26 @@ namespace Glorg2
 			}
 		}
 		/// <summary>
-		/// Normalizes a quaternion to ensure it is a unit quaternion
+		/// Normalizes a quaternion if it is not a unit quaternion
 		/// </summary>
 		/// <returns>Returns a unit quaternion</returns>
 		public Quaternion Normalize()
 		{
-			float mag = Magnitude;
-			return new Quaternion(x / mag, y / mag, z / mag, w / mag);
+			if (!IsUnit)
+			{
+				float mag = Magnitude;
+				return new Quaternion(x / mag, y / mag, z / mag, w / mag);
+			}
+			else
+				return this;
 		}
 		public static Quaternion operator *(Quaternion a, Quaternion b)
 		{
 			return new Quaternion(
-				  a.y*b.z - a.z*b.y + a.w*b.x + a.x*b.w,
-				  a.z*b.x - a.x*b.z + a.w*b.y + a.y*b.w,
-				  a.x*b.y - a.y*b.x + a.w*b.z + a.z*b.w,
-				  a.w*b.w - Vector3.Dot(new Vector3(a.x, a.y, a.z), new Vector3(b.x, b.y, b.z)));
+				  a.y * b.z - a.z * b.y + a.w * b.x + a.x * b.w,
+				  a.z * b.x - a.x * b.z + a.w * b.y + a.y * b.w,
+				  a.x * b.y - a.y * b.x + a.w * b.z + a.z * b.w,
+				  a.w * b.w - Vector3.Dot(new Vector3(a.x, a.y, a.z), new Vector3(b.x, b.y, b.z)));
 		}
 		/// <summary>
 		/// Creates a new matrix representing the quaternion
@@ -115,23 +120,28 @@ namespace Glorg2
 		{
 			return new Matrix()
 			{
-				m11 = 1 - 2*(y * y - z*z),
-				m12 = 2 * (x * y -  w * z),
-				m13 = 2 * (x * z + w * y),
-				m14 = 0,
+				m11 = 1f - 2 * (y * y + z * z),
 				m21 = 2 * (x * y + w * z),
-				m22 = 1 - 2*(x*x - z*z),
-				m23 = 2 * (y*z-w*x),
-				m24 = 0,
 				m31 = 2 * (x * z - w * y),
-				m32 = 2 * (y * x - w * x),
-				m33 = 1 - 2 * (x * x - y * y),
-				m34 = 0,
 				m41 = 0,
+				m12 = 2 * (x * y - w * z),
+				m22 = 1f - 2 * (x * x + z * z),
+				m32 = 2 * (y * z + w * x),
 				m42 = 0,
+				m13 = 2 * (x * z + w * y),
+				m23 = 2 * (y * z - w * x),
+				m33 = 1f - 2 * (x * x + y * y),
 				m43 = 0,
+				m14 = 0,
+				m24 = 0,
+				m34 = 0,
 				m44 = 1
 			};
+		}
+
+		public static explicit operator Vector4(Quaternion quat)
+		{
+			return new Vector4(quat.x, quat.y, quat.z, quat.w);
 		}
 	}
 }
