@@ -10,6 +10,7 @@ namespace Glorg2
 	/// <summary>
 	/// Represents a vector in 2D space
 	/// </summary>
+	[Serializable()]
 	public struct Vector2
 	{
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
@@ -102,6 +103,7 @@ namespace Glorg2
 	/// <summary>
 	/// Represents a vector in 3D space
 	/// </summary>
+	[Serializable()]
 	public struct Vector3
 	{
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
@@ -203,6 +205,7 @@ namespace Glorg2
 	/// <summary>
 	/// Represents a vector in 4D space
 	/// </summary>
+	[Serializable()]
 	public struct Vector4
 	{
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
@@ -318,6 +321,7 @@ namespace Glorg2
 	/// Represents a vector of 4 16-bit floating points
 	/// </summary>
 	/// <remarks>This datatype does not support any type of calculations, and is to be considered a strict storage type.</remarks>
+	[Serializable()]
 	public struct Vector4Half
 	{
 		public Half x, y, z, w;
@@ -346,6 +350,7 @@ namespace Glorg2
 	/// Represents a vector of 3 16-bit floating points
 	/// </summary>
 	/// <remarks>This datatype does not support any type of calculations, and is to be considered a strict storage type.</remarks>
+	[Serializable()]
 	public struct Vector3Half
 	{
 		public Half x, y, z;
@@ -374,6 +379,7 @@ namespace Glorg2
 	/// Represents a vector of 2 16-bit floating points
 	/// </summary>
 	/// <remarks>This datatype does not support any type of calculations, and is to be considered a strict storage type.</remarks>
+	[Serializable()]
 	public struct Vector2Half
 	{
 		public Half x, y;

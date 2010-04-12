@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Glorg2
 {
+	[Serializable()]
 	public struct Plane
 	{
 		public Vector3 Normal;

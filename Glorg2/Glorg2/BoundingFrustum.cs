@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Glorg2
 {
+	[Serializable()]
 	public struct BoundingFrustum
 	{
 		public Plane[] Sides;

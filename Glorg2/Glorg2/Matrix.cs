@@ -9,6 +9,7 @@ namespace Glorg2
 	/// Matrices are structures used for manipulating or representing data. 
 	/// This matrix is a 4x4 matrix used for transforming 3D or 4D vectors.
 	/// </summary>
+	[Serializable()]
 	public struct Matrix
 	{
 		public float

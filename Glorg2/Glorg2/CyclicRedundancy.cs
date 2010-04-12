@@ -34,6 +34,20 @@ namespace Glorg2
 			}
 		}
 
+		public static int Hash(string data)
+		{
+			return Hash(Encoding.Unicode.GetBytes(data));
+		}
+
+		public static int Hash(string data, Encoder enc)
+		{
+			var arr = data.ToCharArray();
+			int count = enc.GetByteCount(arr, 0, arr.Length, false);
+			var bytes = new byte[count];
+			enc.GetBytes(arr, 0, arr.Length, bytes, 0, false);
+			return Hash(bytes);
+		}
+
 		public static int Hash(byte[] data)
 		{
 			unchecked

@@ -5,11 +5,13 @@ using System.Text;
 
 namespace Glorg2.Physics
 {
+	[Serializable()]
 	public struct ObjectState
 	{
 		public Vector4 Value;
 		public Vector4 Velocity;
 	}
+	[Serializable()]
 	public struct StateDerivative
 	{
 		public Vector4 Velocity;

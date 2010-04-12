@@ -5,6 +5,7 @@ using System.Text;
 using Glorg2.Graphics.OpenGL;
 namespace Glorg2.Graphics
 {
+	[Serializable()]
 	public struct VertexPositionNormal
 	{
 		public Vector3 Position;

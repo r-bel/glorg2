@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Glorg2
 {
+	[Serializable()]
 	public struct BoundingSphere
 	{
 		public Vector3 Position;

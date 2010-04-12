@@ -9,22 +9,22 @@ namespace Glorg2.Scene
 	public class Scene : IDisposable, IEnumerable<Node>
 	{
 		Node children;
-		internal HashSet<Node> items;
+
+		[NonSerialized()]
+		internal List<Node> items;
 		[NonSerialized()]
 		private Game owner;
-
         [NonSerialized()]
-		internal Camera camera;
-
+		internal NodeReference<Camera> camera;
+		[NonSerialized()]
 		private Resource.ResourceManager res;
-
 		[NonSerialized()]
 		internal Matrix local_transform;
 		
-
+		
 		public Resource.ResourceManager Resources { get { return res; } }
 
-		public Camera Camera { get { return camera; } set { camera = value; } }
+		public Camera Camera { get { return camera.Value; } set { camera.Value = value; } }
 		public Game Owner { get { return owner; } }
 
 		public Scene(Game owner)
@@ -35,34 +35,41 @@ namespace Glorg2.Scene
 		public Scene()
 		{
 			res = new Glorg2.Resource.ResourceManager();
-			items = new HashSet<Node>();
+			items = new List<Node>();
+			camera = new NodeReference<Camera>();
 			children = new Node(this);
 			children.Name = "__WorldSpawn";
 		}
 		public Node ParentNode { get { return children; } }
 
-		public IEnumerable<Node> Find(Predicate<Node> pred)
+		public IEnumerable<Node> Find(string name)
 		{
-			return null;
+			int crc = Crc32.Hash(name);
+			return items.FindAll(i => i.hash_code == crc);
 		}
 
 		public void ToStream(System.IO.Stream dst)
 		{
 			var fmt = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 			fmt.Serialize(dst, this);
-			
 		}
 		protected void InitScene()
 		{
-			Node n = children;
-			foreach (Node d in n.Children)
-			{
-				InitNode(n);
-			}
+			AddItem(children);
+			InitNode(children);
 		}
+
+		private void AddItem(Node n)
+		{
+			items.Add(n);
+			foreach (var child in n.Children)
+				AddItem(child);
+		}
+
 		protected void InitNode(Node n)
 		{
 			owner.GraphicInvoke(() => { n.InitializeGraphics(); n.graphics_initialized = true; });
+			n.InternalPostSerialize();
 			foreach (var node in n.Children)
 			{
 				InitNode(node);

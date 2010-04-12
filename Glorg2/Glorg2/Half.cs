@@ -13,6 +13,7 @@ namespace Glorg2
 	/// Represents a 16-bit floating point
 	/// </summary>
 	/// <remarks>Taken from the document Fast Half Float Conversions by Jeroen van der Zijp</remarks>
+	[Serializable()]
 	public struct Half
 	{
 		private static uint[] mantissa_table;

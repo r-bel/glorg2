@@ -90,7 +90,8 @@ namespace Glorg2.Graphics.OpenGL
 		public delegate void DeleteBuffersARB(int n, uint[] ids);
 		public unsafe delegate void* MapBufferARB(VboTarget target, VboAccess access);
 		public delegate boolean UnmapBufferARB(VboTarget target);
-
+		
+		
 		public static GenBuffersARB glGenBuffersARB;
 		public static BindBufferARB glBindBufferARB;
 		public static BufferDataARB glBufferDataARB;
@@ -110,6 +111,7 @@ namespace Glorg2.Graphics.OpenGL
 			if (IsExtensionSupported("GL_ARB_vertex_buffer_object"))
 			{
 				glGenBuffersARB = ctx.GetProc<GenBuffersARB>("glGenBuffersARB");
+				Console.WriteLine(glGenBuffersARB.ToString() + glGenBuffersARB != null ? " OK" : " FAILED");
 				glBindBufferARB = ctx.GetProc<BindBufferARB>("glBindBufferARB");
 				glBufferDataARB = ctx.GetProc<BufferDataARB>("glBufferDataARB");
 				glBufferSubDataARB = ctx.GetProc<BufferSubDataARB>("glBufferSubDataARB");
