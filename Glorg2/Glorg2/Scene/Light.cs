@@ -41,6 +41,7 @@ namespace Glorg2.Scene
 		{
 			OpenGL.glLightfv(index, OpenGL.Const.GL_POSITION, new float[] { 0, 0, 0, 1 });
 			base.Render(time, dev);
-		}
+		}
+
 	}
 }
