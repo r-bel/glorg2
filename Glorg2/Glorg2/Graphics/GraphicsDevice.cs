@@ -29,6 +29,10 @@ namespace Glorg2.Graphics
 			
 			// Create context using platform specific methods
 			context.CreateContext(target);
+
+			foreach (var str in OpenGL.OpenGL.GetSupportedExtensions())
+				Console.WriteLine(str);
+
 			var err = OpenGL.OpenGL.glGetError();
 			// Initialize Vertex Buffer Objects
 			OpenGL.OpenGL.InitVbo(context);

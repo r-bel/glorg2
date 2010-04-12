@@ -9,7 +9,7 @@ namespace Glorg2.Graphics.OpenGL
 	public sealed class glXContext : OpenGLContext
 	{
 		public const string DllName = "libGL.so";
-		public const string XDllName = "libx11.so";
+		public const string XDllName = "libX11.so";
 		#region Xgl Implementation details
 
 		[DllImport(XDllName)]
@@ -22,13 +22,13 @@ namespace Glorg2.Graphics.OpenGL
 		//public static extern IntPtr XCreateColormap(IntPtr display, IntPtr w, IntPtr visual, int alloc);
 
 		[DllImport(XDllName)]
-		public static extern void XMapWindow(IntPtr display, IntPtr window);
+		public static extern int XMapWindow(IntPtr display, IntPtr window);
 
 		[DllImport(DllName)]
-		public static extern XVisualInfo glXChooseVisual(IntPtr display, int screen,
+		public static extern IntPtr glXChooseVisual(IntPtr display, int screen,
 							 int[] attribList);
 		[DllImport(DllName)]
-		public static extern IntPtr glXCreateContext(IntPtr dpy, XVisualInfo vis,
+		public static extern IntPtr glXCreateContext(IntPtr dpy, IntPtr vis,
 							IntPtr shareList, bool direct);
 		[DllImport(DllName)]
 		public static extern void glXDestroyContext(IntPtr display, IntPtr ctx);
@@ -130,12 +130,12 @@ namespace Glorg2.Graphics.OpenGL
 		public static extern void glXGetSelectedEvent(IntPtr dpy, IntPtr drawable,
 										 ref ulong mask);
 		[DllImport(DllName)]
-		public static extern Delegate glXGetProcAddressARB (string procname);
+		public static extern IntPtr glXGetProcAddressARB (string procname);
 		#endregion
 
 		private IntPtr display;
 		private IntPtr wnd;
-		private XVisualInfo visual;
+		private IntPtr visual;
 		public struct XVisualInfo
 		{
             public IntPtr visual;
@@ -199,14 +199,18 @@ namespace Glorg2.Graphics.OpenGL
 
 		public override T GetProc<T>(string procname)
 		{
-			return (T)Convert.ChangeType(glXGetProcAddressARB(procname), typeof(T));
+			IntPtr ptr = glXGetProcAddressARB(procname);
+			if (ptr == IntPtr.Zero)
+				return default(T);
+			var obj = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
+			return (T)Convert.ChangeType(obj, typeof(T));
 		}
 
 		public override void CreateContext(IntPtr wnd_handle)
 		{
 			// Force loading of OpenGL library
 			// This is later used by the OpenGL class to implement extensions.
-			//linker = GetLinker();
+			linker = GetLinker();
 
 			display = XOpenDisplay(null);
 			if (display == IntPtr.Zero)
@@ -224,7 +228,7 @@ namespace Glorg2.Graphics.OpenGL
 			if (handle == IntPtr.Zero)
 				throw new InvalidOperationException("Unable to create OpenGL context");
 
-			glXMakeCurrent(display, wnd, handle);
+			glXMakeCurrent(display, visual, handle);
 			
 			// TODO: Add Xgl context creation
 
@@ -432,7 +436,8 @@ int main (int argc, char ** argv)
 
 		public override void Dispose()
 		{
-
+			glXMakeCurrent(display, visual, IntPtr.Zero);
+			glXDestroyContext(display, handle);
 		}
 
 		protected override DynamicLinking GetLinker()
