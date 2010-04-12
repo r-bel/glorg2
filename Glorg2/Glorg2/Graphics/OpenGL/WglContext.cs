@@ -254,8 +254,8 @@ namespace Glorg2.Graphics.OpenGL
 		public override T GetProc<T>(string procname)
 		{
 			var ptr = wglGetProcAddress(procname);
-			if (ptr == IntPtr.Zero)
-				throw new MethodAccessException("Function not found, or no device context is current");
+            if (ptr == IntPtr.Zero)
+                return default(T);
 			var d = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
 			return (T)Convert.ChangeType(d, typeof(T));
 		}
@@ -319,7 +319,7 @@ namespace Glorg2.Graphics.OpenGL
 
 			var s = OpenGL.glGetString((uint)OpenGL.Const.GL_VERSION);
 			var str = Marshal.PtrToStringAnsi(s);
-			wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
+            wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
 			if (wglCreateContextAttribsARB != null)
 			{
 
