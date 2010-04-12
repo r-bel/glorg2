@@ -12,7 +12,10 @@ namespace Glorg2.Scene
 		internal HashSet<Node> items;
 		[NonSerialized()]
 		private Game owner;
-		private Camera camera;
+
+        [NonSerialized()]
+		internal Camera camera;
+
 		private Resource.ResourceManager res;
 
 		[NonSerialized()]

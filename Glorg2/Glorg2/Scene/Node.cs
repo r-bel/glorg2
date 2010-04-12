@@ -14,7 +14,7 @@ namespace Glorg2.Scene
 		Node parent;
 
 		[NonSerialized()]
-		Scene owner;
+		internal Scene owner;
 
 		internal bool graphics_initialized;
 
@@ -38,6 +38,8 @@ namespace Glorg2.Scene
 		Quaternion angular_momentum;
 		Quaternion orientation;
 		float mass;
+
+        public Scene Owner { get { return owner; } }
 
 		public void Dispose()
 		{
@@ -197,7 +199,12 @@ namespace Glorg2.Scene
 		/// <remarks>This is not a synchronous function. Children will be added on the next oppurtunity.</remarks>
 		public void Add(IEnumerable<Node> nodes)
 		{
+            
 			add_children.AddRange(nodes);
+            foreach (var node in nodes)
+            {
+                node.owner = owner;
+            }
 		}
 
 		/// <summary>
@@ -208,6 +215,7 @@ namespace Glorg2.Scene
 		public void Add(Node child)
 		{
 			add_children.Add(child);
+            child.owner = owner;
 		}
 		/// <summary>
 		/// Removes child nodes from this node
@@ -217,6 +225,9 @@ namespace Glorg2.Scene
 		public void Remove(IEnumerable<Node> nodes)
 		{
 			remove_children.AddRange(nodes);
+            foreach (var node in nodes)
+                node.owner = null;
+
 		}
 		/// <summary>
 		/// Removes a child node from this node
@@ -227,6 +238,7 @@ namespace Glorg2.Scene
 		public void Remove(Node child)
 		{
 			remove_children.Add(child);
+            child.owner = null;
 		}
 
 		public override int GetHashCode()
