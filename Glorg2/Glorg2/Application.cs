@@ -45,6 +45,8 @@ namespace Glorg2
 			target.Show();
 			target.HandleDestroyed += (sender, e) => { running = false; System.Windows.Forms.Application.Exit(); };
 			target.Resize += (sender, e) => vp = new System.Drawing.Rectangle(0, 0, target.ClientSize.Width, target.ClientSize.Height);
+
+			Scene.ParentNode.InternalPostSerialize();
 		}
 		public void Start(System.Windows.Forms.Control target)
 		{
@@ -56,6 +58,8 @@ namespace Glorg2
 		public void Start()
 		{
 			target = new System.Windows.Forms.Form();
+			target.Show();
+			target.Update();
 			StartInternal();
 			RenderThread.Start();
             MainLoop();

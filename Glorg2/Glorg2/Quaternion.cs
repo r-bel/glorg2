@@ -10,6 +10,7 @@ namespace Glorg2
 	/// </summary>
 	/// <remarks>Inspired by the article Rotations in Three Dimension Part Five: Quaternions by Confuted. 
 	/// http://www.cprogramming.com/tutorial/3d/quaternions.html</remarks>
+	[Serializable()]
 	public struct Quaternion
 	{
 		public float x, y, z, w;

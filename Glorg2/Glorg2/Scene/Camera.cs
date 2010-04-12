@@ -14,7 +14,7 @@ namespace Glorg2.Scene
 
         public void SetActive()
         {
-            owner.camera = this;
+			owner.camera.Value = this;
         }
 
 		public bool Invalidated

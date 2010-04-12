@@ -15,7 +15,7 @@ namespace Glorg2
 			Points = new Vector3[4];
 		}
 	}
-
+	[Serializable()]
 	public struct BoundingBox
 	{
 		public Vector3 Position;

@@ -58,6 +58,7 @@
     <Compile Include="DynamicLinking.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
     <Compile Include="Graphics\OpenGL\BufferObject.cs" />
+    <Compile Include="Graphics\OpenGL\Material.cs" />
     <Compile Include="Graphics\OpenGL\OpenGL.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLConst.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLContext.cs" />
@@ -80,10 +81,15 @@
     <Compile Include="Scene\Camera.cs" />
     <Compile Include="Scene\Light.cs" />
     <Compile Include="Scene\Node.cs" />
+    <Compile Include="Scene\NodeReference.cs" />
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="SubStream.cs" />
     <Compile Include="Vector.cs" />
     <Compile Include="Graphics\Vertex.cs" />
+    <Compile Include="X11\API.cs" />
+    <Compile Include="X11\Functions.cs" />
+    <Compile Include="X11\Glx.cs" />
+    <Compile Include="X11\Structs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

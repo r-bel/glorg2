@@ -24,7 +24,12 @@ namespace Glorg2.Scene
 		private List<Node> add_children;
 
 		string name;
-		int hash_code;
+
+		private Guid identifier;
+
+		public Guid Guid { get { return identifier; } }
+
+		internal int hash_code;
 		Physics.ObjectState linear_state;
 		Physics.ObjectState angualar_state;
 		Vector4 acceleration;
@@ -40,6 +45,36 @@ namespace Glorg2.Scene
 		float mass;
 
         public Scene Owner { get { return owner; } }
+
+		internal void InternalPostSerialize()
+		{
+			var t = GetType();
+
+			var fields = t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance);
+			foreach (var f in fields)
+			{
+				var s = f.FieldType.Name;
+				int index = s.IndexOf('`');
+				if (index > 0)
+				{
+					s = s.Substring(0, index);
+					if (s == "NodeReference")
+					{
+						var nd = f.GetValue(this) as INodeReference;
+						nd.Owner = owner;
+						nd.Update();
+						
+					}
+				}
+			}
+
+			PostSerialize();
+		}
+
+		public virtual void PostSerialize()
+		{
+
+		}
 
 		public void Dispose()
 		{
@@ -84,6 +119,7 @@ namespace Glorg2.Scene
 		}
 		public Node()
 		{
+			identifier = Guid.NewGuid();
 			angular_momentum = Quaternion.Identity;
 			orientation = Quaternion.Identity;
 			name = "";
@@ -329,8 +365,7 @@ namespace Glorg2.Scene
 				name = value;
 				if (!string.IsNullOrEmpty(value) && value.Length > 2)
 				{
-					var bytes = Encoding.Unicode.GetBytes(name);
-					hash_code = Crc32.Hash(bytes);
+					hash_code = Crc32.Hash(value);
 				}
 				else
 					hash_code = 0;
