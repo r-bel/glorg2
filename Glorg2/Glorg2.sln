@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glorg2", "Glorg2\Glorg2.csproj", "{4E812102-5FE8-4F84-B320-BDF973A782D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlorgTest", "GlorgTest\GlorgTest.csproj", "{AEC556FD-B394-4379-90E2-85BCA6B31A65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{D9EFC1CE-8675-4D30-8503-D605932E03CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,10 @@ Global
 		{4E812102-5FE8-4F84-B320-BDF973A782D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E812102-5FE8-4F84-B320-BDF973A782D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E812102-5FE8-4F84-B320-BDF973A782D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AEC556FD-B394-4379-90E2-85BCA6B31A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AEC556FD-B394-4379-90E2-85BCA6B31A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AEC556FD-B394-4379-90E2-85BCA6B31A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AEC556FD-B394-4379-90E2-85BCA6B31A65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9EFC1CE-8675-4D30-8503-D605932E03CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9EFC1CE-8675-4D30-8503-D605932E03CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9EFC1CE-8675-4D30-8503-D605932E03CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9EFC1CE-8675-4D30-8503-D605932E03CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

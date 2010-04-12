@@ -16,6 +16,26 @@ namespace Glorg2.Graphics.OpenGL
 {
 	public static partial class OpenGL
 	{
+		private static System.Collections.ObjectModel.ReadOnlyCollection<string> Extensions;
+
+		public static bool IsExtensionSupported(string ext)
+		{
+			return GetSupportedExtensions().Contains(ext);
+		}
+
+		public static System.Collections.ObjectModel.ReadOnlyCollection<string> GetSupportedExtensions()
+		{
+			if (Extensions == null)
+			{
+				string ext = Marshal.PtrToStringAnsi(glGetString(Const.GL_EXTENSIONS));
+				string[] items = ext.Split(' ');
+				Extensions = items.ToList().AsReadOnly();
+			}
+			return Extensions;
+				
+		}
+
+
 
 
 		#region Vertex Buffer Objects
@@ -87,13 +107,16 @@ namespace Glorg2.Graphics.OpenGL
 		/// <param name="ctx">Context used to initialize functions</param>
 		public static void InitVbo(OpenGLContext ctx)
 		{
-			glGenBuffersARB = ctx.GetProc<GenBuffersARB>("glGenBuffersARB");
-			glBindBufferARB = ctx.GetProc<BindBufferARB>("glBindBufferARB");
-			glBufferDataARB = ctx.GetProc<BufferDataARB>("glBufferDataARB");
-			glBufferSubDataARB = ctx.GetProc<BufferSubDataARB>("glBufferSubDataARB");
-			glDeleteBuffersARB = ctx.GetProc<DeleteBuffersARB>("glDeleteBuffersARB");
-			glMapBufferARB = ctx.GetProc<MapBufferARB>("glMapBufferARB");
-			glUnmapBufferARB = ctx.GetProc<UnmapBufferARB>("glUnmapBufferARB");
+			if (IsExtensionSupported("GL_ARB_vertex_buffer_object"))
+			{
+				glGenBuffersARB = ctx.GetProc<GenBuffersARB>("glGenBuffersARB");
+				glBindBufferARB = ctx.GetProc<BindBufferARB>("glBindBufferARB");
+				glBufferDataARB = ctx.GetProc<BufferDataARB>("glBufferDataARB");
+				glBufferSubDataARB = ctx.GetProc<BufferSubDataARB>("glBufferSubDataARB");
+				glDeleteBuffersARB = ctx.GetProc<DeleteBuffersARB>("glDeleteBuffersARB");
+				glMapBufferARB = ctx.GetProc<MapBufferARB>("glMapBufferARB");
+				glUnmapBufferARB = ctx.GetProc<UnmapBufferARB>("glUnmapBufferARB");
+			}
 		}
 
 		#endregion
@@ -390,6 +413,8 @@ namespace Glorg2.Graphics.OpenGL
 
 		public static void InitShaderProgram(OpenGLContext ctx)
 		{
+			if(IsExtensionSupported("GL_ARB_shader_objects"))
+			{
 			glVertexAttrib1dARB = ctx.GetProc<VertexAttrib1dARB>("glVertexAttrib1dARB");
 			glVertexAttrib1dvARB = ctx.GetProc<VertexAttrib1dvARB>("glVertexAttrib1dvARB");
 			glVertexAttrib1fARB = ctx.GetProc<VertexAttrib1fARB>("glVertexAttrib1fARB");
@@ -497,6 +522,7 @@ namespace Glorg2.Graphics.OpenGL
 			glFramebufferTextureARB = ctx.GetProc<FramebufferTextureARB>("glFramebufferTextureARB");
 			glFramebufferTextureLayerARB = ctx.GetProc<FramebufferTextureLayerARB>("glFramebufferTextureLayerARB");
 			glFramebufferTextureFaceARB = ctx.GetProc<FramebufferTextureFaceARB>("glFramebufferTextureFaceARB");
+			}
 		}
 
 		#endregion
@@ -529,14 +555,17 @@ namespace Glorg2.Graphics.OpenGL
 
 		public static void InitOcclusionQueries(OpenGLContext ctx)
 		{
-			glGenQueriesARB = ctx.GetProc<GenQueriesARB>("glGenQueriesARB");
-			glDeleteQueriesARB = ctx.GetProc<DeleteQueriesARB>("glDeleteQueriesARB");
-			glIsQueryARB = ctx.GetProc<IsQueryARB>("glIsQueryARB");
-			glBeginQueryARB = ctx.GetProc<BeginQueryARB>("glBeginQueryARB");
-			glEndQueryARB = ctx.GetProc<EndQueryARB>("glEndQueryARB");
-			glGetQueryivARB = ctx.GetProc<GetQueryivARB>("glGetQueryivARB");
-			glGetQueryObjectivARB = ctx.GetProc<GetQueryObjectivARB>("glGetQueryObjectivARB");
-			glGetQueryObjectuivARB = ctx.GetProc<GetQueryObjectuivARB>("glGetQueryObjectuivARB");
+			if (IsExtensionSupported("GL_ARB_occlusion_query"))
+			{
+				glGenQueriesARB = ctx.GetProc<GenQueriesARB>("glGenQueriesARB");
+				glDeleteQueriesARB = ctx.GetProc<DeleteQueriesARB>("glDeleteQueriesARB");
+				glIsQueryARB = ctx.GetProc<IsQueryARB>("glIsQueryARB");
+				glBeginQueryARB = ctx.GetProc<BeginQueryARB>("glBeginQueryARB");
+				glEndQueryARB = ctx.GetProc<EndQueryARB>("glEndQueryARB");
+				glGetQueryivARB = ctx.GetProc<GetQueryivARB>("glGetQueryivARB");
+				glGetQueryObjectivARB = ctx.GetProc<GetQueryObjectivARB>("glGetQueryObjectivARB");
+				glGetQueryObjectuivARB = ctx.GetProc<GetQueryObjectuivARB>("glGetQueryObjectuivARB");
+			}
 		}
 
 		#endregion
