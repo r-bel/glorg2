@@ -58,6 +58,7 @@ namespace Glorg2
 			target = new System.Windows.Forms.Form();
 			StartInternal();
 			RenderThread.Start();
+            MainLoop();
 		}
 		public void StartAsync()
 		{

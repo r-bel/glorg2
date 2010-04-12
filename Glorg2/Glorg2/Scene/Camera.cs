@@ -5,12 +5,17 @@ using System.Text;
 
 namespace Glorg2.Scene
 {
-	public abstract class Camera
+	public abstract class Camera : Node
 	{
 		Matrix projection;
 		protected bool invalidated;
 
 		protected abstract Matrix BuildCamera();
+
+        public void SetActive()
+        {
+            owner.camera = this;
+        }
 
 		public bool Invalidated
 		{
