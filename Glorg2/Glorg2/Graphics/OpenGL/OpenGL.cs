@@ -338,6 +338,8 @@ namespace Glorg2.Graphics.OpenGL
 		[DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glLightfv(uint light, uint pname, float[] parameters);
 		[DllImport(DllName, CallingConvention = CallConv)]
+		public static extern void glLightfv(uint light, uint pname, ref Vector4 parameters);
+		[DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glLighti(uint light, uint pname, int param);
 		[DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glLightiv(uint light, uint pname, int[] parameters);

@@ -42,6 +42,7 @@ namespace Glorg2.Graphics
 			OpenGL.OpenGL.InitShaderProgram(context);
 			err = OpenGL.OpenGL.glGetError();
 
+			// Initialize occlusion queries
 			OpenGL.OpenGL.InitOcclusionQueries(context);
 			err = OpenGL.OpenGL.glGetError();
 

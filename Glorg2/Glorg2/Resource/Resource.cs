@@ -25,6 +25,10 @@ namespace Glorg2.Resource
 				return o.hash == hash;
 		}
 
+		public virtual void BuildResource(ResourceManager manager)
+		{
+		}
+
 		/// <summary>
 		/// Reads resource data from stream. This is used to build resource data which is not serialized
 		/// such as texture data or similar.

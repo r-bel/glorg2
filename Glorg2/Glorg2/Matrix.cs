@@ -253,6 +253,21 @@ namespace Glorg2
 			};
 		}
 
+		public Vector4 Translation
+		{
+			get
+			{
+				return new Vector4(m14, m24, m34, m44);
+			}
+			set
+			{
+				m14 = value.x;
+				m24 = value.y;
+				m34 = value.z;
+				m44 = value.w;
+			}
+		}
+
 		public static Matrix operator *(Matrix a, Matrix b)
 		{
 			// TODO: Increase performance

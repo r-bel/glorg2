@@ -8,6 +8,14 @@ namespace Glorg2.Scene
 	[Serializable()]
 	public class Node : IDisposable
 	{
+		internal const float dt = 0.0001f;
+		[NonSerialized()]
+		private float accumulator;
+		[NonSerialized()]
+		private float interp;
+		[NonSerialized()]
+		private float sim_time;
+
 		LinkedList<Node> children;
 		
 		[NonSerialized()]
@@ -36,7 +44,7 @@ namespace Glorg2.Scene
 		Vector4 center_of_mass;
 
 		[NonSerialized()]
-		Matrix absolute_transform;
+		internal Matrix absolute_transform;
 		
 
 		float radius;
@@ -53,17 +61,25 @@ namespace Glorg2.Scene
 			var fields = t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance);
 			foreach (var f in fields)
 			{
-				var s = f.FieldType.Name;
-				int index = s.IndexOf('`');
-				if (index > 0)
+				
+				//if (f.FieldType.IsSubclassOf(typeof(Resource.Resource)))
+				//{
+					//f.FieldType.InvokeMember("BuildResource", System.Reflection.BindingFlags.Instance, null, f.GetValue(this), new object[] {owner.Resources});
+				//}
+				//else
 				{
-					s = s.Substring(0, index);
-					if (s == "NodeReference")
+					var s = f.FieldType.Name;
+					int index = s.IndexOf('`');
+					if (index > 0)
 					{
-						var nd = f.GetValue(this) as INodeReference;
-						nd.Owner = owner;
-						nd.Update();
-						
+						s = s.Substring(0, index);
+						if (s == "NodeReference")
+						{
+							var nd = f.GetValue(this) as INodeReference;
+							nd.Owner = owner;
+							nd.Update();
+
+						}
 					}
 				}
 			}
@@ -132,7 +148,14 @@ namespace Glorg2.Scene
 		{
 			//position += velocity * time;
 			//velocity += acceleration * time;
-			Physics.Integration.RK4Integrate(ref linear_state, 0, time, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
+			accumulator += time;
+			while(accumulator >= dt)
+			{
+				Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
+				sim_time += dt;
+				accumulator -= dt;
+			}
+			interp = accumulator / dt;
 		}
 
 		public virtual void InternalProcess(float time)

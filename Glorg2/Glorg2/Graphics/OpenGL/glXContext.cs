@@ -115,7 +115,7 @@ namespace Glorg2.Graphics.OpenGL
 			int def_screen = API.DefaultScreen(display);
 			Console.WriteLine("Display: 0x" + display.ToString("x"));
 			Console.WriteLine("Deault screen: 0x" + def_screen.ToString("x"));
-			int[] elems = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+			int[] elems = new int[] { 0 };
 
 			//IntPtr fb = Glx.glXChooseFBConfig(display, def_screen, attr, elems);
 			

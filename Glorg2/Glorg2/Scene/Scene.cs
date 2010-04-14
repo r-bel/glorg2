@@ -20,8 +20,11 @@ namespace Glorg2.Scene
 		private Resource.ResourceManager res;
 		[NonSerialized()]
 		internal Matrix local_transform;
-		
-		
+		[NonSerialized()]
+		internal float sim_time;
+
+		public float SimulationTime { get { return sim_time; } }
+
 		public Resource.ResourceManager Resources { get { return res; } }
 
 		public Camera Camera { get { return camera.Value; } set { camera.Value = value; } }
