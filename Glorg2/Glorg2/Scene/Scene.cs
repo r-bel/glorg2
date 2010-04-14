@@ -86,7 +86,11 @@ namespace Glorg2.Scene
 			res.InitScene();
 			return res;
 		}
-
+		public void GraphicsDispose()
+		{
+			res.Dispose();
+			ParentNode.Dispose();
+		}
 		public void Dispose()
 		{
 			children.Dispose();

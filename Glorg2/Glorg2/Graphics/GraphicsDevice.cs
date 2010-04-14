@@ -46,6 +46,10 @@ namespace Glorg2.Graphics
 			OpenGL.OpenGL.InitOcclusionQueries(context);
 			err = OpenGL.OpenGL.glGetError();
 
+			OpenGL.OpenGL.InitMultiTexture(context);
+
+			OpenGL.OpenGL.glEnable(OpenGL.OpenGL.Const.GL_TEXTURE_2D);
+
 			state = new OpenGLState(this);
 			state.Culling = true;
 			state.DepthTest = true;
@@ -77,7 +81,7 @@ namespace Glorg2.Graphics
 			if (index_buffer != null)
 				index_buffer.Reset();
 			if (indices != null)
-				index_buffer.MakeCurrent();
+				indices.MakeCurrent();
 			index_buffer = indices;
 		}
 

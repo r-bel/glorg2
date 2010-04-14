@@ -45,7 +45,6 @@ namespace Glorg2
 			target.Show();
 			target.HandleDestroyed += (sender, e) => { running = false; System.Windows.Forms.Application.Exit(); };
 			target.Resize += (sender, e) => vp = new System.Drawing.Rectangle(0, 0, target.ClientSize.Width, target.ClientSize.Height);
-
 			Scene.ParentNode.InternalPostSerialize();
 		}
 		public void Start(System.Windows.Forms.Control target)
@@ -114,7 +113,17 @@ namespace Glorg2
 				graphic_invoke.Enqueue(act);
 			}
 		}
-
+		private void DoJanitorial(IEnumerable<Resource.Resource> res)
+		{
+			foreach (var r in res)
+			{
+				r.DoDispose();
+			}
+			lock (scene.Resources)
+			{
+				scene.Resources.Remove(res);
+			}
+		}
 		private void MainLoop()
 		{
 			long old_time;
@@ -124,9 +133,26 @@ namespace Glorg2
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
+				var res = scene.Resources.Janitorial();
+
+				GraphicInvoke(() =>
+				{
+					foreach (var r in res)
+					{
+						r.DoDispose();
+					}
+					lock (scene.Resources)
+					{
+						scene.Resources.Remove(res);
+					}
+				});
+
 				scene.sim_time += frame_time;
 				FrameStep(frame_time);
-				scene.local_transform = Matrix.Identity;
+				if (scene.camera.Value != null)
+					scene.local_transform = scene.camera.Value.GetCameraTransform();
+				else
+					scene.local_transform = Matrix.Identity;						 
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;
@@ -134,9 +160,10 @@ namespace Glorg2
 				old_time = new_time;				
 			}
 			scene.Dispose();
+			scene_disposed = true;
 			Closing();
 		}
-
+		private volatile bool scene_disposed;
 		private void InitLights()
 		{
 			foreach (var node in this.Scene.items)
@@ -175,11 +202,13 @@ namespace Glorg2
 				}
 				// Wait until simulation thread has finished with one frame
 				// or else it is not necessary to render the next frame (since nothing has happened)
+				
 				InitLights();
 				while (!provoke_render && running)
 				{
 					System.Threading.Thread.Sleep(0);
 				}
+				
 				Render(dev, frame_time, total_time);
 
 				fps = 1 / time;
@@ -187,7 +216,12 @@ namespace Glorg2
 				old_time = new_time;
 				Glorg2.Scene.Light.DisableAllLights();
 			}
+			while (!scene_disposed)
+				System.Threading.Thread.Sleep(0);
+			var j = scene.Resources.Janitorial();
+			DoJanitorial(j);
 			GraphicsClosing();
+			scene.GraphicsDispose();
 			dev.Dispose();
 		}
 

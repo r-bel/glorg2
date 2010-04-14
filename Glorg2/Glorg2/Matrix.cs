@@ -267,7 +267,31 @@ namespace Glorg2
 				m44 = value.w;
 			}
 		}
+		public static Matrix operator *(Matrix a, float scalar)
+		{
+			return new Matrix()
+			{
+				m11 = a.m11 * scalar,
+				m12 = a.m12 * scalar,
+				m13 = a.m13 * scalar,
+				m14 = a.m14 * scalar,
 
+				m21 = a.m21 * scalar,
+				m22 = a.m22 * scalar,
+				m23 = a.m23 * scalar,
+				m24 = a.m24 * scalar,
+
+				m31 = a.m31 * scalar,
+				m32 = a.m32 * scalar,
+				m33 = a.m33 * scalar,
+				m34 = a.m34 * scalar,
+
+				m41 = a.m41 * scalar,
+				m42 = a.m42 * scalar,
+				m43 = a.m43 * scalar,
+				m44 = a.m44 * scalar,
+			};
+		}
 		public static Matrix operator *(Matrix a, Matrix b)
 		{
 			// TODO: Increase performance
@@ -298,6 +322,29 @@ namespace Glorg2
 				ret.m44 = Vector4.Dot(va[3], vb[3]);
 				return ret;
 		}
+
+		public Matrix Invert()
+		{
+			return this * (1 / this.Determinant());
+		}
+
+		public float Determinant()
+		{
+			return 
+				m14 * m23 * m32 * m41 - m13 * m24 * m32 * m41 -
+				m14 * m22 * m33 * m41 + m12 * m24 * m33 * m41 +
+				m13 * m22 * m34 * m41 - m12 * m23 * m34 * m41 -
+				m14 * m23 * m31 * m42 + m13 * m24 * m31 * m42 +
+				m14 * m21 * m33 * m42 - m11 * m24 * m33 * m42 -
+				m13 * m21 * m34 * m42 + m11 * m23 * m34 * m42 +
+				m14 * m22 * m31 * m43 - m12 * m24 * m31 * m43 -
+				m14 * m21 * m32 * m43 + m11 * m24 * m32 * m43 +
+				m12 * m21 * m34 * m43 - m11 * m22 * m34 * m43 -
+				m13 * m22 * m31 * m44 + m12 * m23 * m31 * m44 +
+				m13 * m21 * m32 * m44 - m11 * m23 * m32 * m44 -
+				m12 * m21 * m33 * m44 + m11 * m22 * m33 * m44;
+		}
+
 		public static Vector4 operator * (Matrix a, Vector4 b)
 		{
 			// This is based on linear algebra (duh) idea that any matrix 
