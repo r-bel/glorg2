@@ -102,6 +102,7 @@
     <Compile Include="Ray.cs" />
     <Compile Include="Resource\Model3dsImporter.cs" />
     <Compile Include="Resource\BitmapImporter.cs" />
+    <Compile Include="Resource\ModelMeshImporter.cs" />
     <Compile Include="Resource\ObjModelImporter.cs" />
     <Compile Include="Resource\Resource.cs" />
     <Compile Include="Resource\ResourceImporter.cs" />
