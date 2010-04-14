@@ -13,7 +13,7 @@ namespace Glorg2.Resource
 			get { return "texture2d"; }
 		}
 
-		public override T Import<T>(System.IO.Stream source, string source_name)
+		public override T Import<T>(System.IO.Stream source, string source_name, ResourceManager man)
 		{
 			if (typeof(T) != typeof(Glorg2.Graphics.OpenGL.Texture2D))
 				throw new System.IO.InvalidDataException("Invalid file format");

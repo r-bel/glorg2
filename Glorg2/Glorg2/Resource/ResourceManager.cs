@@ -10,6 +10,34 @@ namespace Glorg2.Resource
 		List<ResourceImporter> importers;
 		List<Resource> resources;
 
+		public ResourceManager()
+		{
+			var asm = System.Reflection.Assembly.GetCallingAssembly();
+			var types = asm.GetTypes();
+			importers = new List<ResourceImporter>();
+			resources = new List<Resource>();
+			foreach (var t in types)
+			{
+				if (t.IsSubclassOf(typeof(ResourceImporter)))
+				{
+					var item = Activator.CreateInstance(t) as ResourceImporter;
+					importers.Add(item);
+				}
+			}
+			
+		}
+
+		public List<Resource> Janitorial()
+		{
+			List<Resource> remove = new List<Resource>();
+			foreach (var r in resources)
+			{
+				if (r.Links <= 0)
+					remove.Add(r);
+			}
+			return remove;
+		}
+
 		private System.IO.Stream GetStream(string res_name)
 		{
 			if (System.IO.File.Exists(res_name))
@@ -28,7 +56,10 @@ namespace Glorg2.Resource
 			foreach (var res in resources)
 			{
 				if (res.GetHashCode() == hash)
+				{
+					res.Links++;
 					return res as T;
+				}
 			}
 
 			int index = name.IndexOf('.');
@@ -41,11 +72,31 @@ namespace Glorg2.Resource
 				{
 					using (var stream = GetStream(name))
 					{
-						imp.Import<T>(stream, name);
+						var res = imp.Import<T>(stream, name, this);
+						res.Links++;
+						lock (resources)
+						{
+							resources.Add(res);
+						}
+						return res;
 					}
 				}
 
 			return default(T);
+		}
+
+		internal void Dispose()
+		{
+			foreach (var res in resources)
+				res.Dispose();
+		}
+
+		internal void Remove(IEnumerable<Resource> res)
+		{
+			foreach (var item in res)
+			{
+				resources.Remove(item);
+			}
 		}
 	}
 }

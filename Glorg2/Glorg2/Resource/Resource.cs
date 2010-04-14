@@ -6,10 +6,13 @@ using System.Text;
 namespace Glorg2.Resource
 {
 	[Serializable()]
-	public abstract class Resource
+	public abstract class Resource : IDisposable
 	{
 		private string source_name;
 		private int hash;
+		private int links;
+
+		public int Links { get { return links; } set { links = value; } }
 
 		public override int GetHashCode()
 		{
@@ -61,6 +64,13 @@ namespace Glorg2.Resource
 				var bytes = Encoding.Unicode.GetBytes(value);
 				hash = Crc32.Hash(bytes);
 			}
+		}
+		public void Dispose()
+		{
+			--links;
+		}
+		public virtual void DoDispose()
+		{
 		}
 	}
 }

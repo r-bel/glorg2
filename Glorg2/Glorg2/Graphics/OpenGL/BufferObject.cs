@@ -38,6 +38,18 @@ namespace Glorg2.Graphics.OpenGL
 			OpenGL.glGenBuffersARB(1, buffers);
 			handle = buffers[0];
 		}
+
+		public void Add(T value)
+		{
+			
+			T[] new_arr = new T[count + 1];
+			new_arr[count] = value;
+			++count;
+			if(internal_array != null)
+				internal_array.CopyTo(new_arr, 0);
+			internal_array = new_arr;
+		}
+
 		public void Allocate(int num_elements)
 		{
 			internal_array = new T[num_elements];
@@ -82,7 +94,11 @@ namespace Glorg2.Graphics.OpenGL
 		}
 		protected void Cleanup()
 		{
-			OpenGL.glDeleteBuffersARB(1, new uint[] { handle });
+			if (handle != 0)
+			{
+				OpenGL.glDeleteBuffersARB(1, new uint[] { handle });
+				handle = 0;
+			}
 		}
 
 		public void Dispose()
@@ -166,6 +182,7 @@ namespace Glorg2.Graphics.OpenGL
 			public int dimensions;
 			public uint gl_type;
 			public IntPtr offset_value;
+			public uint channel;
 		}
 		internal List<ElementInfo> elements;
 		internal List<Action<ElementInfo>> initialize;
@@ -203,6 +220,7 @@ namespace Glorg2.Graphics.OpenGL
 		}
 		private void SetTexCoordPointer(ElementInfo info)
 		{
+			OpenGL.glClientActiveTextureARB(info.channel + OpenGL.Const.GL_TEXTURE0);
 			OpenGL.glTexCoordPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
 		}
 		private void SetColorPointer(ElementInfo info)
@@ -247,6 +265,8 @@ namespace Glorg2.Graphics.OpenGL
 				int bits = ((tt & 0x00ff0000) >> 16);
 				size = dim * bits;
 
+				uint ch = ((uint)el & 0xff000000) >> 24;
+
 				if (bits == 2 && data_type == ElementType.Integer)
 					gl_datatype = (uint)OpenGL.Const.GL_SHORT;
 				else if (bits == 4 && data_type == ElementType.Integer)
@@ -264,7 +284,8 @@ namespace Glorg2.Graphics.OpenGL
 				{
 					dimensions = dim,
 					gl_type = gl_datatype,
-					offset_value = new IntPtr(offset)
+					offset_value = new IntPtr(offset),
+					channel = ch
 				});
 
 				switch (type)
