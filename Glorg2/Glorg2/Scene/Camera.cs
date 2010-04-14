@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Glorg2.Scene
 {
+	[Serializable()]
 	public abstract class Camera : Node
 	{
 		Matrix projection;
@@ -32,7 +33,7 @@ namespace Glorg2.Scene
 			return projection;
 		}
 	}
-
+	[Serializable()]
 	public class PerspectiveCamera : Camera
 	{
 		protected float fov;

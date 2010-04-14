@@ -24,7 +24,7 @@ namespace Glorg2.Graphics.OpenGL
 		private uint handle;
 		protected int size_of_t;
 		private int count;
-		private T[] internal_array;
+		protected T[] internal_array;
 		protected uint target;
 
 		public uint Handle { get { return handle; } }
@@ -129,7 +129,7 @@ namespace Glorg2.Graphics.OpenGL
 	{
 		Type description_type;
 		int size;
-		ElementType[] types;
+		internal ElementType[] types;
 		public static int GetElementSize(ElementType t)
 		{
 			int tt = (int)t;
@@ -170,6 +170,28 @@ namespace Glorg2.Graphics.OpenGL
 		internal List<ElementInfo> elements;
 		internal List<Action<ElementInfo>> initialize;
 		internal List<uint> types;
+
+		/// <summary>
+		/// Buffers a part of the client data
+		/// </summary>
+		/// <param name="index">Starting element in the vertex definition</param>
+		/// <param name="count">Number of elements from the vertex definition to buffer</param>
+		/// <remarks>This function cannot be called once the client data has been freed</remarks>
+		public void BufferSubData(int index, int count)
+		{
+			int offset = 0;
+			int size = 0;
+			if (internal_array == null || internal_array.Length == 0)
+				throw new InvalidOperationException("Cannot buffer data from empty client array");
+			for (int i = 0; i < index; i++)
+				offset += VertexBufferDescriptor.GetElementSize(desc.types[i]);
+			for (int i = index; i < index + count; i++)
+				size += VertexBufferDescriptor.GetElementSize(desc.types[i]);
+
+			var ptr = System.Runtime.InteropServices.GCHandle.Alloc(internal_array, System.Runtime.InteropServices.GCHandleType.Pinned);
+			OpenGL.glBufferSubDataARB((OpenGL.VboTarget)target, offset, size, ptr.AddrOfPinnedObject());
+			ptr.Free();
+		}
 
 		private void SetVertexPointer(ElementInfo info)
 		{

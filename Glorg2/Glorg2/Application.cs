@@ -124,6 +124,7 @@ namespace Glorg2
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
+				scene.sim_time += frame_time;
 				FrameStep(frame_time);
 				scene.local_transform = Matrix.Identity;
 				scene.ParentNode.InternalProcess(frame_time);
@@ -135,6 +136,21 @@ namespace Glorg2
 			scene.Dispose();
 			Closing();
 		}
+
+		private void InitLights()
+		{
+			foreach (var node in this.Scene.items)
+			{
+				var l = node as Scene.Light;
+				if (l != null)
+				{
+					dev.ModelviewMatrix = l.absolute_transform;
+					l.SetLight();
+				}
+			}
+			dev.ModelviewMatrix = Matrix.Identity;
+		}
+
 		private void RenderLoop()
 		{
 			long old_time = 0;
@@ -159,6 +175,7 @@ namespace Glorg2
 				}
 				// Wait until simulation thread has finished with one frame
 				// or else it is not necessary to render the next frame (since nothing has happened)
+				InitLights();
 				while (!provoke_render && running)
 				{
 					System.Threading.Thread.Sleep(0);
@@ -168,6 +185,7 @@ namespace Glorg2
 				fps = 1 / time;
 				provoke_render = false;
 				old_time = new_time;
+				Glorg2.Scene.Light.DisableAllLights();
 			}
 			GraphicsClosing();
 			dev.Dispose();

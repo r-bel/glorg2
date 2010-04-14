@@ -86,7 +86,7 @@ namespace Glorg2.Graphics.OpenGL
 		public delegate void GenBuffersARB(int n, uint[] ids);
 		public delegate void BindBufferARB(VboTarget target, uint id);
 		public unsafe delegate void BufferDataARB(VboTarget target, int size, IntPtr data, VboUsage usage);
-		public unsafe delegate void BufferSubDataARB(VboTarget target, int offset, int size, void* data);
+		public unsafe delegate void BufferSubDataARB(VboTarget target, int offset, int size, IntPtr data);
 		public delegate void DeleteBuffersARB(int n, uint[] ids);
 		public unsafe delegate void* MapBufferARB(VboTarget target, VboAccess access);
 		public delegate boolean UnmapBufferARB(VboTarget target);

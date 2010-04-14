@@ -23,4 +23,19 @@ namespace Glorg2.Graphics
 				OpenGL.ElementType.Float | ElementType.Normals | ElementType.ThreeDimension | ElementType.Bits32
 			},typeof(VertexPositionNormal));
 	}
+	public struct VertexPositionTexCoordNormal
+	{
+		public Vector3 Position;
+		public Vector2 TexCoord;
+		public Vector3 Normal;
+
+		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(
+			new ElementType[] 
+			{
+				OpenGL.ElementType.Float | ElementType.Position | ElementType.ThreeDimension | ElementType.Bits32,
+				OpenGL.ElementType.Float | ElementType.TexCoord | ElementType.TwoDimension | ElementType.Bits32,
+				OpenGL.ElementType.Float | ElementType.Normals | ElementType.ThreeDimension | ElementType.Bits32,
+			}, typeof(VertexPositionTexCoordNormal));
+
+	}
 }
