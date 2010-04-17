@@ -5,6 +5,9 @@ using System.Text;
 using Glorg2.Graphics.OpenGL;
 namespace Glorg2.Graphics
 {
+	/// <summary>
+	/// Defines a common vertex format with 3-dimensional vector for both position and normals
+	/// </summary>
 	[Serializable()]
 	public struct VertexPositionNormal
 	{
@@ -19,10 +22,14 @@ namespace Glorg2.Graphics
 
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(
 			new ElementType[] { 
-				OpenGL.ElementType.Float | ElementType.Position | ElementType.ThreeDimension | ElementType.Bits32,
-				OpenGL.ElementType.Float | ElementType.Normals | ElementType.ThreeDimension | ElementType.Bits32
+				ElementType.Position3Float,
+				ElementType.Normal3Float
 			},typeof(VertexPositionNormal));
 	}
+	/// <summary>
+	/// Defines a common vertex format with three dimensional vector for position and color, and two dimensional vector for texture coordinates.
+	/// </summary>
+	[Serializable()]
 	public struct VertexPositionTexCoordNormal
 	{
 		public Vector3 Position;
@@ -32,9 +39,9 @@ namespace Glorg2.Graphics
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(
 			new ElementType[] 
 			{
-				OpenGL.ElementType.Float | ElementType.Position | ElementType.ThreeDimension | ElementType.Bits32,
-				OpenGL.ElementType.Float | ElementType.Normals | ElementType.ThreeDimension | ElementType.Bits32,
-				OpenGL.ElementType.Float | ElementType.TexCoord | ElementType.TwoDimension | ElementType.Bits32,
+				ElementType.Position3Float,
+				ElementType.Normal3Float,
+				ElementType.TexCoord2Float
 			}, typeof(VertexPositionTexCoordNormal));
 
 	}

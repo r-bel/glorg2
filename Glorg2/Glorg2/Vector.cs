@@ -112,6 +112,11 @@ namespace Glorg2
 		}, typeof(Vector3));
 
 		public float x, y, z;
+
+		public override int GetHashCode()
+		{
+			return ((int)x) ^ ((int)y) ^ ((int)z) ;
+		}
 		public Vector3(float x, float y, float z)
 		{
 			this.x = x; this.y = y; this.z = z;
@@ -132,6 +137,16 @@ namespace Glorg2
 			return this / Length;
 		}
 
+		public static bool operator == (Vector3 a, Vector3 b)
+		{
+			float f = (b - a).Length;
+			return f >= -float.Epsilon || f <= float.Epsilon;
+		}
+		public static bool operator !=(Vector3 a, Vector3 b)
+		{
+			float f = (b - a).Length;
+			return !(f >= -float.Epsilon || f <= float.Epsilon);
+		}
 		public static Vector3 operator *(Vector3 a, Vector3 b)
 		{
 			return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);

@@ -4,27 +4,139 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
+/*
+ public delegate [a-zA-Z0-9]+ {[a-zA-Z0-9]+}\(.*\);		public static \1 wgl\1;
+ extern:b+{[A-Z]+}:b+WINAPI:b+{[a-zA-Z0-9]*}:b*{.*};	public delegate \1 \2\3;
+ */
 namespace Glorg2.Graphics.OpenGL
 {
 	public sealed class WglContext : OpenGLContext
 	{
 		#region wgl Extensions
 
-			public const int WGL_CONTEXT_DEBUG_BIT_ARB = 0x00000001;
-			public const int WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = 0x00000002;
-			public const int WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091;
-			public const int WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092;
-			public const int WGL_CONTEXT_LAYER_PLANE_ARB = 0x2093;
-			public const int WGL_CONTEXT_FLAGS_ARB = 0x2094;
-			public const int WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126;
-			public const int WGL_CONTEXT_CORE_PROFILE_BIT_ARB = 0x00000001;
-			public const int WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB = 0x00000002;
-			public const int ERROR_INVALID_VERSION_ARB = 0x2095;
-		
+		public const int WGL_CONTEXT_DEBUG_BIT_ARB = 0x00000001;
+		public const int WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = 0x00000002;
+		public const int WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091;
+		public const int WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092;
+		public const int WGL_CONTEXT_LAYER_PLANE_ARB = 0x2093;
+		public const int WGL_CONTEXT_FLAGS_ARB = 0x2094;
+		public const int WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126;
+		public const int WGL_CONTEXT_CORE_PROFILE_BIT_ARB = 0x00000001;
+		public const int WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB = 0x00000002;
+		public const int ERROR_INVALID_VERSION_ARB = 0x2095;
+
+		public const int WGL_NUMBER_PIXEL_FORMATS_ARB = 0x2000;
+		public const int WGL_DRAW_TO_WINDOW_ARB = 0x2001;
+		public const int WGL_DRAW_TO_BITMAP_ARB = 0x2002;
+		public const int WGL_ACCELERATION_ARB = 0x2003;
+		public const int WGL_NEED_PALETTE_ARB = 0x2004;
+		public const int WGL_NEED_SYSTEM_PALETTE_ARB = 0x2005;
+		public const int WGL_SWAP_LAYER_BUFFERS_ARB = 0x2006;
+		public const int WGL_SWAP_METHOD_ARB = 0x2007;
+		public const int WGL_NUMBER_OVERLAYS_ARB = 0x2008;
+		public const int WGL_NUMBER_UNDERLAYS_ARB = 0x2009;
+		public const int WGL_TRANSPARENT_ARB = 0x200A;
+		public const int WGL_TRANSPARENT_RED_VALUE_ARB = 0x2037;
+		public const int WGL_TRANSPARENT_GREEN_VALUE_ARB = 0x2038;
+		public const int WGL_TRANSPARENT_BLUE_VALUE_ARB = 0x2039;
+		public const int WGL_TRANSPARENT_ALPHA_VALUE_ARB = 0x203A;
+		public const int WGL_TRANSPARENT_INDEX_VALUE_ARB = 0x203B;
+		public const int WGL_SHARE_DEPTH_ARB = 0x200C;
+		public const int WGL_SHARE_STENCIL_ARB = 0x200D;
+		public const int WGL_SHARE_ACCUM_ARB = 0x200E;
+		public const int WGL_SUPPORT_GDI_ARB = 0x200F;
+		public const int WGL_SUPPORT_OPENGL_ARB = 0x2010;
+		public const int WGL_DOUBLE_BUFFER_ARB = 0x2011;
+		public const int WGL_STEREO_ARB = 0x2012;
+		public const int WGL_PIXEL_TYPE_ARB = 0x2013;
+		public const int WGL_COLOR_BITS_ARB = 0x2014;
+		public const int WGL_RED_BITS_ARB = 0x2015;
+		public const int WGL_RED_SHIFT_ARB = 0x2016;
+		public const int WGL_GREEN_BITS_ARB = 0x2017;
+		public const int WGL_GREEN_SHIFT_ARB = 0x2018;
+		public const int WGL_BLUE_BITS_ARB = 0x2019;
+		public const int WGL_BLUE_SHIFT_ARB = 0x201A;
+		public const int WGL_ALPHA_BITS_ARB = 0x201B;
+		public const int WGL_ALPHA_SHIFT_ARB = 0x201C;
+		public const int WGL_ACCUM_BITS_ARB = 0x201D;
+		public const int WGL_ACCUM_RED_BITS_ARB = 0x201E;
+		public const int WGL_ACCUM_GREEN_BITS_ARB = 0x201F;
+		public const int WGL_ACCUM_BLUE_BITS_ARB = 0x2020;
+		public const int WGL_ACCUM_ALPHA_BITS_ARB = 0x2021;
+		public const int WGL_DEPTH_BITS_ARB = 0x2022;
+		public const int WGL_STENCIL_BITS_ARB = 0x2023;
+		public const int WGL_AUX_BUFFERS_ARB = 0x2024;
+		public const int WGL_NO_ACCELERATION_ARB = 0x2025;
+		public const int WGL_GENERIC_ACCELERATION_ARB = 0x2026;
+		public const int WGL_FULL_ACCELERATION_ARB = 0x2027;
+		public const int WGL_SWAP_EXCHANGE_ARB = 0x2028;
+		public const int WGL_SWAP_COPY_ARB = 0x2029;
+		public const int WGL_SWAP_UNDEFINED_ARB = 0x202A;
+		public const int WGL_TYPE_RGBA_ARB = 0x202B;
+		public const int WGL_TYPE_COLORINDEX_ARB = 0x202C;
+
+		public const int WGL_NUMBER_PIXEL_FORMATS_EXT = 0x2000;
+		public const int WGL_DRAW_TO_WINDOW_EXT = 0x2001;
+		public const int WGL_DRAW_TO_BITMAP_EXT = 0x2002;
+		public const int WGL_ACCELERATION_EXT = 0x2003;
+		public const int WGL_NEED_PALETTE_EXT = 0x2004;
+		public const int WGL_NEED_SYSTEM_PALETTE_EXT = 0x2005;
+		public const int WGL_SWAP_LAYER_BUFFERS_EXT = 0x2006;
+		public const int WGL_SWAP_METHOD_EXT = 0x2007;
+		public const int WGL_NUMBER_OVERLAYS_EXT = 0x2008;
+		public const int WGL_NUMBER_UNDERLAYS_EXT = 0x2009;
+		public const int WGL_TRANSPARENT_EXT = 0x200A;
+		public const int WGL_TRANSPARENT_VALUE_EXT = 0x200B;
+		public const int WGL_SHARE_DEPTH_EXT = 0x200C;
+		public const int WGL_SHARE_STENCIL_EXT = 0x200D;
+		public const int WGL_SHARE_ACCUM_EXT = 0x200E;
+		public const int WGL_SUPPORT_GDI_EXT = 0x200F;
+		public const int WGL_SUPPORT_OPENGL_EXT = 0x2010;
+		public const int WGL_DOUBLE_BUFFER_EXT = 0x2011;
+		public const int WGL_STEREO_EXT = 0x2012;
+		public const int WGL_PIXEL_TYPE_EXT = 0x2013;
+		public const int WGL_COLOR_BITS_EXT = 0x2014;
+		public const int WGL_RED_BITS_EXT = 0x2015;
+		public const int WGL_RED_SHIFT_EXT = 0x2016;
+		public const int WGL_GREEN_BITS_EXT = 0x2017;
+		public const int WGL_GREEN_SHIFT_EXT = 0x2018;
+		public const int WGL_BLUE_BITS_EXT = 0x2019;
+		public const int WGL_BLUE_SHIFT_EXT = 0x201A;
+		public const int WGL_ALPHA_BITS_EXT = 0x201B;
+		public const int WGL_ALPHA_SHIFT_EXT = 0x201C;
+		public const int WGL_ACCUM_BITS_EXT = 0x201D;
+		public const int WGL_ACCUM_RED_BITS_EXT = 0x201E;
+		public const int WGL_ACCUM_GREEN_BITS_EXT = 0x201F;
+		public const int WGL_ACCUM_BLUE_BITS_EXT = 0x2020;
+		public const int WGL_ACCUM_ALPHA_BITS_EXT = 0x2021;
+		public const int WGL_DEPTH_BITS_EXT = 0x2022;
+		public const int WGL_STENCIL_BITS_EXT = 0x2023;
+		public const int WGL_AUX_BUFFERS_EXT = 0x2024;
+		public const int WGL_NO_ACCELERATION_EXT = 0x2025;
+		public const int WGL_GENERIC_ACCELERATION_EXT = 0x2026;
+		public const int WGL_FULL_ACCELERATION_EXT = 0x2027;
+		public const int WGL_SWAP_EXCHANGE_EXT = 0x2028;
+		public const int WGL_SWAP_COPY_EXT = 0x2029;
+		public const int WGL_SWAP_UNDEFINED_EXT = 0x202A;
+		public const int WGL_TYPE_RGBA_EXT = 0x202B;
+		public const int WGL_TYPE_COLORINDEX_EXT = 0x202C;
+		public const int WGL_SAMPLE_BUFFERS_ARB = 0x2041;
+		public const int WGL_SAMPLES_ARB = 0x2042;
 
 		public delegate IntPtr CreateContextAttribsARB(IntPtr hDC, IntPtr hShareContext, int[] attribList);
 
 		public CreateContextAttribsARB wglCreateContextAttribsARB;
+
+		public delegate bool GetPixelFormatAttribivARB(IntPtr hdc, int iPixelFormat, int iLayerPlane, uint nAttributes, int[] piAttributes, int[] piValues);
+		public delegate bool GetPixelFormatAttribfvARB(IntPtr hdc, int iPixelFormat, int iLayerPlane, uint nAttributes, int[] piAttributes, float[] pfValues);
+		public delegate bool ChoosePixelFormatARB(IntPtr hdc, int[] piAttribIList, float[] pfAttribFList, uint nMaxFormats, ref int piFormats, ref uint nNumFormats);
+
+		public delegate IntPtr GetExtensionsStringARB(IntPtr hdc);
+
+		public static GetExtensionsStringARB wglGetExtensionStringARB;
+		public static GetPixelFormatAttribivARB wglGetPixelFormatAttribivARB;
+		public static GetPixelFormatAttribfvARB wglGetPixelFormatAttribfvARB;
+		public static ChoosePixelFormatARB wglChoosePixelFormatARB;
 
 		#endregion
 
@@ -254,8 +366,8 @@ namespace Glorg2.Graphics.OpenGL
 		public override T GetProc<T>(string procname)
 		{
 			var ptr = wglGetProcAddress(procname);
-            if (ptr == IntPtr.Zero)
-                return default(T);
+			if (ptr == IntPtr.Zero)
+				return default(T);
 			var d = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
 			return (T)Convert.ChangeType(d, typeof(T));
 		}
@@ -294,40 +406,82 @@ namespace Glorg2.Graphics.OpenGL
 
 			hwnd = wnd;
 
-			// Setup pixel format
-			int pixelformat;
-			PIXELFORMATDESCRIPTOR desc = new PIXELFORMATDESCRIPTOR();
+			int pixel_format = 0;
+			bool valid = false;
 
 			hdc = GetDC(wnd);
+
+			PIXELFORMATDESCRIPTOR desc = new PIXELFORMATDESCRIPTOR();
 			desc.nSize = (short)Marshal.SizeOf(desc);
 			desc.nVersion = 1;
 			desc.dwFlags = PixelFormatFlags.PFD_DOUBLEBUFFER | PixelFormatFlags.PFD_DRAW_TO_WINDOW | PixelFormatFlags.PFD_SUPPORT_OPENGL;
 			desc.cDepthBits = 32;
 			desc.cColorBits = 32;
+			pixel_format = ChoosePixelFormat(hdc, ref desc);
 
-			pixelformat = ChoosePixelFormat(hdc, ref desc);
-
-			SetPixelFormat(hdc, pixelformat, ref desc);
+			SetPixelFormat(hdc, pixel_format, ref desc);
 
 			// Create legacy OpenGL context
 			handle = wglCreateContext(hdc);
 
-			if (handle != IntPtr.Zero)
-				wglMakeCurrent(hdc, handle);
-			else
-				throw new InvalidOperationException("Could not create OpenGL context");
+			wglMakeCurrent(hdc, handle);
 
+
+			wglGetExtensionStringARB = GetProc<GetExtensionsStringARB>("wglGetExtensionStringARB");
+			wglChoosePixelFormatARB = GetProc<ChoosePixelFormatARB>("wglChoosePixelFormatARB");
+			wglGetPixelFormatAttribfvARB = GetProc<GetPixelFormatAttribfvARB>("wglGetPixelFormatAttribfvARB");
+			wglGetPixelFormatAttribivARB = GetProc<GetPixelFormatAttribivARB>("wglGetPixelFormatAttribivARB");
+			string ext = "";
+			if(wglGetExtensionStringARB != null)
+				ext = Marshal.PtrToStringAnsi(wglGetExtensionStringARB(hdc));
+
+			var extensions = ext.Split(' ');
+
+			if (wglChoosePixelFormatARB != null)
+			{
+				var fAttributes = new float[] { 0, 0 };
+				var iAttributes = new int[] 
+				{	WGL_DRAW_TO_WINDOW_ARB, 1,
+					WGL_SUPPORT_OPENGL_ARB, 1,
+					WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
+					WGL_COLOR_BITS_ARB, 24,
+					WGL_ALPHA_BITS_ARB, 8,
+					WGL_DEPTH_BITS_ARB, 16,
+					WGL_STENCIL_BITS_ARB, 0,
+					WGL_DOUBLE_BUFFER_ARB, 1,
+					WGL_SAMPLE_BUFFERS_ARB, 1,
+					WGL_SAMPLES_ARB, samples ,						// Check For 4x Multisampling
+					0,0
+				};
+				uint num_formats = 0;
+				valid = wglChoosePixelFormatARB(hdc, iAttributes, fAttributes, 1, ref pixel_format, ref num_formats) && num_formats > 0;
+				if (valid)
+				{
+					wglMakeCurrent(hdc, IntPtr.Zero);
+					wglDeleteContext(handle);
+					SetPixelFormat(hdc, pixel_format, ref desc);
+					handle = wglCreateContext(hdc);
+					wglMakeCurrent(hdc, handle);
+				}
+			}
+			wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
+			//if (!valid)
+			//{
+			//}
 			var s = OpenGL.glGetString((uint)OpenGL.Const.GL_VERSION);
 			var str = Marshal.PtrToStringAnsi(s);
-            wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
+			var sub = str.Split('.');
+			int major = int.Parse(sub[0]);
+			int minor = int.Parse(sub[1]);
+			int revision = int.Parse(sub[2]);
 			if (wglCreateContextAttribsARB != null)
 			{
 
 				int[] attribs = new int[]
 				{
-					WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-					WGL_CONTEXT_MINOR_VERSION_ARB, 0, 
-					WGL_CONTEXT_FLAGS_ARB,0,
+					WGL_CONTEXT_MAJOR_VERSION_ARB, major,
+					WGL_CONTEXT_MINOR_VERSION_ARB, minor, 
+					WGL_CONTEXT_FLAGS_ARB, 0,
 					WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB, 
 					0
 				};
@@ -336,8 +490,13 @@ namespace Glorg2.Graphics.OpenGL
 				if (newhandle != IntPtr.Zero) // If OpenGL 3.0 context creation failed, fallback to legacy 2.x
 					handle = newhandle;
 			}
+				
+			if (handle != IntPtr.Zero)
+				wglMakeCurrent(hdc, handle);
+			else
+				throw new InvalidOperationException("Could not create OpenGL context");
+
 			
-			wglMakeCurrent(hdc, handle);
 
 		}
 		protected override DynamicLinking GetLinker()

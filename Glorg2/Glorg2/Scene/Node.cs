@@ -54,6 +54,12 @@ namespace Glorg2.Scene
 
         public Scene Owner { get { return owner; } }
 
+		public virtual bool HitTest(Ray ray, out Vector3 pos)
+		{
+			pos = default(Vector3);
+			return false;
+		}
+
 		internal void InternalPostSerialize()
 		{
 			var t = GetType();

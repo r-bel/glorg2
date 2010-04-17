@@ -95,6 +95,7 @@ namespace Glorg2.Resource
 		{
 			foreach (var item in res)
 			{
+				item.DoDispose();
 				resources.Remove(item);
 			}
 		}

@@ -126,74 +126,7 @@ namespace Glorg2.Graphics.OpenGL
 		#region Shader Program
 
 		// Shader objects
-		public const int GL_PROGRAM_OBJECT_ARB = 0x8B40;
-		public const int GL_SHADER_OBJECT_ARB = 0x8B48;
-		public const int GL_OBJECT_TYPE_ARB = 0x8B4E;
-		public const int GL_OBJECT_SUBTYPE_ARB = 0x8B4F;
-		public const int GL_FLOAT_VEC2_ARB = 0x8B50;
-		public const int GL_FLOAT_VEC3_ARB = 0x8B51;
-		public const int GL_FLOAT_VEC4_ARB = 0x8B52;
-		public const int GL_INT_VEC2_ARB = 0x8B53;
-		public const int GL_INT_VEC3_ARB = 0x8B54;
-		public const int GL_INT_VEC4_ARB = 0x8B55;
-		public const int GL_BOOL_ARB = 0x8B56;
-		public const int GL_BOOL_VEC2_ARB = 0x8B57;
-		public const int GL_BOOL_VEC3_ARB = 0x8B58;
-		public const int GL_BOOL_VEC4_ARB = 0x8B59;
-		public const int GL_FLOAT_MAT2_ARB = 0x8B5A;
-		public const int GL_FLOAT_MAT3_ARB = 0x8B5B;
-		public const int GL_FLOAT_MAT4_ARB = 0x8B5C;
-		public const int GL_SAMPLER_1D_ARB = 0x8B5D;
-		public const int GL_SAMPLER_2D_ARB = 0x8B5E;
-		public const int GL_SAMPLER_3D_ARB = 0x8B5F;
-		public const int GL_SAMPLER_CUBE_ARB = 0x8B60;
-		public const int GL_SAMPLER_1D_SHADOW_ARB = 0x8B61;
-		public const int GL_SAMPLER_2D_SHADOW_ARB = 0x8B62;
-		public const int GL_SAMPLER_2D_RECT_ARB = 0x8B63;
-		public const int GL_SAMPLER_2D_RECT_SHADOW_ARB = 0x8B64;
-		public const int GL_OBJECT_DELETE_STATUS_ARB = 0x8B80;
-		public const int GL_OBJECT_COMPILE_STATUS_ARB = 0x8B81;
-		public const int GL_OBJECT_LINK_STATUS_ARB = 0x8B82;
-		public const int GL_OBJECT_VALIDATE_STATUS_ARB = 0x8B83;
-		public const int GL_OBJECT_INFO_LOG_LENGTH_ARB = 0x8B84;
-		public const int GL_OBJECT_ATTACHED_OBJECTS_ARB = 0x8B85;
-		public const int GL_OBJECT_ACTIVE_UNIFORMS_ARB = 0x8B86;
-		public const int GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB = 0x8B87;
-		public const int GL_OBJECT_SHADER_SOURCE_LENGTH_ARB = 0x8B88;
-
-		// Vertex shader
-		public const int GL_VERTEX_SHADER_ARB = 0x8B31;
-		public const int GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB = 0x8B4A;
-		public const int GL_MAX_VARYING_FLOATS_ARB = 0x8B4B;
-		public const int GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB = 0x8B4C;
-		public const int GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB = 0x8B4D;
-		public const int GL_OBJECT_ACTIVE_ATTRIBUTES_ARB = 0x8B89;
-		public const int GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB = 0x8B8A;
-
-		//Fragment shader
-		public const int GL_FRAGMENT_SHADER_ARB = 0x8B30;
-		public const int GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB = 0x8B49;
-		public const int GL_FRAGMENT_SHADER_DERIVATIVE_HINT_ARB = 0x8B8B;
-
-		// Geometry shader
-		public const int GL_LINES_ADJACENCY_ARB = 0x000A;
-		public const int GL_LINE_STRIP_ADJACENCY_ARB = 0x000B;
-		public const int GL_TRIANGLES_ADJACENCY_ARB = 0x000C;
-		public const int GL_TRIANGLE_STRIP_ADJACENCY_ARB = 0x000D;
-		public const int GL_PROGRAM_POINT_SIZE_ARB = 0x8642;
-		public const int GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB = 0x8C29;
-		public const int GL_FRAMEBUFFER_ATTACHMENT_LAYERED_ARB = 0x8DA7;
-		public const int GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_ARB = 0x8DA8;
-		public const int GL_FRAMEBUFFER_INCOMPLETE_LAYER_COUNT_ARB = 0x8DA9;
-		public const int GL_GEOMETRY_SHADER_ARB = 0x8DD9;
-		public const int GL_GEOMETRY_VERTICES_OUT_ARB = 0x8DDA;
-		public const int GL_GEOMETRY_INPUT_TYPE_ARB = 0x8DDB;
-		public const int GL_GEOMETRY_OUTPUT_TYPE_ARB = 0x8DDC;
-		public const int GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB = 0x8DDD;
-		public const int GL_MAX_VERTEX_VARYING_COMPONENTS_ARB = 0x8DDE;
-		public const int GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB = 0x8DDF;
-		public const int GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB = 0x8DE0;
-		public const int GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_ARB = 0x8DE1;
+		
 
 
 		public delegate void VertexAttrib1dARB(uint index, double x);
@@ -531,11 +464,7 @@ namespace Glorg2.Graphics.OpenGL
 
 		#region Occlusion Query
 
-		public const uint GL_QUERY_COUNTER_BITS_ARB = 0x8864;
-		public const uint GL_CURRENT_QUERY_ARB = 0x8865;
-		public const uint GL_QUERY_RESULT_ARB = 0x8866;
-		public const uint GL_QUERY_RESULT_AVAILABLE_ARB = 0x8867;
-		public const uint GL_SAMPLES_PASSED_ARB = 0x8914;
+		
 
 		public delegate void GenQueriesARB(int n, uint[] ids);
 		public delegate void DeleteQueriesARB(int n, uint[] ids);
@@ -573,41 +502,7 @@ namespace Glorg2.Graphics.OpenGL
 		#endregion
 
 		#region Multi-texturing
-		public const uint GL_TEXTURE0_ARB = 0x84C0;
-		public const uint GL_TEXTURE1_ARB = 0x84C1;
-		public const uint GL_TEXTURE2_ARB = 0x84C2;
-		public const uint GL_TEXTURE3_ARB = 0x84C3;
-		public const uint GL_TEXTURE4_ARB = 0x84C4;
-		public const uint GL_TEXTURE5_ARB = 0x84C5;
-		public const uint GL_TEXTURE6_ARB = 0x84C6;
-		public const uint GL_TEXTURE7_ARB = 0x84C7;
-		public const uint GL_TEXTURE8_ARB = 0x84C8;
-		public const uint GL_TEXTURE9_ARB = 0x84C9;
-		public const uint GL_TEXTURE10_ARB = 0x84CA;
-		public const uint GL_TEXTURE11_ARB = 0x84CB;
-		public const uint GL_TEXTURE12_ARB = 0x84CC;
-		public const uint GL_TEXTURE13_ARB = 0x84CD;
-		public const uint GL_TEXTURE14_ARB = 0x84CE;
-		public const uint GL_TEXTURE15_ARB = 0x84CF;
-		public const uint GL_TEXTURE16_ARB = 0x84D0;
-		public const uint GL_TEXTURE17_ARB = 0x84D1;
-		public const uint GL_TEXTURE18_ARB = 0x84D2;
-		public const uint GL_TEXTURE19_ARB = 0x84D3;
-		public const uint GL_TEXTURE20_ARB = 0x84D4;
-		public const uint GL_TEXTURE21_ARB = 0x84D5;
-		public const uint GL_TEXTURE22_ARB = 0x84D6;
-		public const uint GL_TEXTURE23_ARB = 0x84D7;
-		public const uint GL_TEXTURE24_ARB = 0x84D8;
-		public const uint GL_TEXTURE25_ARB = 0x84D9;
-		public const uint GL_TEXTURE26_ARB = 0x84DA;
-		public const uint GL_TEXTURE27_ARB = 0x84DB;
-		public const uint GL_TEXTURE28_ARB = 0x84DC;
-		public const uint GL_TEXTURE29_ARB = 0x84DD;
-		public const uint GL_TEXTURE30_ARB = 0x84DE;
-		public const uint GL_TEXTURE31_ARB = 0x84DF;
-		public const uint GL_ACTIVE_TEXTURE_ARB = 0x84E0;
-		public const uint GL_CLIENT_ACTIVE_TEXTURE_ARB = 0x84E1;
-		public const uint GL_MAX_TEXTURE_UNITS_ARB = 0x84E2;
+		
 
 
 		public delegate void ActiveTextureARB(uint texture);
@@ -682,7 +577,7 @@ namespace Glorg2.Graphics.OpenGL
 
 		public static void InitMultiTexture(OpenGLContext ctx)
 		{
-			
+
 			glActiveTextureARB = ctx.GetProc<ActiveTextureARB>("glActiveTextureARB");
 			glClientActiveTextureARB = ctx.GetProc<ClientActiveTextureARB>("glClientActiveTextureARB");
 			glMultiTexCoord1dARB = ctx.GetProc<MultiTexCoord1dARB>("glMultiTexCoord1dARB");
@@ -717,6 +612,77 @@ namespace Glorg2.Graphics.OpenGL
 			glMultiTexCoord4ivARB = ctx.GetProc<MultiTexCoord4ivARB>("glMultiTexCoord4ivARB");
 			glMultiTexCoord4sARB = ctx.GetProc<MultiTexCoord4sARB>("glMultiTexCoord4sARB");
 			glMultiTexCoord4svARB = ctx.GetProc<MultiTexCoord4svARB>("glMultiTexCoord4svARB");
+		}
+		#endregion
+
+		#region Framebuffer objects
+
+
+
+		public delegate boolean IsRenderbuffer(uint renderbuffer);
+		public delegate void BindRenderbuffer(uint target, uint renderbuffer);
+		public delegate void DeleteRenderbuffers(int n, uint[] renderbuffers);
+		public delegate void GenRenderbuffers(int n, uint[] renderbuffers);
+		public delegate void RenderbufferStorage(uint target, uint internalformat, int width, int height);
+		public delegate void GetRenderbufferParameteriv(uint target, uint pname, int[] parameters);
+		public delegate boolean IsFramebuffer(uint framebuffer);
+		public delegate void BindFramebuffer(uint target, uint framebuffer);
+		public delegate void DeleteFramebuffers(int n, uint[] framebuffers);
+		public delegate void GenFramebuffers(int n, uint[] framebuffers);
+		public delegate uint CheckFramebufferStatus(uint target);
+		public delegate void FramebufferTexture1D(uint target, uint attachment, uint textarget, uint texture, int level);
+		public delegate void FramebufferTexture2D(uint target, uint attachment, uint textarget, uint texture, int level);
+		public delegate void FramebufferTexture3D(uint target, uint attachment, uint textarget, uint texture, int level, int zoffset);
+		public delegate void FramebufferRenderbuffer(uint target, uint attachment, uint renderbuffertarget, uint renderbuffer);
+		public delegate void GetFramebufferAttachmentParameteriv(uint target, uint attachment, uint pname, int[] parameters);
+		public delegate void GenerateMipmap(uint target);
+		public delegate void BlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, uint mask, uint filter);
+		public delegate void RenderbufferStorageMultisample(uint target, int samples, uint internalformat, int width, int height);
+		public delegate void FramebufferTextureLayer(uint target, uint attachment, uint texture, int level, int layer);
+
+		public static IsRenderbuffer glIsRenderbuffer;
+		public static BindRenderbuffer glBindRenderbuffer;
+		public static DeleteRenderbuffers glDeleteRenderbuffers;
+		public static GenRenderbuffers glGenRenderbuffers;
+		public static RenderbufferStorage glRenderbufferStorage;
+		public static GetRenderbufferParameteriv glGetRenderbufferParameteriv;
+		public static IsFramebuffer glIsFramebuffer;
+		public static BindFramebuffer glBindFramebuffer;
+		public static DeleteFramebuffers glDeleteFramebuffers;
+		public static GenFramebuffers glGenFramebuffers;
+		public static CheckFramebufferStatus glCheckFramebufferStatus;
+		public static FramebufferTexture1D glFramebufferTexture1D;
+		public static FramebufferTexture2D glFramebufferTexture2D;
+		public static FramebufferTexture3D glFramebufferTexture3D;
+		public static FramebufferRenderbuffer glFramebufferRenderbuffer;
+		public static GetFramebufferAttachmentParameteriv glGetFramebufferAttachmentParameteriv;
+		public static GenerateMipmap glGenerateMipmap;
+		public static BlitFramebuffer glBlitFramebuffer;
+		public static RenderbufferStorageMultisample glRenderbufferStorageMultisample;
+		public static FramebufferTextureLayer glFramebufferTextureLayer;
+
+		public static void InitFramebuffers(OpenGLContext ctx)
+		{
+			glIsRenderbuffer = ctx.GetProc<IsRenderbuffer>("glIsRenderbuffer");
+			glBindRenderbuffer = ctx.GetProc<BindRenderbuffer>("glBindRenderbuffer");
+			glDeleteRenderbuffers = ctx.GetProc<DeleteRenderbuffers>("glDeleteRenderbuffers");
+			glGenRenderbuffers = ctx.GetProc<GenRenderbuffers>("glGenRenderbuffers");
+			glRenderbufferStorage = ctx.GetProc<RenderbufferStorage>("glRenderbufferStorage");
+			glGetRenderbufferParameteriv = ctx.GetProc<GetRenderbufferParameteriv>("glGetRenderbufferParameteriv");
+			glIsFramebuffer = ctx.GetProc<IsFramebuffer>("glIsFramebuffer");
+			glBindFramebuffer = ctx.GetProc<BindFramebuffer>("glBindFramebuffer");
+			glDeleteFramebuffers = ctx.GetProc<DeleteFramebuffers>("glDeleteFramebuffers");
+			glGenFramebuffers = ctx.GetProc<GenFramebuffers>("glGenFramebuffers");
+			glCheckFramebufferStatus = ctx.GetProc<CheckFramebufferStatus>("glCheckFramebufferStatus");
+			glFramebufferTexture1D = ctx.GetProc<FramebufferTexture1D>("glFramebufferTexture1D");
+			glFramebufferTexture2D = ctx.GetProc<FramebufferTexture2D>("glFramebufferTexture2D");
+			glFramebufferTexture3D = ctx.GetProc<FramebufferTexture3D>("glFramebufferTexture3D");
+			glFramebufferRenderbuffer = ctx.GetProc<FramebufferRenderbuffer>("glFramebufferRenderbuffer");
+			glGetFramebufferAttachmentParameteriv = ctx.GetProc<GetFramebufferAttachmentParameteriv>("glGetFramebufferAttachmentParameteriv");
+			glGenerateMipmap = ctx.GetProc<GenerateMipmap>("glGenerateMipmap");
+			glBlitFramebuffer = ctx.GetProc<BlitFramebuffer>("glBlitFramebuffer");
+			glRenderbufferStorageMultisample = ctx.GetProc<RenderbufferStorageMultisample>("glRenderbufferStorageMultisample");
+			glFramebufferTextureLayer = ctx.GetProc<FramebufferTextureLayer>("glFramebufferTextureLayer");
 		}
 		#endregion
 	}

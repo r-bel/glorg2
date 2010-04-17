@@ -9,6 +9,7 @@ namespace Glorg2
 	public struct Plane
 	{
 		public Vector3 Normal;
+		public Vector3 Position;
 		public float Distance;
 
 		public float GetDistance(Vector3 p)
