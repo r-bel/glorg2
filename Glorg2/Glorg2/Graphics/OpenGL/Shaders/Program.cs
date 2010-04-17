@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL.Shaders
 {
-	public class Program : Resource.Resource, IDisposable
+	/// <summary>
+	/// Represents a shader program.
+	/// </summary>
+	public sealed class Program : Resource.Resource, IDisposable
 	{
 		private IntPtr handle;
 		internal List<Shader> shaders;
@@ -17,6 +20,11 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			return new Uniform(OpenGL.glGetUniformLocationARB(handle, name));
 		}
 
+		/// <summary>
+		/// Compiles all shaders and links the program
+		/// </summary>
+		/// <returns>True if program compiled and linked</returns>
+		/// <remarks>Use GetCompileLog to retrieve compile errors if any</remarks>
 		public bool Compile()
 		{
 			uint err = OpenGL.glGetError();
@@ -49,6 +57,9 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			OpenGL.glDeleteObjectARB(handle);
 		}
 
+		/// <summary>
+		/// Disposes all unmanaged resources.
+		/// </summary>
 		public void Dispose()
 		{
 			Cleanup();

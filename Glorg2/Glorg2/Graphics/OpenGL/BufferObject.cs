@@ -38,7 +38,11 @@ namespace Glorg2.Graphics.OpenGL
 			OpenGL.glGenBuffersARB(1, buffers);
 			handle = buffers[0];
 		}
-
+		/// <summary>
+		/// Increases the buffer by one, and sets the last value
+		/// </summary>
+		/// <param name="value">Value to add</param>
+		/// <remarks>Note that this function is slower than using the Allocate function. If you can calculate beforehand the size of the array, you should.</remarks>
 		public void Add(T value)
 		{
 			
@@ -49,17 +53,30 @@ namespace Glorg2.Graphics.OpenGL
 				internal_array.CopyTo(new_arr, 0);
 			internal_array = new_arr;
 		}
-
+		/// <summary>
+		/// Allocates an array of size num_elements
+		/// </summary>
+		/// <param name="num_elements"></param>
+		/// <remarks>Note that this function does not validate the buffer object. Use BufferData or BufferSubData to store data in the buffer object</remarks>
 		public void Allocate(int num_elements)
 		{
 			internal_array = new T[num_elements];
 			count = internal_array.Length;
 		}
+		/// <summary>
+		/// Allocates an array the size of the source parameter, and copies source into it.
+		/// </summary>
+		/// <param name="source">Source data</param>
+		/// <remarks>Note that this function does not validate the buffer object. Use BufferData or BufferSubData to store data in the buffer object</remarks>
 		public void Allocate(IEnumerable<T> source)
 		{
 			internal_array = source.ToArray();
 			count = internal_array.Length;
 		}
+		/// <summary>
+		/// Frees the arrays stored on the client.
+		/// </summary>
+		/// <remarks>Note that calling this function will make BufferSubData and BufferData invalid calls, since the local data has been freed.</remarks>
 		public void FreeClientData()
 		{
 			internal_array = new T[] {};
@@ -75,7 +92,12 @@ namespace Glorg2.Graphics.OpenGL
 				internal_array[index] = value;
 			}
 		}
-
+		/// <summary>
+		/// Buffers the entire local array to designated storage
+		/// </summary>
+		/// <remarks>Where the data is stored is implementation specific, and the usage variable is considered a hint, not a command.</remarks>
+		/// <param name="usage">Data usage.</param>
+		/// <seealso cref="Glorg2.Graphics.OpenGL.OpenGL.VboUsage"/>
 		public void BufferData(OpenGL.VboUsage usage)
 		{
 			
@@ -84,10 +106,16 @@ namespace Glorg2.Graphics.OpenGL
 			OpenGL.glBufferDataARB((OpenGL.VboTarget)target, size_of_t * internal_array.Length, h.AddrOfPinnedObject(), usage);
 			h.Free();
 		}
+		/// <summary>
+		/// Sets the current vertex buffer object to this
+		/// </summary>
 		public virtual void MakeCurrent()
 		{
 			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, handle);
 		}
+		/// <summary>
+		/// Sets the current vertex buffer object as null (disabling vertex buffer objects)
+		/// </summary>
 		public virtual void Reset()
 		{
 			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, 0);
@@ -115,32 +143,131 @@ namespace Glorg2.Graphics.OpenGL
 
 	public enum ElementType
 	{
+		/// <summary>
+		/// Ignore this entry
+		/// </summary>
 		Ignore =			0x00000000,
+		/// <summary>
+		/// Vertex position
+		/// </summary>
 		Position =			0x00000001,
+		/// <summary>
+		/// Texture coordinate
+		/// </summary>
 		TexCoord =			0x00000002,
+		/// <summary>
+		/// Vertex normal
+		/// </summary>
 		Normals =			0x00000003,
+		/// <summary>
+		/// Vertex color
+		/// </summary>
 		Color =				0x00000004,
+		/// <summary>
+		/// Vertex weight
+		/// </summary>
 		Weight =			0x00000005,
+		/// <summary>
+		/// Vertex attribute
+		/// </summary>
 		Attribute =			0x00000006,
+		/// <summary>
+		/// Element is a Scalar
+		/// </summary>
 		OneDimension =		0x00000010,
+		/// <summary>
+		/// Element is a two-dimensional vector
+		/// </summary>
 		TwoDimension =		0x00000020,
+		/// <summary>
+		/// Element is a three-dimensional vector
+		/// </summary>
 		ThreeDimension =	0x00000030,
+		/// <summary>
+		/// Element is a four-dimensional vector
+		/// </summary>
 		FourDimension =		0x00000040,
+		/// <summary>
+		/// Element is a sixteen dimensional vector (Matrix)
+		/// </summary>
 		SixteenDimension =	0x00000100,
+		/// <summary>
+		/// Element is an integer type
+		/// </summary>
 		Integer =			0x00001000,
+		/// <summary>
+		/// Element is an floating point type
+		/// </summary>
 		Float =				0x00002000,
+		/// <summary>
+		/// Each unit in the element takes iup 1 byte
+		/// </summary>
 		Bits8 =				0x00010000,
+		/// <summary>
+		/// Each unit in the element takes up two bytes (short or half float)
+		/// </summary>
 		Bits16 =			0x00020000,
+		/// <summary>
+		/// Each unit in the element takes up four bytes (int or float)
+		/// </summary>
 		Bits32 =			0x00040000,
+		/// <summary>
+		/// Each unit in the element takes up eight bytes (double)
+		/// </summary>
 		Bits64 =			0x00080000,
+		/// <summary>
+		/// The element is the first channel
+		/// </summary>
 		Channel0 =			0x00000000,
+		/// <summary>
+		/// The element is the second channel (used for multi-texturing)
+		/// </summary>
 		Channel1 =			0x01000000,
+		/// <summary>
+		/// The element is the third channel (used for multi-texturing)
+		/// </summary>
 		Channel2 =			0x02000000,
+		/// <summary>
+		/// The element is the fourth channel (used for multi-texturing)
+		/// </summary>
 		Channel3 =			0x03000000,
+		/// <summary>
+		/// The element is the fifth channel (used for multi-texturing)
+		/// </summary>
 		Channel4 =			0x04000000,
-		Matrix = Channel0 | Attribute | SixteenDimension | Float | Bits32
-	}
+		/// <summary>
+		/// Element is a 4x4 attribute matrix. This is a complete definition
+		/// </summary>
+		Matrix = Channel0 | Attribute | SixteenDimension | Float | Bits32,
 
+		/// <summary>
+		/// Element is a position with three-dimensional vector of floats. This is a complete definition
+		/// </summary>
+		Position3Float = Channel0 | Position | ThreeDimension | Float | Bits32,
+		/// <summary>
+		/// Element is a normal with three-dimensional vector of floats. This is a complete definition
+		/// </summary>
+		Normal3Float = Channel0 | Normals | ThreeDimension | Float | Bits32,
+		/// <summary>
+		/// Element is a texture coordinate woth two-dimensional vector of floats. This is a complete definition
+		/// </summary>
+		TexCoord2Float = Channel0 | TexCoord | TwoDimension | Float | Bits32,
+		/// <summary>
+		/// Element is a color with four-dimensional vector of bytes. This is a complete definition
+		/// </summary>
+		Color4Bytes = Channel0 | Color | FourDimension | Integer | Bits8,
+		/// <summary>
+		/// Element is a color with four-dimensional vector of floats. This is a complete definition
+		/// </summary>
+		Color4Floats = Channel0 | Color | FourDimension | Float | Bits32,
+		/// <summary>
+		/// Element is a color with four-dimensional vector of half floats. This is a complete definition
+		/// </summary>
+		Color4Halfs = Channel0 | Color | FourDimension | Float | Bits16
+	}
+	/// <summary>
+	/// Describes a vertex structure
+	/// </summary>
 	public sealed class VertexBufferDescriptor
 	{
 		Type description_type;
@@ -153,6 +280,12 @@ namespace Glorg2.Graphics.OpenGL
 			int bits = ((tt & 0x00ff0000) >> 16);
 			return dim * bits;
 		}
+		/// <summary>
+		/// Build a vertex buffer descriptor
+		/// </summary>
+		/// <param name="types">Array of element type which describes all the types in each element.</param>
+		/// <param name="T">Vertex data to be described</param>
+		/// <remarks>Note that types MUST describe ALL elements in T. If not, an exception will be thrown.</remarks>
 		public VertexBufferDescriptor(IEnumerable<ElementType> types, Type T)
 		{
 			description_type = T;
@@ -374,5 +507,14 @@ namespace Glorg2.Graphics.OpenGL
 				}
 			}
 		}
+	}
+	public enum IndexType : uint
+	{
+		UnsignedByte = OpenGL.Const.GL_UNSIGNED_BYTE,
+		UnsignedShort = OpenGL.Const.GL_UNSIGNED_SHORT,
+		UnsignedInt = OpenGL.Const.GL_UNSIGNED_INT,
+		SignedByte = OpenGL.Const.GL_BYTE,
+		SignedShort = OpenGL.Const.GL_SHORT,
+		SignedInt = OpenGL.Const.GL_INT
 	}
 }

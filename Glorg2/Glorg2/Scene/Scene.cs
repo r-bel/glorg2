@@ -25,6 +25,10 @@ namespace Glorg2.Scene
 
 		public float SimulationTime { get { return sim_time; } }
 
+		public Vector3 gravity;
+		public Vector3 Gravity { get { return gravity; } set { gravity = value; } }
+
+
 		public Resource.ResourceManager Resources { get { return res; } }
 
 		public Camera Camera { get { return camera.Value; } set { camera.Value = value; } }
@@ -68,7 +72,69 @@ namespace Glorg2.Scene
 			foreach (var child in n.Children)
 				AddItem(child);
 		}
+		public IEnumerable<Node> HitTest(Ray ray)
+		{
+			foreach (var n in items)
+			{
+				Vector3 ret = new Vector3();
+				if (n.HitTest(ray, out ret))
+				{
+					yield return n;
+				}
+			}
+		}
 
+		/// <summary>
+		/// Unproject a viewport coordinate to world coordinates
+		/// </summary>
+		/// <param name="pos">Viewport coordinate to unproject</param>
+		/// <param name="z">Z depth for resulting coordinate</param>
+		/// <returns>Vector representing the point in 3D world space</returns>
+		public Vector3 Unproject(Vector2 pos, float z)
+		
+		{
+			if (this.owner.Device != null)
+			{
+
+				var worldview = camera.Value.GetCameraTransform();
+				var proj = camera.Value.GetProjectionMatrix();
+				var vp = this.owner.Device.Viewport;
+				var p = (worldview * proj).Invert() * new Vector3(
+					(2 * (pos.x - vp.X) - 1) / vp.Width,
+					(2 * (pos.y - vp.Y) - 1) / vp.Height,
+					2 * z - 1);
+				return p;
+			}
+			else
+				return default(Vector3);
+		}
+
+		public Vector2 Project(Vector3 pos)
+		{
+			return default(Vector2);
+		}
+
+		public Node HitTest(Ray ray, out Vector3 pos)
+		{
+			Node current = null;
+			
+			Vector3 closest = ray.Origin + ray.Normal;
+			float cl = closest.Length;
+			foreach (var n in items)
+			{
+				Vector3 ret = new Vector3();
+				if (n.HitTest(ray, out ret))
+				{
+					if (ret.Length < closest.Length)
+					{
+						cl = ret.Length;
+						closest = ret;
+					}
+				}
+			}
+			pos = closest;
+			return current;
+		}
 		protected void InitNode(Node n)
 		{
 			owner.GraphicInvoke(() => { n.InitializeGraphics(); n.graphics_initialized = true; });

@@ -79,14 +79,17 @@
     <Compile Include="Graphics\GraphicsDevice.cs" />
     <Compile Include="Graphics\Model.cs" />
     <Compile Include="Graphics\OpenGL\BufferObject.cs" />
+    <Compile Include="Graphics\OpenGL\FrameBuffer.cs" />
     <Compile Include="Graphics\OpenGL\Material.cs" />
     <Compile Include="Graphics\OpenGL\OpenGL.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLConst.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLContext.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLExt.cs" />
+    <Compile Include="Graphics\OpenGL\PixelBuffer.cs" />
     <Compile Include="Graphics\OpenGL\Primitives\Box.cs" />
     <Compile Include="Graphics\OpenGL\Primitives\Primitive.cs" />
     <Compile Include="Graphics\OpenGL\Primitives\PrimitiveRenderer.cs" />
+    <Compile Include="Graphics\OpenGL\RenderBuffer.cs" />
     <Compile Include="Graphics\OpenGL\Shaders\Program.cs" />
     <Compile Include="Graphics\OpenGL\Shaders\Shader.cs" />
     <Compile Include="Graphics\OpenGL\Shaders\Uniform.cs" />
@@ -138,6 +141,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

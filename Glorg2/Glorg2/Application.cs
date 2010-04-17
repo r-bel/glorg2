@@ -36,15 +36,30 @@ namespace Glorg2
 		public float TotalTime { get { return total_time; } }
 
 		public Graphics.GraphicsDevice Device { get { return dev; } }
+
+		protected virtual void InternalSizeChanged()
+		{
+			System.Drawing.Size size;
+			size = (System.Drawing.Size)target.Invoke(new Func<System.Drawing.Size>(delegate { return target.ClientSize; }));
+			SizeChanged(size);
+		}
+		protected virtual void SizeChanged(System.Drawing.Size new_size)
+		{
+			dev.Viewport = new System.Drawing.Rectangle(0, 0, new_size.Width, new_size.Height);
+		}
+
 		private void StartInternal()
 		{
 			graphic_invoke = new Queue<Action>();
 			scene = new Glorg2.Scene.Scene(this);
 			RenderThread = new System.Threading.Thread(new System.Threading.ThreadStart(RenderLoop));
+			RenderThread.Name = "Rendering thread";
 			running = true;
 			target.Show();
 			target.HandleDestroyed += (sender, e) => { running = false; System.Windows.Forms.Application.Exit(); };
-			target.Resize += (sender, e) => vp = new System.Drawing.Rectangle(0, 0, target.ClientSize.Width, target.ClientSize.Height);
+			//target.Resize += (sender, e) => GraphicInvoke(new Action(InternalSizeChanged));
+			//GraphicInvoke(new Action(InternalSizeChanged));
+			
 			Scene.ParentNode.InternalPostSerialize();
 		}
 		public void Start(System.Windows.Forms.Control target)
@@ -68,6 +83,7 @@ namespace Glorg2
 			target = new System.Windows.Forms.Form();
 			StartInternal();
 			SimulationThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
+			SimulationThread.Name = "Simulation thread";
 			RenderThread.Start();
 			SimulationThread.Start();
 		}
@@ -75,6 +91,7 @@ namespace Glorg2
 		{
 			this.target = target;
 			SimulationThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
+			SimulationThread.Name = "Simulation thread";
 			StartInternal();
 			RenderThread.Start();
 			SimulationThread.Start();
@@ -82,7 +99,7 @@ namespace Glorg2
 		protected virtual void FrameStep(float time)
 		{
 		}
-		protected virtual void GraphicsInit()
+		protected virtual void InitializeGraphics()
 		{
 			
 		}
@@ -97,9 +114,20 @@ namespace Glorg2
 		{
 		}
 
+		private void JoinThread(System.Threading.Thread th)
+		{
+			while (th.ThreadState == System.Threading.ThreadState.Running)
+			{
+				System.Windows.Forms.Application.DoEvents();
+			}
+		}
+
 		public void Exit()
 		{
 			running = false;
+			JoinThread(RenderThread);
+			if (SimulationThread != null)
+				JoinThread(SimulationThread);
 		}
 		/// <summary>
 		/// Invokes an action in the rendering thread.
@@ -124,6 +152,14 @@ namespace Glorg2
 				scene.Resources.Remove(res);
 			}
 		}
+		private void CleanupResources()
+		{
+			var r = scene.Resources.Janitorial();
+			lock (scene.Resources)
+			{
+				scene.Resources.Remove(r);
+			}
+		}
 		private void MainLoop()
 		{
 			long old_time;
@@ -134,18 +170,20 @@ namespace Glorg2
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
 				var res = scene.Resources.Janitorial();
-
-				GraphicInvoke(() =>
+				if (res.Count > 0)
 				{
-					foreach (var r in res)
+					GraphicInvoke(() =>
 					{
-						r.DoDispose();
-					}
-					lock (scene.Resources)
-					{
-						scene.Resources.Remove(res);
-					}
-				});
+						foreach (var r in res)
+						{
+							r.DoDispose();
+						}
+						lock (scene.Resources)
+						{
+							scene.Resources.Remove(res);
+						}
+					});
+				}
 
 				scene.sim_time += frame_time;
 				FrameStep(frame_time);
@@ -159,8 +197,6 @@ namespace Glorg2
 				System.Windows.Forms.Application.DoEvents();
 				old_time = new_time;				
 			}
-			scene.Dispose();
-			scene_disposed = true;
 			Closing();
 		}
 		private volatile bool scene_disposed;
@@ -177,15 +213,20 @@ namespace Glorg2
 			}
 			dev.ModelviewMatrix = Matrix.Identity;
 		}
-
+		volatile bool ready;
 		private void RenderLoop()
 		{
 			long old_time = 0;
+			// Wait for control to recieve a handle
+			target.HandleCreated += (sender, e) => ready = true;
+			while (!ready)
+				System.Threading.Thread.Sleep(0);
 			IntPtr handle = (IntPtr)target.Invoke(new Func<IntPtr>(() => target.Handle));
 			dev = new Glorg2.Graphics.GraphicsDevice(handle);
-			GraphicsInit();
+			InitializeGraphics();
 			old_time = System.Diagnostics.Stopwatch.GetTimestamp();
-			target.Invoke(new Action(() => target.Size = new System.Drawing.Size(640, 480)));
+
+			dev.State.MultiSample = true;
 			while (running)
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -200,6 +241,7 @@ namespace Glorg2
 							act();
 					}
 				}
+				InternalSizeChanged();
 				// Wait until simulation thread has finished with one frame
 				// or else it is not necessary to render the next frame (since nothing has happened)
 				
@@ -216,10 +258,11 @@ namespace Glorg2
 				old_time = new_time;
 				Glorg2.Scene.Light.DisableAllLights();
 			}
-			while (!scene_disposed)
-				System.Threading.Thread.Sleep(0);
-			var j = scene.Resources.Janitorial();
-			DoJanitorial(j);
+			/*while (!scene_disposed)
+				System.Threading.Thread.Sleep(0);*/
+			scene.Dispose();
+			scene_disposed = true;
+			CleanupResources();
 			GraphicsClosing();
 			scene.GraphicsDispose();
 			dev.Dispose();

@@ -13,9 +13,24 @@ namespace Glorg2.Graphics.OpenGL
 	/// </summary>
 	public abstract class OpenGLContext : IDisposable
 	{
+
+		protected int samples;
+
+
+		protected bool multisampling_enabled;
 		protected IntPtr handle;
 		protected IntPtr display;
 		protected DynamicLinking linker;
+
+		/// <summary>
+		/// This is a hint for the context creation to at least try to obtain this number of samples
+		/// </summary>
+		public int Samples { get { return samples; } set { samples = value; } }
+
+		/// <summary>
+		/// Retrieves if this OpenGL context was created with multisampling
+		/// </summary>
+		public bool MultisamplingEnabled { get { return multisampling_enabled; } }
 		
 		/// <summary>
 		/// Handle to OpenGL context

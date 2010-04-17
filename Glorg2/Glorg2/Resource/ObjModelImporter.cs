@@ -66,6 +66,10 @@ namespace Glorg2.Resource
 		{
 			if (typeof(T) == typeof(Glorg2.Graphics.Model))
 			{
+				Vector3 min = new Vector3();
+				Vector3 max = new Vector3();
+				Vector3 mid = new Vector3();
+
 				var ret = new Model();
 				ret.VertexBuffer = new Graphics.OpenGL.VertexBuffer<VertexPositionTexCoordNormal>(VertexPositionTexCoordNormal.Descriptor);
 				ret.SourceName = source_name;
@@ -79,6 +83,7 @@ namespace Glorg2.Resource
 				string mtl = "materials";
 				string current_mat = "";
 				int vi = 0;
+
 				while ((ln = rd.ReadLine()) != null)
 				{
 					Match m;
@@ -87,6 +92,22 @@ namespace Glorg2.Resource
 						float x = float.Parse(m.Groups["X"].Value, System.Globalization.NumberFormatInfo.InvariantInfo);
 						float y = float.Parse(m.Groups["Y"].Value, System.Globalization.NumberFormatInfo.InvariantInfo);
 						float z = float.Parse(m.Groups["Z"].Value, System.Globalization.NumberFormatInfo.InvariantInfo);
+						//var v = vb[i].Position;
+						if (x < min.x)
+							min.x = x;
+						if (y < min.y)
+							min.y = y;
+						if (z < min.z)
+							min.z = z;
+
+						if (x > max.x)
+							max.x = x;
+						if (y > max.y)
+							max.y = y;
+						if (z > max.z)
+							max.z = z;
+						mid += new Vector3(x, y, z);
+
 						pos.Add(new Vector3(x, y, z));
 					}
 					else if((m = tex_reg.Match(ln)).Success)
@@ -147,7 +168,13 @@ namespace Glorg2.Resource
 					Emit(null, null, null, indices, vi, ret);
 
 				ret.VertexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
-				//ret.VertexBuffer.FreeClientData();
+				ret.bounds = new BoundingBox()
+				{
+					Position = mid / ret.VertexBuffer.Count,
+					Size = (max - min) / 2
+				};
+
+				ret.VertexBuffer.FreeClientData();
 				return ret as T;
 			}
 			else

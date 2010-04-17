@@ -30,8 +30,11 @@ namespace Glorg2.Graphics
 		[NonSerialized()]
 		List<ModelPart> parts;
 
+		internal BoundingBox bounds;
 		public OpenGL.VertexBuffer<Vertex> VertexBuffer { get { return vb; } set { vb = value; } }
 		public List<ModelPart> Parts { get { return parts; } }
+
+		public BoundingBox BoundingBox { get { return bounds; } }
 
 		public Model()
 		{

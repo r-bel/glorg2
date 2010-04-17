@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace Glorg2.Resource
 {
@@ -38,6 +39,5 @@ namespace Glorg2.Resource
 
 			return ret as T;
 		}
-		private void ReadChunk
 	}
 }
