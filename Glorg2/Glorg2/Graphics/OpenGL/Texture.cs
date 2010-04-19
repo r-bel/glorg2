@@ -191,6 +191,14 @@ namespace Glorg2.Graphics.OpenGL
 			this.type = (uint)type;
 		}
 
+		public void AssignBuffer<T>(T[] array)
+		{
+			var h = System.Runtime.InteropServices.GCHandle.Alloc(array, System.Runtime.InteropServices.GCHandleType.Pinned);
+			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_2D, handle);
+			OpenGL.glTexImage2D(OpenGL.Const.GL_TEXTURE_2D, 0, int_fmt, width, height, 0, fmt, type, h.AddrOfPinnedObject());
+			h.Free();			
+		}
+
 		internal void AssignTexture()
 		{
 			OpenGL.glTexImage2D(OpenGL.Const.GL_TEXTURE_2D, 0, (int)int_fmt, width, height, 0, (uint)fmt, (uint)type, IntPtr.Zero);
