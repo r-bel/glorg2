@@ -5,10 +5,8 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL
 {
-	public interface IBufferObject
+	public interface IBufferObject : IDeviceObject
 	{
-		void MakeCurrent();
-		void Reset();
 		int Count { get; }
 	}
 	public interface IVertexBuffer : IBufferObject
@@ -18,7 +16,7 @@ namespace Glorg2.Graphics.OpenGL
 	{
 		uint Type { get; }
 	}
-	public abstract class BufferObject<T> : IDisposable, IBufferObject
+	public abstract class BufferObject<T> : IBufferObject
 		where T : struct
 	{
 		private uint handle;
@@ -116,7 +114,7 @@ namespace Glorg2.Graphics.OpenGL
 		/// <summary>
 		/// Sets the current vertex buffer object as null (disabling vertex buffer objects)
 		/// </summary>
-		public virtual void Reset()
+		public virtual void MakeNonCurrent()
 		{
 			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, 0);
 		}
@@ -457,9 +455,9 @@ namespace Glorg2.Graphics.OpenGL
 			for (int i = 0; i < initialize.Count; i++)
 				initialize[i](elements[i]);
 		}
-		public override void Reset()
+		public override void MakeNonCurrent()
 		{
-			base.Reset();
+			base.MakeNonCurrent();
 			foreach (var act in types)
 				if (act != 0)
 					OpenGL.glDisableClientState(act);

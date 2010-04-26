@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL
 {
-	public sealed class FrameBuffer : IDisposable
+	public sealed class FrameBuffer : IDeviceObject
 	{
 		uint handle;
 		int width, height;
@@ -54,7 +54,10 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			OpenGL.glBindFramebuffer(OpenGL.Const.GL_FRAMEBUFFER, handle);
 		}
-
+		public void MakeNonCurrent()
+		{
+			OpenGL.glBindFramebuffer(OpenGL.Const.GL_FRAMEBUFFER, 0);
+		}
 		private void Cleanup()
 		{
 			OpenGL.glDeleteFramebuffers(1, new uint[] { handle });

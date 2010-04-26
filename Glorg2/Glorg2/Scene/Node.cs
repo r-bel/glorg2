@@ -24,7 +24,8 @@ namespace Glorg2.Scene
 		[NonSerialized()]
 		internal Scene owner;
 
-		internal bool graphics_initialized;
+		[NonSerialized()]
+		internal volatile bool graphics_initialized;
 
 		[NonSerialized()]
 		private List<Node> remove_children;
@@ -163,7 +164,11 @@ namespace Glorg2.Scene
 			}
 			interp = accumulator / dt;
 		}
-
+		internal void InternalInitGraphics()
+		{
+			InitializeGraphics();
+			graphics_initialized = true;
+		}
 		public virtual void InternalProcess(float time)
 		{
 			Matrix old = owner.local_transform;
@@ -198,9 +203,12 @@ namespace Glorg2.Scene
 					{
 						foreach (var child in add_children)
 						{
+							child.owner = owner;
 							if (child.parent != this)
 								child.parent = this;
 							children.AddLast(child);
+							//if (!child.graphics_initialized)
+								//owner.Owner.GraphicInvoke(new Action(child.InternalInitGraphics));
 							owner.items.Add(child);
 						}
 						

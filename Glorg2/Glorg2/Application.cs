@@ -11,7 +11,7 @@ namespace Glorg2
 		System.Threading.Thread SimulationThread;
 		Glorg2.Graphics.GraphicsDevice dev;
 		System.Windows.Forms.Control target;
-		System.Drawing.Rectangle vp;
+		
 		volatile bool running;
 		volatile bool provoke_render;
 		volatile float fps;
@@ -46,15 +46,19 @@ namespace Glorg2
 		protected virtual void SizeChanged(System.Drawing.Size new_size)
 		{
 			dev.Viewport = new System.Drawing.Rectangle(0, 0, new_size.Width, new_size.Height);
+			if (scene.Camera != null && scene.Camera is Glorg2.Scene.PerspectiveCamera)
+			{
+				(scene.Camera as Glorg2.Scene.PerspectiveCamera).Aspect = new_size.Width / (float)new_size.Height;
+			}
 		}
 
 		private void StartInternal()
 		{
+			running = true;
 			graphic_invoke = new Queue<Action>();
 			scene = new Glorg2.Scene.Scene(this);
 			RenderThread = new System.Threading.Thread(new System.Threading.ThreadStart(RenderLoop));
 			RenderThread.Name = "Rendering thread";
-			running = true;
 			target.Show();
 			target.HandleDestroyed += (sender, e) => { running = false; System.Windows.Forms.Application.Exit(); };
 			//target.Resize += (sender, e) => GraphicInvoke(new Action(InternalSizeChanged));
@@ -65,6 +69,7 @@ namespace Glorg2
 		public void Start(System.Windows.Forms.Control target)
 		{
 			this.target = target;
+			ready = true;
 			StartInternal();
 			RenderThread.Start();
 			MainLoop();
@@ -74,6 +79,7 @@ namespace Glorg2
 			target = new System.Windows.Forms.Form();
 			target.Show();
 			target.Update();
+			ready = true;
 			StartInternal();
 			RenderThread.Start();
             MainLoop();
@@ -81,6 +87,9 @@ namespace Glorg2
 		public void StartAsync()
 		{
 			target = new System.Windows.Forms.Form();
+			target.Show();
+			target.Update();
+			ready = true;
 			StartInternal();
 			SimulationThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
 			SimulationThread.Name = "Simulation thread";
@@ -121,7 +130,6 @@ namespace Glorg2
 				System.Windows.Forms.Application.DoEvents();
 			}
 		}
-
 		public void Exit()
 		{
 			running = false;
@@ -165,6 +173,7 @@ namespace Glorg2
 			long old_time;
 			Init();
 			old_time = System.Diagnostics.Stopwatch.GetTimestamp();
+			target.Resize += (sender, e) => { GraphicInvoke(new Action(InternalSizeChanged));};
 			while (running)
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -196,10 +205,11 @@ namespace Glorg2
 				provoke_render = true;
 				System.Windows.Forms.Application.DoEvents();
 				old_time = new_time;				
+
 			}
 			Closing();
 		}
-		private volatile bool scene_disposed;
+
 		private void InitLights()
 		{
 			foreach (var node in this.Scene.items)
@@ -220,7 +230,12 @@ namespace Glorg2
 			// Wait for control to recieve a handle
 			target.HandleCreated += (sender, e) => ready = true;
 			while (!ready)
+			{
+				IntPtr h = (IntPtr)target.Invoke(new Func<IntPtr>(() => target.Handle));
+				if (h != IntPtr.Zero)
+					ready = true;
 				System.Threading.Thread.Sleep(0);
+			}
 			IntPtr handle = (IntPtr)target.Invoke(new Func<IntPtr>(() => target.Handle));
 			dev = new Glorg2.Graphics.GraphicsDevice(handle);
 			InitializeGraphics();
@@ -231,7 +246,6 @@ namespace Glorg2
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				float time =  (new_time - old_time) / ((float)System.Diagnostics.Stopwatch.Frequency);
-				dev.Viewport = vp;
 				lock (graphic_invoke)
 				{
 					while (graphic_invoke.Count > 0)
@@ -241,7 +255,7 @@ namespace Glorg2
 							act();
 					}
 				}
-				InternalSizeChanged();
+
 				// Wait until simulation thread has finished with one frame
 				// or else it is not necessary to render the next frame (since nothing has happened)
 				
@@ -261,7 +275,6 @@ namespace Glorg2
 			/*while (!scene_disposed)
 				System.Threading.Thread.Sleep(0);*/
 			scene.Dispose();
-			scene_disposed = true;
 			CleanupResources();
 			GraphicsClosing();
 			scene.GraphicsDispose();
@@ -270,7 +283,9 @@ namespace Glorg2
 
 		protected virtual void Render(Glorg2.Graphics.GraphicsDevice dev, float frame_time, float total_time)
 		{
-			dev.Clear(Glorg2.Graphics.ClearFlags.Color | Glorg2.Graphics.ClearFlags.Depth, new Vector4(0, 0, .4f, 0));
+			if(scene.Background.w > 0)
+				dev.Clear(Glorg2.Graphics.ClearFlags.Color | Glorg2.Graphics.ClearFlags.Depth, scene.Background);
+
 			if (scene.Camera != null)
 				dev.ProjectionMatrix = scene.Camera.GetProjectionMatrix();
 			scene.ParentNode.InternalRender(frame_time, dev);			

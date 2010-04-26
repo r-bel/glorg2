@@ -13,11 +13,11 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// <seealso cref="GeometryShader"/>
 	public abstract class Shader : IDisposable
 	{
-		private IntPtr handle;
+		private uint handle;
 		private string source;
 		private Program parent;
 
-		public IntPtr Handle { get { return handle; } }
+		public uint Handle { get { return handle; } }
 		public string Source { get { return source; } }
 		public Program Program { get { return parent; } }
 

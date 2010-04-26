@@ -23,6 +23,9 @@ namespace Glorg2.Scene
 		[NonSerialized()]
 		internal float sim_time;
 
+		private Vector4 background;
+		public Vector4 Background { get { return background; } set { background = value; } }
+
 		public float SimulationTime { get { return sim_time; } }
 
 		public Vector3 gravity;

@@ -77,6 +77,8 @@
     <Compile Include="CyclicRedundancy.cs" />
     <Compile Include="DynamicLinking.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
+    <Compile Include="Graphics\MeshBuilders\CylinderBuilder.cs" />
+    <Compile Include="Graphics\MeshBuilders\MeshBuilder.cs" />
     <Compile Include="Graphics\Model.cs" />
     <Compile Include="Graphics\OpenGL\BufferObject.cs" />
     <Compile Include="Graphics\OpenGL\FrameBuffer.cs" />
@@ -93,10 +95,12 @@
     <Compile Include="Graphics\OpenGL\Shaders\Program.cs" />
     <Compile Include="Graphics\OpenGL\Shaders\Shader.cs" />
     <Compile Include="Graphics\OpenGL\Shaders\Uniform.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\UniformBase.cs" />
     <Compile Include="Graphics\OpenGL\Texture.cs" />
     <Compile Include="Graphics\OpenGL\WglContext.cs" />
     <Compile Include="Graphics\OpenGL\glXContext.cs" />
     <Compile Include="Half.cs" />
+    <Compile Include="IDeviceObject.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Physics\Integration.cs" />
     <Compile Include="Plane.cs" />

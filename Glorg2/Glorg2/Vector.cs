@@ -113,6 +113,13 @@ namespace Glorg2
 
 		public float x, y, z;
 
+		public static readonly Vector3 Up = new Vector3(0, 1, 0);
+		public static readonly Vector3 Down = new Vector3(0, -1, 0);
+		public static readonly Vector3 West = new Vector3(-1, 0, 0);
+		public static readonly Vector3 East = new Vector3(1, 0, 0);
+		public static readonly Vector3 North = new Vector3(0, 0, 1);
+		public static readonly Vector3 South = new Vector3(0, 0, -1);
+
 		public override int GetHashCode()
 		{
 			return ((int)x) ^ ((int)y) ^ ((int)z) ;

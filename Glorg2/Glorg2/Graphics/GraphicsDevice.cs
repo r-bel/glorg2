@@ -90,7 +90,7 @@ namespace Glorg2.Graphics
 		{
 			if (vertex_buffer != null)
 			{
-				vertex_buffer.Reset();
+				vertex_buffer.MakeNonCurrent();
 			}
 			if (vert != null)
 				vert.MakeCurrent();
@@ -103,7 +103,7 @@ namespace Glorg2.Graphics
 		public void SetIndexBuffer(OpenGL.IIndexBuffer indices)
 		{
 			if (index_buffer != null)
-				index_buffer.Reset();
+				index_buffer.MakeNonCurrent();
 			if (indices != null)
 				indices.MakeCurrent();
 			index_buffer = indices;
