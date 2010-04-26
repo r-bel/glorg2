@@ -24,7 +24,7 @@ namespace Glorg2.Scene
 
 		Guid guid;
 
-		public T Value { get { return node; } set { node = value; guid = value.Guid; } }
+		public T Value { get { return node; } set { node = value; if (value == null) guid = Guid.Empty; else guid = value.Guid; } }
 
 		public Scene Owner { get { return owner; } set { owner = value; } }
 
@@ -52,11 +52,18 @@ namespace Glorg2.Scene
 		private void Update()
 		{
 			Guid g = guid;
-			node = (T)owner.items.Find(i => i.Guid == g);
-			if (node == null)
-				guid = new Guid();
+			if (g == Guid.Empty)
+			{
+				node = null;
+			}
 			else
-				guid = node.Guid;
+			{
+				node = (T)owner.items.Find(i => i.Guid == g);
+				if (node == null)
+					guid = Guid.Empty;
+				else
+					guid = node.Guid;
+			}
 		}
 
 	}

@@ -10,7 +10,7 @@ namespace Glorg2.Resource
 	public class HdrImporter : ResourceImporter
 	{
 
-		private static Regex reg = new Regex(@"(?<YSign>+|-)Y\s*(?<YValue>[0-9]+)\s(?<XSign>+|-)X\s*(?<XValue>[0-9]+)", RegexOptions.Compiled);
+		private static Regex reg = new Regex(@"(?<YSign>\+|\-)Y\s*(?<YValue>[0-9]+)\s(?<XSign>\+|\-)X\s*(?<XValue>[0-9]+)", RegexOptions.Compiled);
 
 		public override string FileDescriptor
 		{
@@ -53,6 +53,9 @@ namespace Glorg2.Resource
 				ret[i] = item.ToVector3Half();
 			}
 		}
+		/*
+			Retrieved from the source code written by Greg Ward for reading Radiance HDR images.
+		 */
 		private void ReadRgbeRle(System.IO.Stream src, Vector3Half[] ret, int width, int height)
 		{
 			byte[] rgbe = new byte[4]; byte[] scanline_buffer; int ptr, ptr_end;
@@ -68,23 +71,26 @@ namespace Glorg2.Resource
 			scanline_buffer = null;
 			int num_scanlines = height;
 			/* read in each successive scanline */
+			long start = src.Position;
 			while (num_scanlines > 0)
 			{
 				if (src.Read(rgbe, 0, 4) < 1)
 					throw new FormatException();
-				if ((rgbe[0] != 2) || (rgbe[1] != 2) || ((rgbe[2] & 0x80) == 0x80))
+				//if ((rgbe[0] != 2) || (rgbe[1] != 2) || ((rgbe[2] & 0x80) == 0x80))
 				{
 					/* this file is not run length encoded */
 					//rgbe2float(&data[0],&data[1],&data[2],rgbe);
 					//data += RGBE_DATA_SIZE;
 					//free(scanline_buffer);
 					//return RGBE_ReadPixels(fp,data,scanline_width*num_scanlines-1);
-					throw new FormatException();
+					//src.Position = start;
+					//ReadRgbe(src, ret);
+					//return;
 				}
-				if ((((int)rgbe[2]) << 8 | rgbe[3]) != width)
-				{
-					throw new FormatException();
-				}
+				//if ((((int)rgbe[2]) << 8 | rgbe[3]) != width)
+				//{
+//					throw new FormatException();
+				//}
 				if (scanline_buffer == null)
 					scanline_buffer = new byte[4 * width];
 
@@ -156,10 +162,11 @@ namespace Glorg2.Resource
 			int width = -1, height = -1;
 			int exposure = 0;
 			Match m;
-			if (line != "?#RADIANCE")
+			if (line != "#?RADIANCE")
 				throw new FormatException("Unrecognized HDR format");
-			while (!string.IsNullOrEmpty(line = rd.ReadLine()))
+			while (true)
 			{
+				line = rd.ReadLine();
 				int index = line.IndexOf('=');
 				if (index > 0)
 				{
@@ -169,7 +176,6 @@ namespace Glorg2.Resource
 						exposure = int.Parse(value);
 					else if (name == "FORMAT")
 						format = value;
-
 				}
 				else if ((m = reg.Match(line)).Success)
 				{
@@ -182,13 +188,14 @@ namespace Glorg2.Resource
 				throw new FormatException("Could not figure out the size of the HDR image");
 
 
-
 			Vector3Half[] data = new Vector3Half[width * height];
 
-			if (width < 8 || width > 0x7FFFF)
+			if (format == "32-bit_rgbe" || (width < 8 || width > 0x7FFFF))
 				ReadRgbe(source, data);
-			else
+			else if (format == "32-bit_rle_rgbe")
 				ReadRgbeRle(source, data, width, height);
+			else if (format == "32-bit_rle_xyzw")
+				throw new NotSupportedException(format + " not supported.");
 
 			res = new Graphics.OpenGL.Texture2D(width, height, Graphics.OpenGL.InternalFormat.Rgb16, Graphics.OpenGL.PixelDataType.Float, Graphics.OpenGL.PixelType.Rgb, source_name);
 			res.AssignBuffer(data);

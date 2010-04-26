@@ -105,9 +105,12 @@ namespace Glorg2.Graphics.OpenGL
 		UnsignedInt_2_10_10_10_Rev = OpenGL.Const.GL_UNSIGNED_INT_2_10_10_10_REV
 	}
 
-	public abstract class Texture : Glorg2.Resource.Resource
+	[Serializable()]
+	public abstract class Texture : Glorg2.Resource.Resource, IDeviceObject
 	{
+		[NonSerialized()]
 		protected uint handle;
+
 		internal uint target;
 		public uint Handle { get { return handle; } }
 
@@ -116,14 +119,18 @@ namespace Glorg2.Graphics.OpenGL
 			base.StreamRead(input);
 		}
 
+		public void MakeCurrent()
+		{
+			OpenGL.glEnable(target);
+			OpenGL.glBindTexture(target, handle);
+		}
+		public void MakeNonCurrent()
+		{
+			OpenGL.glDisable(target);
+			OpenGL.glBindTexture(target, 0);
+		}
 		protected abstract void Cleanup();
 
-		public abstract void MakeCurrent();
-
-		/// <summary>
-		/// Disables this texture unit
-		/// </summary>
-		public abstract void Disable();
 		public override void DoDispose()
 		{
 			Cleanup();
@@ -134,6 +141,7 @@ namespace Glorg2.Graphics.OpenGL
 			Cleanup();
 		}
 	}
+	[Serializable()]
 	public sealed class Texture1D : Texture
 	{
 		private int width;
@@ -148,22 +156,13 @@ namespace Glorg2.Graphics.OpenGL
 			handle = names[0];
 			target = (uint)OpenGL.Const.GL_TEXTURE_1D;
 		}
-		public override void MakeCurrent()
-		{
-			OpenGL.glEnable(OpenGL.Const.GL_TEXTURE_1D);
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_1D, handle);
-		}
-		public override void Disable()
-		{
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_1D, 0);
-			OpenGL.glDisable(OpenGL.Const.GL_TEXTURE_1D);
-		}
 
 		protected override void Cleanup()
 		{
 			OpenGL.glDeleteTextures(1, new uint[] { handle });
 		}
 	}
+	[Serializable()]
 	public sealed class Texture2D : Texture
 	{
 		private int width, height;
@@ -224,22 +223,12 @@ namespace Glorg2.Graphics.OpenGL
 			bmp.Dispose();
 		}
 
-		public override void MakeCurrent()
-		{
-			OpenGL.glEnable(OpenGL.Const.GL_TEXTURE_2D);
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_2D, handle);
-		}
-		public override void Disable()
-		{
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_2D, 0);
-			OpenGL.glDisable(OpenGL.Const.GL_TEXTURE_2D);
-		}
-
 		protected override void Cleanup()
 		{
 			OpenGL.glDeleteTextures(1, new uint[] { handle });
 		}
 	}
+	[Serializable()]
 	public sealed class Texture3D : Texture
 	{
 		private int width, height, depth;
@@ -260,16 +249,6 @@ namespace Glorg2.Graphics.OpenGL
 			target = (uint)OpenGL.Const.GL_TEXTURE_3D;
 		}
 
-		public override void MakeCurrent()
-		{
-			OpenGL.glEnable(OpenGL.Const.GL_TEXTURE_3D);
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_3D, handle);
-		}
-		public override void Disable()
-		{
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_3D, 0);
-			OpenGL.glDisable(OpenGL.Const.GL_TEXTURE_3D);
-		}
 		protected override void Cleanup()
 		{
 			OpenGL.glDeleteTextures(1, new uint[] { handle });
@@ -286,7 +265,7 @@ namespace Glorg2.Graphics.OpenGL
 			PositiveZ = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
 			NegativeZ = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB		
 	}
-
+	[Serializable()]
 	public sealed class CubeTexture : Texture
 	{
 		private List<Texture2D> textures;
@@ -305,20 +284,10 @@ namespace Glorg2.Graphics.OpenGL
 			textures[(int)side] = value;
 			//OpenGL.glTexImage2D(OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_X + (uint)side, 0, 
 		}
-		public override void MakeCurrent()
-		{
-			OpenGL.glEnable(OpenGL.Const.GL_TEXTURE_CUBE_MAP);
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_CUBE_MAP, handle);
-		}
-		public override void Disable()
-		{
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_CUBE_MAP, 0);
-			OpenGL.glDisable(OpenGL.Const.GL_TEXTURE_CUBE_MAP);
-		}
 
 		protected override void Cleanup()
 		{
-			
+			OpenGL.glDeleteTextures(1, new uint[] { handle });	
 		}
 	}
 }

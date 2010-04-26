@@ -9,7 +9,11 @@ namespace Glorg2.Resource
 	public abstract class Resource : IDisposable
 	{
 		private string source_name;
+		
+		[NonSerialized()]
 		private int hash;
+		
+		[NonSerialized()]
 		private int links;
 
 		public int Links { get { return links; } set { links = value; } }

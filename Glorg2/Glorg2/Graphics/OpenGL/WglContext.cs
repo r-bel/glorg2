@@ -471,9 +471,14 @@ namespace Glorg2.Graphics.OpenGL
 			var s = OpenGL.glGetString((uint)OpenGL.Const.GL_VERSION);
 			var str = Marshal.PtrToStringAnsi(s);
 			var sub = str.Split('.');
-			int major = int.Parse(sub[0]);
-			int minor = int.Parse(sub[1]);
-			int revision = int.Parse(sub[2]);
+			int major = 2;
+			int minor = 0;
+			int revision = 0;
+			int.TryParse(sub[0], out major);
+			int.TryParse(sub[1], out minor);
+			if(sub.Length >= 3)
+				int.TryParse(sub[0], out revision);
+
 			if (wglCreateContextAttribsARB != null)
 			{
 
