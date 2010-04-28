@@ -34,7 +34,7 @@ namespace Glorg2.Graphics.MeshBuilders
 			ib.Allocate(indices);
 
 			float ang_inc = (float)((Math.PI * 2) / sides);
-			float ang = 0;
+			float ang = (float)Math.PI / 2;
 			float h2 = height / 2;
 			Vector3 up = new Vector3(0, 1, 0);
 			Vector3 dn = new Vector3(0, -1, 0);
