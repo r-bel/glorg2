@@ -137,7 +137,8 @@ namespace Glorg2.Scene
 			this.owner = owner;
 			if (owner.Owner != null)
 			{
-				owner.Owner.GraphicInvoke(() => { InitializeGraphics(); graphics_initialized = true; });
+                graphics_initialized = true;
+                owner.Owner.GraphicInvoke(new Action(InitializeGraphics));
 			}
 		}
 		public Node()
@@ -287,6 +288,11 @@ namespace Glorg2.Scene
 		/// <remarks>This is not a synchronous function. Children will be added on the next oppurtunity.</remarks>
 		public void Add(Node child)
 		{
+            if (!child.graphics_initialized)
+            {
+                child.graphics_initialized = true;
+                owner.Owner.GraphicInvoke(new Action(child.InitializeGraphics));
+            }
 			add_children.Add(child);
             child.owner = owner;
 		}

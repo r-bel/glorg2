@@ -36,27 +36,6 @@ namespace Glorg2
 			y = axis.y * sinf;
 			z = axis.z * sinf;
 		}
-		/// <summary>
-		/// Create quaternion from euler angles
-		/// </summary>
-		/// <param name="x_angle">X angle in radians</param>
-		/// <param name="y_angle">Y angle in radians</param>
-		/// <param name="z_angle">Z angle in radians</param>
-		public Quaternion(float x_angle, float y_angle, float z_angle)
-		{
-			float cx = (float)Math.Cos(.5f * x_angle);
-			float cy = (float)Math.Cos(.5f * y_angle);
-			float cz = (float)Math.Cos(.5f * z_angle);
-
-			float sx = (float)Math.Sin(0.5 * x_angle);
-			float sy = (float)Math.Sin(0.5 * y_angle);
-			float sz = (float)Math.Sin(0.5 * z_angle);
-
-			x = cz * cy * sx - sz * sy * cx;
-			y = cz * sy * cx + sz * cy * sx;
-			z = sz * cy * cx - cz * sy * sx;
-			w = cz * cy * cx + sz * sy * sx;
-		}
 
 		public static Quaternion operator -(Quaternion q)
 		{
@@ -97,22 +76,70 @@ namespace Glorg2
 		/// <returns>Returns a unit quaternion</returns>
 		public Quaternion Normalize()
 		{
-			if (!IsUnit)
+			//if (!IsUnit)
 			{
 				float mag = Magnitude;
 				return new Quaternion(x / mag, y / mag, z / mag, w / mag);
 			}
-			else
-				return this;
+			//else
+				//return this;
 		}
 		public static Quaternion operator *(Quaternion a, Quaternion b)
 		{
-			return new Quaternion(
-				  a.y * b.z - a.z * b.y + a.w * b.x + a.x * b.w,
-				  a.z * b.x - a.x * b.z + a.w * b.y + a.y * b.w,
-				  a.x * b.y - a.y * b.x + a.w * b.z + a.z * b.w,
-				  a.w * b.w - Vector3.Dot(new Vector3(a.x, a.y, a.z), new Vector3(b.x, b.y, b.z)));
-		}
+            return new Quaternion()
+            {
+                x = a.y * b.z - a.z * b.y + a.w * b.x + a.x * b.w,
+                y = a.z * b.x - a.x * b.z + a.w * b.y + a.y * b.w,
+                z = a.x * b.y - a.y * b.x + a.w * b.z + a.z * b.w,
+                w = a.w * b.w - Vector3.Dot((Vector3)a, (Vector3)b)
+            };
+                
+
+
+            
+            /*return new Quaternion()
+            {
+                w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+                x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+                y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+                z = a.w * b.z + a.x * b.y - a.y * b.x + a.z + b.w
+            };*/
+            /*
+             (Q1 * Q2).w = (w1w2 - x1x2 - y1y2 - z1z2)
+(Q1 * Q2).x = (w1x2 + x1w2 + y1z2 - z1y2)
+(Q1 * Q2).y = (w1y2 - x1z2 + y1w2 + z1x2)
+(Q1 * Q2).z = (w1z2 + x1y2 - y1x2 + z1w2 
+             */
+        }
+        public static Quaternion FromEulerAngle(float x, float y, float z)
+        {
+            float cx = (float)Math.Cos(.5f * x);
+            float cy = (float)Math.Cos(.5f * y);
+            float cz = (float)Math.Cos(.5f * z);
+
+            float sx = (float)Math.Sin(0.5 * x);
+            float sy = (float)Math.Sin(0.5 * y);
+            float sz = (float)Math.Sin(0.5 * z);
+            return new Quaternion()
+            {
+                x = cz * cy * sx - sz * sy * cx,
+                y = cz * sy * cx + sz * cy * sx,
+                z = sz * cy * cx - cz * sy * sx,
+                w = cz * cy * cx + sz * sy * sx
+            };
+        }
+        public static Quaternion FromAxisAngle(float angle, Vector3 axis)
+        {
+            return new Quaternion()
+            {
+                w = (float)Math.Cos(angle / 2),
+                x = axis.x * (float)Math.Sin(angle / 2),
+                y = axis.y * (float)Math.Sin(angle / 2),
+                z = axis.z * (float)Math.Sin(angle / 2)
+            };
+
+        }
+
 		/// <summary>
 		/// Creates a new matrix representing the quaternion
 		/// </summary>
@@ -139,7 +166,10 @@ namespace Glorg2
 				m44 = 1
 			};
 		}
-
+        public static explicit operator Vector3(Quaternion quat)
+        {
+            return new Vector3(quat.x, quat.y, quat.z);
+        }
 		public static explicit operator Vector4(Quaternion quat)
 		{
 			return new Vector4(quat.x, quat.y, quat.z, quat.w);
