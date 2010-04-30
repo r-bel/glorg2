@@ -57,7 +57,7 @@ namespace Glorg2.Resource
 			{
 				if (res.GetHashCode() == hash)
 				{
-					res.Links++;
+					++res.Links;
 					return res as T;
 				}
 			}
@@ -73,7 +73,8 @@ namespace Glorg2.Resource
 					using (var stream = GetStream(name))
 					{
 						var res = imp.Import<T>(stream, name, this);
-						res.Links++;
+                        res.handled = true;
+                        ++res.Links;
 						lock (resources)
 						{
 							resources.Add(res);

@@ -12,7 +12,7 @@ namespace Glorg2.Scene
 		void Update();
 	}
 
-	public sealed class NodeReference<T>
+	public struct NodeReference<T>
 		where T : Node
 	{
 		public static readonly NodeReference<T> Empty = new NodeReference<T>();
@@ -27,13 +27,6 @@ namespace Glorg2.Scene
 		public T Value { get { return node; } set { node = value; if (value == null) guid = Guid.Empty; else guid = value.Guid; } }
 
 		public Scene Owner { get { return owner; } set { owner = value; } }
-
-		public NodeReference()
-		{
-			node = null;
-			guid = new Guid();
-			owner = null;
-		}
 
 		public NodeReference(Scene owner)
 		{

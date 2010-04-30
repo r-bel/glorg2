@@ -8,6 +8,7 @@ namespace Glorg2.Resource
 	[Serializable()]
 	public abstract class Resource : IDisposable
 	{
+        internal bool handled;
 		private string source_name;
 		
 		[NonSerialized()]
@@ -71,7 +72,10 @@ namespace Glorg2.Resource
 		}
 		public void Dispose()
 		{
-			--links;
+            if (handled)
+                --links;
+            else
+                DoDispose();
 		}
 		public virtual void DoDispose()
 		{

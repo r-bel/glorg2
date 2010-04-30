@@ -9,6 +9,7 @@ namespace Glorg2.Scene
 	public abstract class Camera : Node
 	{
 		Matrix projection;
+        
 		protected bool invalidated;
 
 		protected abstract Matrix BuildCamera();
@@ -16,12 +17,15 @@ namespace Glorg2.Scene
 		public virtual Matrix GetCameraTransform()
 		{
 			var or = Orientation;
-			or.x = or.x * -1;
-			or.y = or.y * -1;
-			or.z = or.z * -1;
+			//or.x = or.x * -1;
+			//or.y = or.y * -1;
+			//or.z = or.z * -1;
+            or.w = -or.w;
 			var mat = or.ToMatrix();
-			mat.Translation = new Vector4(-Position.x, -Position.y, -Position.z);
-			return mat;
+            var trans = Matrix.Translate(Position);
+			//mat.Translation = new Vector4(-Position.x, -Position.y, -Position.z);
+            return mat * trans;
+			//return mat;
 		}
 
         public void SetActive()

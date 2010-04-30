@@ -26,6 +26,13 @@ namespace Glorg2
 		{
 			return a.x * b.x + a.y * b.y;
 		}
+
+        public Vector2 Abs()
+        {
+            return new Vector2(Math.Abs(x), Math.Abs(y));
+        }
+
+
 		public float Length
 		{
 			get
@@ -113,12 +120,24 @@ namespace Glorg2
 
 		public float x, y, z;
 
+
+
 		public static readonly Vector3 Up = new Vector3(0, 1, 0);
 		public static readonly Vector3 Down = new Vector3(0, -1, 0);
 		public static readonly Vector3 West = new Vector3(-1, 0, 0);
 		public static readonly Vector3 East = new Vector3(1, 0, 0);
 		public static readonly Vector3 North = new Vector3(0, 0, 1);
 		public static readonly Vector3 South = new Vector3(0, 0, -1);
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public Vector3 Abs()
+        {
+            return new Vector3(Math.Abs(x), Math.Abs(y), Math.Abs(z));
+        }
 
 		public override int GetHashCode()
 		{
@@ -143,6 +162,14 @@ namespace Glorg2
 		{
 			return this / Length;
 		}
+
+        public static Vector3 Cross(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.y * b.z - a.z * b.y,
+                            a.z * b.x - a.x * b.z,
+                            a.x * b.y - a.y * b.x);
+
+        }
 
 		public static bool operator == (Vector3 a, Vector3 b)
 		{
@@ -236,6 +263,8 @@ namespace Glorg2
 		}, typeof(Vector4));
 
 		public float x, y, z, w;
+
+
 		public Vector4(float x, float y, float z)
 		{
 			this.x = x; this.y = y; this.z = z; this.w = 1;
@@ -248,6 +277,13 @@ namespace Glorg2
 		{
 			return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 		}
+
+        public Vector4 Abs()
+        {
+            return new Vector4(Math.Abs(x), Math.Abs(y), Math.Abs(z), Math.Abs(w));
+        }
+
+
 		public float Length
 		{
 			get

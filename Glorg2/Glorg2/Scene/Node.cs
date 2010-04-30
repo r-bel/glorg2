@@ -43,6 +43,7 @@ namespace Glorg2.Scene
 		Physics.ObjectState angualar_state;
 		Vector4 acceleration;
 		Vector4 center_of_mass;
+        Vector3 up;
 
 		[NonSerialized()]
 		internal Matrix absolute_transform;
@@ -51,15 +52,44 @@ namespace Glorg2.Scene
 		float radius;
 		Quaternion angular_momentum;
 		Quaternion orientation;
+        
 		float mass;
 
+        NodeReference<Node> target;
+
+        /// <summary>
+        /// Defines an object which this node will look at
+        /// </summary>
+        public Node Target { get { return target.Value; } set { target.Value = value; } }
+
+
+        /// <summary>
+        /// The scene which owns this node
+        /// </summary>
         public Scene Owner { get { return owner; } }
+
+        /// <summary>
+        /// The up vector for this node. This is used by the PerformLookAt() function.
+        /// </summary>
+        public Vector3 Up { get { return up; } set { up = value; } }
 
 		public virtual bool HitTest(Ray ray, out Vector3 pos)
 		{
 			pos = default(Vector3);
 			return false;
 		}
+
+        /// <summary>
+        /// Makes this nodes orientation look at 'Target'
+        /// </summary>
+        protected void PerformLookAt()
+        {
+            if (target.Value != null)
+            {
+                var mat = Matrix.LookAt(this.Position.ToVector3(), target.Value.Position.ToVector3(), up);
+                orientation = mat.ToQuaternion().Normalize();
+            }
+        }
 
 		internal void InternalPostSerialize()
 		{
@@ -83,8 +113,11 @@ namespace Glorg2.Scene
 						if (s == "NodeReference")
 						{
 							var nd = f.GetValue(this) as INodeReference;
-							nd.Owner = owner;
-							nd.Update();
+                            if (nd != null)
+                            {
+                                nd.Owner = owner;
+                                nd.Update();
+                            }
 
 						}
 					}
@@ -93,7 +126,9 @@ namespace Glorg2.Scene
 
 			PostSerialize();
 		}
-
+        /// <summary>
+        /// This functions is called afters serialization, and is used to seet up data which cannot be serialized.
+        /// </summary>
 		public virtual void PostSerialize()
 		{
 
@@ -106,11 +141,22 @@ namespace Glorg2.Scene
 			DoDispose();
 			Parent = null;
 		}
-
+        /// <summary>
+        /// This function defines a linear acceleration function. Override this to implement non-constant accelerations.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
 		protected virtual Vector4 LinearAcceleratiom(Physics.ObjectState state, float t)
 		{
 			return acceleration * t;
 		}
+        /// <summary>
+        /// This function defines an angular acceleration. Override this to implement non-constant accelerations.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
 		protected virtual Vector4 AnguralAcceleration(Physics.ObjectState state, float t)
 		{
 			//return angular_momentum * t;
@@ -143,6 +189,7 @@ namespace Glorg2.Scene
 		}
 		public Node()
 		{
+            up = Vector3.Up;
 			identifier = Guid.NewGuid();
 			angular_momentum = Quaternion.Identity;
 			orientation = Quaternion.Identity;
@@ -156,6 +203,7 @@ namespace Glorg2.Scene
 		{
 			//position += velocity * time;
 			//velocity += acceleration * time;
+            PerformLookAt();
 			accumulator += time;
 			while(accumulator >= dt)
 			{
@@ -172,10 +220,10 @@ namespace Glorg2.Scene
 		}
 		public virtual void InternalProcess(float time)
 		{
+            Process(time);
 			Matrix old = owner.local_transform;
 			owner.local_transform = owner.local_transform * GetTransform();
 			absolute_transform = owner.local_transform;
-			Process(time);
 			foreach (var child in children)
 				child.InternalProcess(time);
 			owner.local_transform = old;
@@ -280,7 +328,6 @@ namespace Glorg2.Scene
                 node.owner = owner;
             }
 		}
-
 		/// <summary>
 		/// Adds a child node to this node
 		/// </summary>
