@@ -118,28 +118,28 @@ namespace Glorg2.Graphics.MeshBuilders
 
             vb[8] = new VertexPositionTexCoordNormal()
             {
-                Position = pos[0],
+                Position = pos[4],
                 Normal = Vector3.North,
                 TexCoord = new Vector2(0, 0)
             };
 
             vb[9] = new VertexPositionTexCoordNormal()
             {
-                Position = pos[1],
+                Position = pos[5],
                 Normal = Vector3.North,
                 TexCoord = new Vector2(0, 0)
             };
 
             vb[10] = new VertexPositionTexCoordNormal()
             {
-                Position = pos[5],
+                Position = pos[1],
                 Normal = Vector3.North,
                 TexCoord = new Vector2(0, 0)
             };
 
             vb[11] = new VertexPositionTexCoordNormal()
             {
-                Position = pos[4],
+                Position = pos[0],
                 Normal = Vector3.North,
                 TexCoord = new Vector2(0, 0)
             };
@@ -200,27 +200,27 @@ namespace Glorg2.Graphics.MeshBuilders
                 TexCoord = new Vector2()
             };
 
-            vb[20] = new VertexPositionTexCoordNormal()
+            vb[23] = new VertexPositionTexCoordNormal()
             {
                 Position = pos[1],
                 Normal = Vector3.East,
                 TexCoord = new Vector2()
             };
 
-            vb[21] = new VertexPositionTexCoordNormal()
+            vb[22] = new VertexPositionTexCoordNormal()
             {
                 Position = pos[2],
                 Normal = Vector3.East,
                 TexCoord = new Vector2()
             };
 
-            vb[22] = new VertexPositionTexCoordNormal()
+            vb[21] = new VertexPositionTexCoordNormal()
             {
                 Position = pos[6],
                 Normal = Vector3.East,
                 TexCoord = new Vector2()
             };
-            vb[23] = new VertexPositionTexCoordNormal()
+            vb[20] = new VertexPositionTexCoordNormal()
             {
                 Position = pos[5],
                 Normal = Vector3.East,
@@ -228,8 +228,8 @@ namespace Glorg2.Graphics.MeshBuilders
             };
 
             int offset = 0;
-            ib.Allocate(6 * 5);
-            for (int i = 0; i < 5; i++)
+            ib.Allocate(36);
+            for (int i = 0; i < 6; i++)
             {
                 offset = AddFaces(i * 4, offset, ib);
             }
