@@ -160,21 +160,21 @@ namespace Glorg2.Resource
 						indices.Add(new Tuple() 
 						{ 
 							v = int.Parse(m.Groups["A1"].Value) - 1,
-							n = int.Parse(m.Groups["A2"].Value) - 1,
-							t = int.Parse(m.Groups["A3"].Value) - 1
+							t = int.Parse(m.Groups["A2"].Value) - 1,
+							n = int.Parse(m.Groups["A3"].Value) - 1
 						});
 
 						indices.Add(new Tuple() 
 						{ 
 							v = int.Parse(m.Groups["B1"].Value) - 1,
-							n = int.Parse(m.Groups["B2"].Value) - 1,
-							t = int.Parse(m.Groups["B3"].Value) - 1
+							t = int.Parse(m.Groups["B2"].Value) - 1,
+							n = int.Parse(m.Groups["B3"].Value) - 1
 						});
 						indices.Add(new Tuple() 
 						{ 
 							v = int.Parse(m.Groups["C1"].Value) - 1,
-							n = int.Parse(m.Groups["C2"].Value) - 1,
-							t = int.Parse(m.Groups["C3"].Value) - 1
+							t = int.Parse(m.Groups["C2"].Value) - 1,
+							n = int.Parse(m.Groups["C3"].Value) - 1
 						});
 					}
 				}
