@@ -21,51 +21,58 @@ namespace Glorg2.Resource
 		{
 			get { return "model.obj"; }
 		}
-		private int Emit(List<Vector3> pos, List<Vector2> tex, List<Vector3> norms, List<int> indices, int offset, Model mod)
+
+		private List<VertexPositionTexCoordNormal> verts;
+		
+		private struct Tuple
+		{
+			public int v, n, t;
+			public int result;
+			public bool CompareTo(Tuple o)
+			{
+				return v == o.v && n == o.n && t == o.t;
+			}
+		}
+		private int Emit(List<Vector3> pos, List<Vector2> tex, List<Vector3> norms, List<Tuple> ind, int offset, Model mod)
 		{
 			int count = 0;
-			if (!(pos == null || tex == null || norms == null))
-			{
-				count = pos.Count;
-				if (tex.Count > count)
-					count = tex.Count;
-				if (norms.Count > count)
-					count = norms.Count;
-				
 
-				//p.StartVertex = mod.VertexBuffer.Count;
-				//p.VertexCount = count;
-				for (int i = 0; i < count; i++)
-				{
-					var v = new VertexPositionTexCoordNormal();
-					if (i < pos.Count)
-						v.Position = pos[i];
-					if (i < tex.Count)
-						v.TexCoord = tex[i];
-					if (i < norms.Count)
-						v.Normal = norms[i];
-					mod.VertexBuffer.Add(v);
-				}
-			}
-			if (indices.Count > 0)
+			List<Tuple> unique = new List<Tuple>();
+			List<uint> indices = new List<uint>();
+			for (int i = 0; i < ind.Count; i++)
 			{
-				ModelPart p = new ModelPart();
-				p.IndexBuffer = new Graphics.OpenGL.IndexBuffer<uint>();
-				p.IndexBuffer.Allocate(indices.Count);
-				for (int i = 0; i < indices.Count; i++)
+				int j = unique.FindIndex(item => item.CompareTo(ind[i]));
+				if (j >= 0)
+					indices.Add((uint)unique[j].result);
+				else
 				{
-					p.IndexBuffer[i] = (uint)(indices[i] + offset);
+					++count;
+					Tuple t = ind[i];
+					t.result = verts.Count + offset;
+					unique.Add(t);
+					indices.Add((uint)t.result);
+					verts.Add(new VertexPositionTexCoordNormal()
+					{
+						Position = pos[t.v],
+						Normal = norms[t.n],
+						TexCoord = tex[t.t]
+					});
 				}
-				p.IndexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
-				//p.IndexBuffer.FreeClientData();
-				mod.Parts.Add(p);
 			}
+			ModelPart part = new ModelPart()
+			{
+				IndexBuffer = new Graphics.OpenGL.IndexBuffer<uint>(),
+				Name = ""
+			};
+			part.IndexBuffer.Add(indices);
+			mod.VertexBuffer.Add(verts);
 			return count;
 		}
 		public override T Import<T>(System.IO.Stream source, string source_name, ResourceManager man)
 		{
 			if (typeof(T) == typeof(Glorg2.Graphics.Model))
 			{
+				verts = new List<VertexPositionTexCoordNormal>();
 				Vector3 min = new Vector3();
 				Vector3 max = new Vector3();
 				Vector3 mid = new Vector3();
@@ -78,7 +85,7 @@ namespace Glorg2.Resource
 				List<Vector3> pos = new List<Vector3>();
 				List<Vector2> tex = new List<Vector2>();
 				List<Vector3> nrm = new List<Vector3>();
-				List<int> indices = new List<int>();
+				List<Tuple> indices = new List<Tuple>();
 				string ln;
 				string mtl = "materials";
 				string current_mat = "";
@@ -148,17 +155,25 @@ namespace Glorg2.Resource
 					}
 					else if ((m = face.Match(ln)).Success)
 					{
-						indices.Add(int.Parse(m.Groups["A1"].Value) - 1);
-						indices.Add(int.Parse(m.Groups["B1"].Value) - 1);
-						indices.Add(int.Parse(m.Groups["C1"].Value) - 1);
+						indices.Add(new Tuple() 
+						{ 
+							v = int.Parse(m.Groups["A1"].Value) - 1,
+							n = int.Parse(m.Groups["A2"].Value) - 1,
+							t = int.Parse(m.Groups["A3"].Value) - 1
+						});
 
-						/*indices.Add(int.Parse(m.Groups["B1"].Value));
-						indices.Add(int.Parse(m.Groups["B2"].Value));
-						indices.Add(int.Parse(m.Groups["B3"].Value));
-
-						indices.Add(int.Parse(m.Groups["C1"].Value));
-						indices.Add(int.Parse(m.Groups["C2"].Value));
-						indices.Add(int.Parse(m.Groups["C3"].Value));*/
+						indices.Add(new Tuple() 
+						{ 
+							v = int.Parse(m.Groups["B1"].Value) - 1,
+							n = int.Parse(m.Groups["B2"].Value) - 1,
+							t = int.Parse(m.Groups["B3"].Value) - 1
+						});
+						indices.Add(new Tuple() 
+						{ 
+							v = int.Parse(m.Groups["C1"].Value) - 1,
+							n = int.Parse(m.Groups["C2"].Value) - 1,
+							t = int.Parse(m.Groups["C3"].Value) - 1
+						});
 					}
 				}
 
@@ -167,6 +182,7 @@ namespace Glorg2.Resource
 				else if (indices.Count > 0)
 					Emit(null, null, null, indices, vi, ret);
 
+				
 				ret.VertexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
 				ret.bounds = new BoundingBox()
 				{
