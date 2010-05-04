@@ -229,6 +229,7 @@ namespace Glorg2
 			long old_time = 0;
 			// Wait for control to recieve a handle
 			target.HandleCreated += (sender, e) => ready = true;
+
 			while (!ready)
 			{
 				IntPtr h = (IntPtr)target.Invoke(new Func<IntPtr>(() => target.Handle));

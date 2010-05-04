@@ -11,7 +11,7 @@ namespace Glorg2.Scene
 		Scene Owner { get; set; }
 		void Update();
 	}
-
+	[Serializable()]
 	public struct NodeReference<T>
 		where T : Node
 	{

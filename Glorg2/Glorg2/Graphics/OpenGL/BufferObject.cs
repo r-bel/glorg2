@@ -51,6 +51,23 @@ namespace Glorg2.Graphics.OpenGL
 				internal_array.CopyTo(new_arr, 0);
 			internal_array = new_arr;
 		}
+
+		public void Add(IEnumerable<T> en)
+		{
+			var en_arr = en.ToArray();
+			T[] new_arr;
+			if (internal_array != null)
+			{
+				new_arr = new T[count + en_arr.Length];
+				Array.Copy(internal_array, new_arr, internal_array.Length);
+				en_arr.CopyTo(new_arr, internal_array.Length);
+			}
+			else
+				new_arr = en_arr;
+			count += en_arr.Length;
+			internal_array = new_arr;
+		}
+
 		/// <summary>
 		/// Allocates an array of size num_elements
 		/// </summary>
