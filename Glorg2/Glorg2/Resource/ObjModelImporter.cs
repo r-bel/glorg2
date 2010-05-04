@@ -48,7 +48,7 @@ namespace Glorg2.Resource
 				{
 					++count;
 					Tuple t = ind[i];
-					t.result = verts.Count + offset;
+					t.result = verts.Count;
 					unique.Add(t);
 					indices.Add((uint)t.result);
 					verts.Add(new VertexPositionTexCoordNormal()
@@ -145,9 +145,9 @@ namespace Glorg2.Resource
 					{
 						vi += Emit(pos, tex, nrm, indices, vi, ret);
 
-						pos.Clear();
-						tex.Clear();
-						nrm.Clear();
+						//pos.Clear();
+						//tex.Clear();
+						//nrm.Clear();
 						indices.Clear();
 					}
 					else if ((m = group.Match(ln)).Success)
