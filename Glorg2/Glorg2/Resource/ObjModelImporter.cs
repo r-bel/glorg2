@@ -152,7 +152,7 @@ namespace Glorg2.Resource
 					}
 					else if ((m = group.Match(ln)).Success)
 					{
-						Emit(null, null, null, indices, vi, ret);
+						vi += Emit(pos, tex, nrm, indices, vi, ret);
 						indices.Clear();
 					}
 					else if ((m = face.Match(ln)).Success)
@@ -179,10 +179,8 @@ namespace Glorg2.Resource
 					}
 				}
 
-				if (indices.Count > 0 && pos.Count > 0)
+				if (indices.Count > 0)
 					Emit(pos, tex, nrm, indices, vi, ret);
-				else if (indices.Count > 0)
-					Emit(null, null, null, indices, vi, ret);
 
 				
 				ret.VertexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
