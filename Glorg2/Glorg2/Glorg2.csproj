@@ -80,6 +80,7 @@
     <Compile Include="Graphics\MeshBuilders\BoxBuilder.cs" />
     <Compile Include="Graphics\MeshBuilders\CylinderBuilder.cs" />
     <Compile Include="Graphics\MeshBuilders\MeshBuilder.cs" />
+    <Compile Include="Graphics\MeshBuilders\SphereBuilder.cs" />
     <Compile Include="Graphics\Model.cs" />
     <Compile Include="Graphics\OpenGL\BufferObject.cs" />
     <Compile Include="Graphics\OpenGL\FrameBuffer.cs" />
