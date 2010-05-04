@@ -65,6 +65,8 @@ namespace Glorg2.Resource
 				Name = ""
 			};
 			part.IndexBuffer.Add(indices);
+			part.IndexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+			mod.Parts.Add(part);
 			mod.VertexBuffer.Add(verts);
 			return count;
 		}
