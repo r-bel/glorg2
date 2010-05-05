@@ -70,8 +70,8 @@ namespace Glorg2.Graphics
                     var v2 = vb[i2].Position;
                     var v3 = vb[i3].Position;
 
-                    var c1 = v1 - v2;
-                    var c2 = v1 - v3;
+                    var c1 = v2 - v1;
+                    var c2 = v3 - v1;
                     var cross = Vector3.Cross(c1, c2).Normalize();
                     norms[i1] += cross;
                     norms[i2] += cross;
