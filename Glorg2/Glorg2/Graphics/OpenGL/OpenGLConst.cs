@@ -5,6 +5,17 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL
 {
+    public enum Test : uint
+    {
+        Never = OpenGL.Const.GL_NEVER,
+        Less = OpenGL.Const.GL_LESS,
+        Equal = OpenGL.Const.GL_EQUAL,
+        LessOrEqual = OpenGL.Const.GL_LEQUAL,
+        Greater = OpenGL.Const.GL_GREATER,
+        NotEqual = OpenGL.Const.GL_NOTEQUAL,
+        GreaterOrEqual = OpenGL.Const.GL_GEQUAL,
+        Always = OpenGL.Const.GL_ALWAYS
+    }
 	public static partial class OpenGL
 	{
 		public static class Const

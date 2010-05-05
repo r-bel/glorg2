@@ -4,18 +4,29 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
-
+using Glorg2.Graphics.OpenGL;
 namespace Glorg2.Resource
 {
 	public class HdrImporter : ResourceImporter
 	{
 
 		private static Regex reg = new Regex(@"(?<YSign>\+|\-)Y\s*(?<YValue>[0-9]+)\s(?<XSign>\+|\-)X\s*(?<XValue>[0-9]+)", RegexOptions.Compiled);
+        internal static readonly Type[] supported_types = new Type[] { typeof(Texture), typeof(Texture2D) };
+        public override IEnumerable<Type> SupportedTypes
+        {
+            get { return supported_types; }
+        }
 
-		public override string FileDescriptor
+        public override string FileDescriptor
 		{
 			get { return "texture.hdr"; }
 		}
+
+        public override int Priority
+        {
+            get { return 50; }
+        }
+
 		public struct Rgbe
 		{
 			public byte red, green, blue, exp;

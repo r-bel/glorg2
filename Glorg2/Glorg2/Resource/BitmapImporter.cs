@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Glorg2.Graphics.OpenGL;
 
 namespace Glorg2.Resource
 {
@@ -10,8 +11,18 @@ namespace Glorg2.Resource
 
 		public override string FileDescriptor
 		{
-			get { return "texture2d"; }
+			get { return "texture"; }
 		}
+
+        public override IEnumerable<Type> SupportedTypes
+        {
+            get { return new Type[] { typeof(Texture), typeof(Texture2D)}; }
+        }
+
+        public override int Priority
+        {
+            get { return 100; }
+        }
 
 		public override T Import<T>(System.IO.Stream source, string source_name, ResourceManager man)
 		{

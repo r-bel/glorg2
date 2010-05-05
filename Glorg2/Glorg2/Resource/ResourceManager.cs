@@ -38,9 +38,9 @@ namespace Glorg2.Resource
 			return remove;
 		}
 
-		private System.IO.Stream GetStream(string res_name)
+		private System.IO.Stream GetStream(string res_name, string handler)
 		{
-			if (System.IO.File.Exists(res_name))
+			if (!string.IsNullOrEmpty(handler) && System.IO.File.Exists(res_name + handler))
 				return new System.IO.FileStream(res_name, System.IO.FileMode.Open, System.IO.FileAccess.Read);
 			else
 			{
@@ -48,7 +48,13 @@ namespace Glorg2.Resource
 			}
 		}
 
-		public T LoadResource<T>(string name)
+        public bool Load<T>(string name, out T ret)
+            where T : Resource
+        {
+            return Load<T>(name, "", out ret);
+        }
+
+		public bool Load<T>(string name, string handler, out T ret)
 			where T : Resource
 		{
 			var hash = Crc32.Hash(name);
@@ -58,7 +64,8 @@ namespace Glorg2.Resource
 				if (res.GetHashCode() == hash)
 				{
 					++res.Links;
-					return res as T;
+					ret = res as T;
+                    return true;
 				}
 			}
 
@@ -66,24 +73,32 @@ namespace Glorg2.Resource
 			if (index == 0)
 				throw new System.IO.IOException("Unknown filetype");
 
-			string desc = name.Substring(index + 1).ToLower();
-			foreach(var imp in importers)
-				if (imp.FileDescriptor == desc)
-				{
-					using (var stream = GetStream(name))
-					{
-						var res = imp.Import<T>(stream, name, this);
-                        res.handled = true;
-                        ++res.Links;
-						lock (resources)
-						{
-							resources.Add(res);
-						}
-						return res;
-					}
-				}
+			string desc = handler;
 
-			return default(T);
+            IEnumerable<ResourceImporter> imps;
+            if (string.IsNullOrEmpty(handler))
+                imps = from item in importers where item.SupportedTypes.Contains(typeof(T)) orderby item.Priority select item;
+            else
+                imps = from item in importers where item.FileDescriptor == handler orderby item.Priority select item;
+
+            foreach (var imp in imps)
+            {
+                using (var stream = GetStream(name, handler))
+                {
+                    var res = imp.Import<T>(stream, name, this);
+                    res.handled = true;
+                    ++res.Links;
+                    lock (resources)
+                    {
+                        resources.Add(res);
+                    }
+                    ret = res;
+                    return true;
+                }
+            }
+
+            ret = default(T);
+			return false;
 		}
 
 		internal void Dispose()

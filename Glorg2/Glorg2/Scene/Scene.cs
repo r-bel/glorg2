@@ -8,13 +8,13 @@ namespace Glorg2.Scene
 	[Serializable()]
 	public class Scene : IDisposable, IEnumerable<Node>
 	{
-		Node children;
+		WorldSpawn children;
 
 		[NonSerialized()]
 		internal List<Node> items;
 		[NonSerialized()]
 		private Game owner;
-        [NonSerialized()]
+        
 		internal NodeReference<Camera> camera;
 		[NonSerialized()]
 		private Resource.ResourceManager res;
@@ -47,7 +47,8 @@ namespace Glorg2.Scene
 			res = new Glorg2.Resource.ResourceManager();
 			items = new List<Node>();
 			camera = new NodeReference<Camera>();
-			children = new Node(this);
+			children = new WorldSpawn();
+            children.owner = this;
 			children.Name = "__WorldSpawn";
 		}
 		public Node ParentNode { get { return children; } }
