@@ -21,6 +21,17 @@ namespace Glorg2.Resource
 		{
 			get { return "model.obj"; }
 		}
+        internal static readonly Type[] supported_types = new Type[] { typeof(Model) };
+
+        public override IEnumerable<Type> SupportedTypes
+        {
+            get { return supported_types; }
+        }
+
+        public override int Priority
+        {
+            get { return 75; }
+        }
 
 		private List<VertexPositionTexCoordNormal> verts;
 		

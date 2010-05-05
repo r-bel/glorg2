@@ -12,6 +12,11 @@ namespace Glorg2.Resource
 		/// Example png|bmp|jpg|gif
 		/// </summary>
 		public abstract string FileDescriptor { get; }
+
+        public abstract IEnumerable<Type> SupportedTypes { get; }
+
+        public abstract int Priority { get; }
+
 		public abstract T Import<T>(System.IO.Stream source, string source_name, ResourceManager man)
 			where T : Resource;
 	}

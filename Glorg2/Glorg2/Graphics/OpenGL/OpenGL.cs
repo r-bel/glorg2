@@ -237,13 +237,17 @@ namespace Glorg2.Graphics.OpenGL
 		public static extern uint glGetError();
 		[DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glGetFloatv(uint pname, float[] parameters);
-		[DllImport(DllName, CallingConvention = CallConv)]
+        [DllImport(DllName, CallingConvention = CallConv)]
+        public static extern void glGetFloatv(uint pname, ref float parameters);
+        [DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glGetFloatv(uint pname, ref Matrix parameters);
 		[DllImport(DllName, CallingConvention = CallConv)]
 		public static unsafe extern void glGetFloatv(uint pname, float* parameters);
 		[DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glGetIntegerv(uint pname, int[] parameters);
-		[DllImport(DllName, CallingConvention = CallConv)]
+        [DllImport(DllName, CallingConvention = CallConv)]
+        public static extern void glGetIntegerv(uint pname, ref int parameters);
+        [DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glGetLightfv(uint light, uint pname, float[] parameters);
 		[DllImport(DllName, CallingConvention = CallConv)]
 		public static extern void glGetLightiv(uint light, uint pname, int[] parameters);

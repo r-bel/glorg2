@@ -19,11 +19,11 @@ namespace Glorg2.Graphics.MeshBuilders
 			Model ret = new Model();
 
 			VertexBuffer<VertexPositionTexCoordNormal> vb = new VertexBuffer<VertexPositionTexCoordNormal>(VertexPositionTexCoordNormal.Descriptor);
-			IndexBuffer<uint> ib = new IndexBuffer<uint>();
+			//IndexBuffer<uint> ib = new IndexBuffer<uint>();
 
 			float ang_inc = (float)(2 * Math.PI) / sides;
 			int vsides = sides / 2 - 2;
-			float ang = 0;
+            float ang = 0;
 			vb.Allocate(sides * (sides / 2 - 2) + 2);
 			int index = 0;
 			for (int i = 0; i < sides; i++, ang += ang_inc)
@@ -32,20 +32,20 @@ namespace Glorg2.Graphics.MeshBuilders
 				float ss = (float)Math.Sin(ang);
 				
 				float sang_inc = (float)Math.PI / vsides;
-				float sang = -((float)Math.PI / 2) + sang_inc;
+                float sang = -((float)Math.PI / 2) + sang_inc;
 				for (int j = 0; j < vsides; j++, sang += sang_inc, ++index)
 				{
 					float vcs = (float)Math.Cos(sang);
 					float vss = (float)Math.Sin(sang);
 					Vector3 pos = new Vector3(
-						cs * (radius * vcs),
+						cs * radius * vcs,
 						vss * radius,
-						ss * (radius * vss));
+						ss * radius * vss);
 					vb[index] = new VertexPositionTexCoordNormal()
 					{
 						Position = pos,
 						TexCoord = new Vector2(),
-						Normal = new Vector3(cs * vss, ss * vcs, vss * ss)
+						Normal = new Vector3(cs * vcs, vss, ss * vss)
 					};
 				}
 				vb[index] = new VertexPositionTexCoordNormal()
@@ -59,7 +59,8 @@ namespace Glorg2.Graphics.MeshBuilders
 					Normal = new Vector3(0, radius, 0)
 				};
 			}
-
+            ret.VertexBuffer = vb;
+            vb.BufferData(Glorg2.Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
 			return ret;
 		}
 	}
