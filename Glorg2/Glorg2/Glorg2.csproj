@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4E812102-5FE8-4F84-B320-BDF973A782D6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Glorg2</RootNamespace>
+    <AssemblyName>Glorg2</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="BoundingBox.cs" />
+    <Compile Include="BoundingCylinder.cs" />
+    <Compile Include="BoundingFrustum.cs" />
+    <Compile Include="BoundingSphere.cs" />
+    <Compile Include="CyclicRedundancy.cs" />
+    <Compile Include="DynamicLinking.cs" />
+    <Compile Include="Graphics\GraphicsDevice.cs" />
+    <Compile Include="Graphics\MeshBuilders\BoxBuilder.cs" />
+    <Compile Include="Graphics\MeshBuilders\CylinderBuilder.cs" />
+    <Compile Include="Graphics\MeshBuilders\MeshBuilder.cs" />
+    <Compile Include="Graphics\MeshBuilders\SphereBuilder.cs" />
+    <Compile Include="Graphics\Model.cs" />
+    <Compile Include="Graphics\OpenGL\BufferObject.cs" />
+    <Compile Include="Graphics\OpenGL\FrameBuffer.cs" />
+    <Compile Include="Graphics\OpenGL\Material.cs" />
+    <Compile Include="Graphics\OpenGL\OpenGL.cs" />
+    <Compile Include="Graphics\OpenGL\OpenGLConst.cs" />
+    <Compile Include="Graphics\OpenGL\OpenGLContext.cs" />
+    <Compile Include="Graphics\OpenGL\OpenGLExt.cs" />
+    <Compile Include="Graphics\OpenGL\PixelBuffer.cs" />
+    <Compile Include="Graphics\OpenGL\Primitives\Box.cs" />
+    <Compile Include="Graphics\OpenGL\Primitives\Primitive.cs" />
+    <Compile Include="Graphics\OpenGL\Primitives\PrimitiveRenderer.cs" />
+    <Compile Include="Graphics\OpenGL\RenderBuffer.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\Program.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\Shader.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\Uniform.cs" />
+    <Compile Include="Graphics\OpenGL\Shaders\UniformBase.cs" />
+    <Compile Include="Graphics\OpenGL\Texture.cs" />
+    <Compile Include="Graphics\OpenGL\WglContext.cs" />
+    <Compile Include="Graphics\OpenGL\glXContext.cs" />
+    <Compile Include="Half.cs" />
+    <Compile Include="IDeviceObject.cs" />
+    <Compile Include="Matrix.cs" />
+    <Compile Include="Physics\Integration.cs" />
+    <Compile Include="Physics\PhysicsEngine.cs" />
+    <Compile Include="Plane.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Quaternion.cs" />
+    <Compile Include="Ray.cs" />
+    <Compile Include="Resource\HdrImporter.cs" />
+    <Compile Include="Resource\Model3dsImporter.cs" />
+    <Compile Include="Resource\BitmapImporter.cs" />
+    <Compile Include="Resource\ModelMeshImporter.cs" />
+    <Compile Include="Resource\ObjModelImporter.cs" />
+    <Compile Include="Resource\Resource.cs" />
+    <Compile Include="Resource\ResourceImporter.cs" />
+    <Compile Include="Resource\ResourceManager.cs" />
+    <Compile Include="Resource\ResourceSpring.cs" />
+    <Compile Include="Scene\Camera.cs" />
+    <Compile Include="Scene\Light.cs" />
+    <Compile Include="Scene\Mesh.cs" />
+    <Compile Include="Scene\Node.cs" />
+    <Compile Include="Scene\NodeReference.cs" />
+    <Compile Include="Scene\Scene.cs" />
+    <Compile Include="Scene\WorldSpawn.cs" />
+    <Compile Include="SubStream.cs" />
+    <Compile Include="Vector.cs" />
+    <Compile Include="Graphics\Vertex.cs" />
+    <Compile Include="X11\API.cs" />
+    <Compile Include="X11\Functions.cs" />
+    <Compile Include="X11\Glx.cs" />
+    <Compile Include="X11\Structs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
