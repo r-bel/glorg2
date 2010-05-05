@@ -40,8 +40,9 @@ namespace Glorg2.Resource
 
 		private System.IO.Stream GetStream(string res_name, string handler)
 		{
-			if (!string.IsNullOrEmpty(handler) && System.IO.File.Exists(res_name + handler))
-				return new System.IO.FileStream(res_name, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            string fname = res_name + "." + handler;
+			if (System.IO.File.Exists(fname))
+				return new System.IO.FileStream(fname, System.IO.FileMode.Open, System.IO.FileAccess.Read);
 			else
 			{
 				return null;
@@ -51,7 +52,7 @@ namespace Glorg2.Resource
         public bool Load<T>(string name, out T ret)
             where T : Resource
         {
-            return Load<T>(name, "", out ret);
+            return Load<T>(name, null, out ret);
         }
 
 		public bool Load<T>(string name, string handler, out T ret)
@@ -83,17 +84,20 @@ namespace Glorg2.Resource
 
             foreach (var imp in imps)
             {
-                using (var stream = GetStream(name, handler))
+                using (var stream = GetStream(name, imp.FileDescriptor))
                 {
-                    var res = imp.Import<T>(stream, name, this);
-                    res.handled = true;
-                    ++res.Links;
-                    lock (resources)
+                    if (stream != null)
                     {
-                        resources.Add(res);
+                        var res = imp.Import<T>(stream, name, this);
+                        res.handled = true;
+                        ++res.Links;
+                        lock (resources)
+                        {
+                            resources.Add(res);
+                        }
+                        ret = res;
+                        return true;
                     }
-                    ret = res;
-                    return true;
                 }
             }
 

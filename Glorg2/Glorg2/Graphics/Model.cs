@@ -53,5 +53,40 @@ namespace Glorg2.Graphics
 		}
 
 		#endregion
-	}
+
+        public void GenerateNormals()
+        {
+            Vector3[] norms = new Vector3[vb.Count];
+            int[] count = new int[vb.Count];
+
+            foreach (var p in parts)
+            {
+                for (int i = 0; i < p.IndexBuffer.Count; i += 3)
+                {
+                    int i1= (int)p.IndexBuffer[i];
+                    int i2= (int)p.IndexBuffer[i + 1];
+                    int i3= (int)p.IndexBuffer[i + 2];
+                    var v1 = vb[i1].Position;
+                    var v2 = vb[i2].Position;
+                    var v3 = vb[i3].Position;
+
+                    var c1 = v1 - v2;
+                    var c2 = v1 - v3;
+                    var cross = Vector3.Cross(c1, c2).Normalize();
+                    norms[i1] += cross;
+                    norms[i2] += cross;
+                    norms[i3] += cross;
+                    ++count[i1];
+                    ++count[i2];
+                    ++count[i3];
+                }
+            }
+            for (int i = 0; i < norms.Length; i++)
+            {
+                VertexPositionTexCoordNormal n = vb[i];
+                n.Normal = norms[i] / count[i];
+                vb[i] = n;
+            }
+        }
+    }
 }

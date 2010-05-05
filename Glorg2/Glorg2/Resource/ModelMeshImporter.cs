@@ -16,6 +16,13 @@ namespace Glorg2.Resource
 			public int size;
 		}
 
+        private static readonly Type[] supported_types = new Type[] { typeof(Glorg2.Graphics.Model) };
+
+        public override IEnumerable<Type> SupportedTypes
+        {
+            get { return supported_types; }
+        }
+
 		public override string FileDescriptor
 		{
 			get { return "model.mesh"; }
@@ -29,6 +36,12 @@ namespace Glorg2.Resource
 				size = rd.ReadInt32()
 			};
 		}
+
+        public override int Priority
+        {
+            get { return 100; }
+        }
+
 		public override T Import<T>(System.IO.Stream source, string source_name, ResourceManager man)
 		{
 			Glorg2.Graphics.Model ret = new Graphics.Model();

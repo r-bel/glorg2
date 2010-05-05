@@ -16,7 +16,7 @@ namespace Glorg2.Resource
 		private static readonly Regex mtl_entry = new Regex(@"^usemtl\s+(?<Name>.*)", RegexOptions.Compiled);
 		private static readonly Regex obj = new Regex(@"^o\s+(?<Name>.*)", RegexOptions.Compiled);
 		private static readonly Regex group = new Regex(@"^g\s+(?<Name>.*)", RegexOptions.Compiled);
-		private static readonly Regex face = new Regex(@"^f\s*(?<A1>\d+)/(?<A2>\d+)/(?<A3>\d+)\s+(?<B1>\d+)/(?<B2>\d+)/(?<B3>\d+)\s+(?<C1>\d+)/(?<C2>\d+)/(?<C3>\d+)", RegexOptions.Compiled);
+		private static readonly Regex face = new Regex(@"^f\s*(?<A1>\d+)/(?<A2>\d+)/(?<A3>\d+)\s+(?<B1>\d*)/(?<B2>\d+)/(?<B3>\d+)\s+(?<C1>\d+)/(?<C2>\d+)/(?<C3>\d+)", RegexOptions.Compiled);
 		public override string FileDescriptor
 		{
 			get { return "model.obj"; }
