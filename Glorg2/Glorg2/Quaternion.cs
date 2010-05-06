@@ -130,12 +130,13 @@ namespace Glorg2
         }
         public static Quaternion FromAxisAngle(float angle, Vector3 axis)
         {
+			float s = (float)Math.Sin(angle / 2);
             return new Quaternion()
             {
                 w = (float)Math.Cos(angle / 2),
-                x = axis.x * (float)Math.Sin(angle / 2),
-                y = axis.y * (float)Math.Sin(angle / 2),
-                z = axis.z * (float)Math.Sin(angle / 2)
+                x = axis.x * s,
+                y = axis.y * s,
+                z = axis.z * s
             };
 
         }
