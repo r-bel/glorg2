@@ -74,6 +74,7 @@
     <Compile Include="BoundingCylinder.cs" />
     <Compile Include="BoundingFrustum.cs" />
     <Compile Include="BoundingSphere.cs" />
+    <Compile Include="Colors.cs" />
     <Compile Include="CyclicRedundancy.cs" />
     <Compile Include="DynamicLinking.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />

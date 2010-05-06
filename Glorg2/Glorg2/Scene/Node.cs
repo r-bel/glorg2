@@ -173,10 +173,6 @@ namespace Glorg2.Scene
 			
 		}
 
-		protected void EulerIntegrate()
-		{
-		}
-
 		public Node(Scene owner)
 			: this()
 		{
