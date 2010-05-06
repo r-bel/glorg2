@@ -24,10 +24,6 @@ namespace Glorg2
 			return FromArgb(color.R, color.G, color.B, color.A);
 		}
 
-		public static Vector3 FromHSL(float hue, float saturation, float lightness)
-		{
-		}
-
 		public static readonly Vector4 AliceBlue = FromArgb(0xfff0f8ff);
   	  	public static readonly Vector4 AntiqueWhite = FromArgb(0xfffaebd7);
   	  	public static readonly Vector4 Aqua = FromArgb(0xff00ffff);
