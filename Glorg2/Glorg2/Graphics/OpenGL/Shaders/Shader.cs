@@ -11,29 +11,37 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// <seealso cref="VertexShader"/>
 	/// <seealso cref="FragmentShader"/>
 	/// <seealso cref="GeometryShader"/>
-	public abstract class Shader : IDisposable
+	public abstract class Shader : Resource.Resource
 	{
 		private uint handle;
 		private string source;
-		private Program parent;
+		internal Program parent;
+		private bool is_compiled;
 
 		public uint Handle { get { return handle; } }
 		public string Source { get { return source; } }
 		public Program Program { get { return parent; } }
 
 		protected Shader(string source, uint type, Program parent)
+			: this(source, type)
+		{
+			this.parent = parent;
+			parent.shaders.Add(this);
+		}
+		internal Shader(string source, uint type)
 		{
 			this.source = source;
 			handle = OpenGL.glCreateShaderObjectARB(type);
 			OpenGL.glShaderSourceARB(handle, 1, new string[] { source }, new int[] { source.Length });
-			this.parent = parent;
-			parent.shaders.Add(this);
 		}
 
 		internal void Compile()
 		{
-			OpenGL.glCompileShaderARB(handle);
-			OpenGL.glAttachObjectARB(parent.Handle, handle);
+			if (!is_compiled)
+			{
+				OpenGL.glCompileShaderARB(handle);
+				is_compiled = true;
+			}
 		}
 
 		protected void Cleanup()
@@ -41,7 +49,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			OpenGL.glDeleteObjectARB(handle);
 		}
 
-		public void Dispose()
+		public override void  DoDispose()
 		{
 			Cleanup();
 			GC.SuppressFinalize(this);
@@ -56,6 +64,10 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// </summary>
 	public class VertexShader : Shader
 	{
+		internal VertexShader(string source)
+			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB)
+		{
+		}
 		public VertexShader(string source, Program parent)
 			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB, parent)
 		{
@@ -71,6 +83,10 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER_ARB, parent)
 		{
 		}
+		internal FragmentShader(string source)
+			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER_ARB)
+		{
+		}
 	}
 	/// <summary>
 	/// Represents a geometry shader
@@ -79,6 +95,10 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	{
 		public GeometryShader(string source, Program parent)
 			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER_ARB, parent)
+		{
+		}
+		internal GeometryShader(string source)
+			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER_ARB)
 		{
 		}
 	}

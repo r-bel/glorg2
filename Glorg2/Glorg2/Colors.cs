@@ -9,9 +9,9 @@ namespace Glorg2
 	{
 		public static Vector4 FromArgb(uint color)
 		{
-			byte a = (byte)(color & 0xff000000 >> 24);
-			byte r = (byte)(color & 0x00ff0000 >> 16);
-			byte g = (byte)(color & 0x0000ff00 >> 8);
+			byte a = (byte)((color & 0xff000000) >> 24);
+			byte r = (byte)((color & 0x00ff0000) >> 16);
+			byte g = (byte)((color & 0x0000ff00) >> 8);
 			byte b = (byte)(color & 0x000000ff);
 			return FromArgb(r, g, b, a);
 		}
@@ -22,6 +22,10 @@ namespace Glorg2
 		public static Vector4 FromArgb(System.Drawing.Color color)
 		{
 			return FromArgb(color.R, color.G, color.B, color.A);
+		}
+
+		public static Vector3 FromHSL(float hue, float saturation, float lightness)
+		{
 		}
 
 		public static readonly Vector4 AliceBlue = FromArgb(0xfff0f8ff);
