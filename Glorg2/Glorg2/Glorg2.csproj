@@ -74,9 +74,11 @@
     <Compile Include="BoundingCylinder.cs" />
     <Compile Include="BoundingFrustum.cs" />
     <Compile Include="BoundingSphere.cs" />
+    <Compile Include="Colors.cs" />
     <Compile Include="CyclicRedundancy.cs" />
     <Compile Include="DynamicLinking.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
+    <Compile Include="Graphics\Material.cs" />
     <Compile Include="Graphics\MeshBuilders\BoxBuilder.cs" />
     <Compile Include="Graphics\MeshBuilders\CylinderBuilder.cs" />
     <Compile Include="Graphics\MeshBuilders\MeshBuilder.cs" />
@@ -84,7 +86,6 @@
     <Compile Include="Graphics\Model.cs" />
     <Compile Include="Graphics\OpenGL\BufferObject.cs" />
     <Compile Include="Graphics\OpenGL\FrameBuffer.cs" />
-    <Compile Include="Graphics\OpenGL\Material.cs" />
     <Compile Include="Graphics\OpenGL\OpenGL.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLConst.cs" />
     <Compile Include="Graphics\OpenGL\OpenGLContext.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Graphics\OpenGL\glXContext.cs" />
     <Compile Include="Half.cs" />
     <Compile Include="IDeviceObject.cs" />
+    <Compile Include="Math.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Physics\Integration.cs" />
     <Compile Include="Physics\PhysicsEngine.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Resource\ResourceImporter.cs" />
     <Compile Include="Resource\ResourceManager.cs" />
     <Compile Include="Resource\ResourceSpring.cs" />
+    <Compile Include="Resource\VertexShaderImporter.cs" />
     <Compile Include="Scene\Camera.cs" />
     <Compile Include="Scene\Light.cs" />
     <Compile Include="Scene\Mesh.cs" />

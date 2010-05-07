@@ -39,10 +39,8 @@ namespace Glorg2.Scene
 					dev.SetIndexBuffer(part.IndexBuffer);
 					dev.Draw(Graphics.DrawMode.Triangles);
 				}
-				//dev.Draw(Graphics.DrawMode.LineLoop);
 				dev.SetIndexBuffer(null);
 				dev.SetVertexBuffer(null);
-				//dev.Draw(Graphics.DrawMode.Points);
 			}
 
 			base.Render(time, dev);

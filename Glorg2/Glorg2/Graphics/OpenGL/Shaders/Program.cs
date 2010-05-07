@@ -21,6 +21,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		}
 		public void MakeNonCurrent()
 		{
+			OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, 0);
 		}
 
 		public Uniform GetUniform(string name)
@@ -48,6 +49,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			foreach (var shader in shaders)
 			{
 				shader.Compile();
+				OpenGL.glAttachObjectARB(handle, shader.Handle);
 			}
 			OpenGL.glLinkProgramARB(handle);
 			err = OpenGL.glGetError();
@@ -71,13 +73,18 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 
 		protected void Cleanup()
 		{
+			foreach (var sh in shaders)
+			{
+				sh.Dispose();
+			}
+			shaders.Clear();
 			OpenGL.glDeleteObjectARB(handle);
 		}
 
 		/// <summary>
 		/// Disposes all unmanaged resources.
 		/// </summary>
-		public void Dispose()
+		public override void  DoDispose()
 		{
 			Cleanup();
 			GC.SuppressFinalize(this);

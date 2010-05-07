@@ -9,7 +9,7 @@ namespace Glorg2.Graphics
 	public sealed class ModelPart
 	{
 		OpenGL.IndexBuffer<uint> ib;
-		OpenGL.Material material;
+		Material material;
 		int vertex_start;
 		int vertex_count;
 		string name;
@@ -18,7 +18,7 @@ namespace Glorg2.Graphics
 		public int VertexCount { get { return vertex_count; } set { vertex_count = value; } }
 		public string Name { get { return name; } set { name = value; } }
 
-		public OpenGL.Material Material { get { return material; } set { material = value; } }
+		public Material Material { get { return material; } set { material = value; } }
 		public OpenGL.IndexBuffer<uint> IndexBuffer { get { return ib; } set { ib = value; } }
 	}
 

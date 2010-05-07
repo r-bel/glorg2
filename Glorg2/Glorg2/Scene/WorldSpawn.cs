@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Glorg2.Scene
 {
+	[Serializable()]
     public class WorldSpawn : Node
     {
         string title;
