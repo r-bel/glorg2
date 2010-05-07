@@ -15,6 +15,13 @@ namespace Glorg2.Resource
     /// Based on documentation by Jim Pitts ( email: jim@micronetics.com )
     /// Source update provided by: 
     /// Albert Szilvasy (email: szilvasy@almos.vein.hu )
+    /// 
+    /// Also
+    /// 3D Studio File Format Information
+    /// by Jochen Wilhelmy
+    /// a.k.a.
+    /// digisnap
+    /// digisnap@cs.tu-berlin.de
     /// </summary>
 	public class Model3dsImporter : ResourceImporter
 	{
