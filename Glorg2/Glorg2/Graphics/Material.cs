@@ -10,12 +10,16 @@ namespace Glorg2.Graphics
 {
 	public class Material : Resource.Resource
 	{
-		List<UniformBase> uniforms;
+		internal List<UniformBase> uniforms;
 
 		Program shader;
-		public List<UniformBase> Entries;
+		public List<UniformBase> Entries { get { return uniforms; } }
 		public Program Shader { get { return shader; } set { shader = value; } }
+		public Material()
+		{
+			uniforms = new List<UniformBase>();
 
+		}
 		
 	}
 }
