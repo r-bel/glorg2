@@ -13,22 +13,44 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		private uint handle;
 		internal List<Shader> shaders;
 		public uint Handle { get { return handle; } }
+		/// <summary>
+		/// Shaders linked to this program
+		/// </summary>
 		public System.Collections.ObjectModel.ReadOnlyCollection<Shader> Shaders { get { return shaders.AsReadOnly(); } }
 
+		/// <summary>
+		/// Makes this program current
+		/// </summary>
 		public void MakeCurrent()
 		{
-			OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, handle);
+			//OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, handle);
+			OpenGL.glUseProgramObjectARB(handle);
 		}
+		/// <summary>
+		/// Makes no program current
+		/// </summary>
 		public void MakeNonCurrent()
 		{
-			OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, 0);
+			//OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, 0);
+			OpenGL.glUseProgramObjectARB(0);
 		}
-
+		/// <summary>
+		/// Retrieves a standard uniform
+		/// </summary>
+		/// <param name="name">Uniform name</param>
+		/// <returns></returns>
 		public Uniform GetUniform(string name)
 		{
 			return new Uniform(OpenGL.glGetUniformLocationARB(handle, name));
 		}
 
+		/// <summary>
+		/// Retrieves the named uniform of type T with subtype S
+		/// </summary>
+		/// <typeparam name="T">Uniform type</typeparam>
+		/// <typeparam name="S">Data type (float, Vector3 etc.)</typeparam>
+		/// <param name="name">Uniform name</param>
+		/// <returns></returns>
 		public T GetUniformType<T, S>(string name)
 			where T : UniformBaseType<S>, new()
 		{
@@ -56,6 +78,10 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			return err == 0;			
 		}
 
+		/// <summary>
+		/// Retrievs the compile log for this shader
+		/// </summary>
+		/// <returns></returns>
 		public string GetCompileLog()
 		{
 			byte[] val = new byte[8192];
@@ -70,7 +96,9 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			shaders = new List<Shader>();
 			handle = OpenGL.glCreateProgramObjectARB();
 		}
-
+		/// <summary>
+		/// Cleans up unmanaged resources.
+		/// </summary>
 		protected void Cleanup()
 		{
 			foreach (var sh in shaders)

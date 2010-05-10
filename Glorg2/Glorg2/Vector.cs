@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Glorg2.Graphics;
 using Glorg2.Graphics.OpenGL;
+
 
 namespace Glorg2
 {
@@ -31,7 +33,50 @@ namespace Glorg2
         {
             return new Vector2(Math.Abs(x), Math.Abs(y));
         }
+		internal static readonly string float_reg = @"(-?[0-9]((\.|,)[0-9]+)?)|(-?(\.|,)[0-9]+)";
+		private static readonly Regex vec2_reg = new Regex(string.Format(@"\{\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*\}", float_reg));
 
+		public static Vector2 Parse(string input, System.IFormatProvider prov)
+		{
+			var m = vec2_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			Vector2 ret = new Vector2();
+			ret.x = float.Parse(x, prov);
+			ret.y = float.Parse(y, prov);
+			return ret;
+		}
+		public static Vector2 Parse(string input)
+		{
+			var m = vec2_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			Vector2 ret = new Vector2();
+			ret.x = float.Parse(x);
+			ret.y = float.Parse(y);
+			return ret;
+
+		}
+		public static bool TryParse(string input, System.Globalization.NumberStyles styles, IFormatProvider prov, out Vector2 ret)
+		{
+			var m = vec2_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			ret = new Vector2();
+			if (float.TryParse(x, styles, prov, out ret.x))
+				return float.TryParse(y, styles, prov, out ret.y);
+			else return false;
+		}
+		public static bool TryParse(string input, out Vector2 ret)
+		{
+			var m = vec2_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			ret = new Vector2();
+			if (float.TryParse(x, out ret.x))
+				return float.TryParse(y, out ret.y);
+			else return false;
+		}
 
 		public float Length
 		{
@@ -138,6 +183,60 @@ namespace Glorg2
         {
             return new Vector3(Math.Abs(x), Math.Abs(y), Math.Abs(z));
         }
+		private static readonly Regex vec_reg = new Regex(string.Format(@"\{\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*\,\s*(?<Z>{0})\s*\}", Vector2.float_reg));
+
+		public static Vector3 Parse(string input, System.IFormatProvider prov)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			Vector3 ret = new Vector3();
+			ret.x = float.Parse(x, prov);
+			ret.y = float.Parse(y, prov);
+			ret.z = float.Parse(z, prov);
+			return ret;
+		}
+		public static Vector3 Parse(string input)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			Vector3 ret = new Vector3();
+			ret.x = float.Parse(x);
+			ret.y = float.Parse(y);
+			ret.z = float.Parse(z);
+			return ret;
+
+		}
+		public static bool TryParse(string input, System.Globalization.NumberStyles styles, IFormatProvider prov, out Vector3 ret)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			ret = new Vector3();
+			if (float.TryParse(x, styles, prov, out ret.x))
+				if (float.TryParse(y, styles, prov, out ret.y))
+					return float.TryParse(z, styles, prov, out ret.z);
+				else return false;
+			else return false;
+		}
+		public static bool TryParse(string input, out Vector3 ret)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			ret = new Vector3();
+			if (float.TryParse(x, out ret.x))
+				if (float.TryParse(y, out ret.y))
+					return float.TryParse(z, out ret.z);
+				else return false;
+			else return false;
+		}
+
 
 		public override int GetHashCode()
 		{
@@ -282,7 +381,67 @@ namespace Glorg2
         {
             return new Vector4(Math.Abs(x), Math.Abs(y), Math.Abs(z), Math.Abs(w));
         }
-
+		private static readonly Regex vec_reg = new Regex(string.Format(@"\{\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*\,\s*(?<Z>{0})\s*\,\s*(?<W>{0})\s*\}", Vector2.float_reg));
+		public static Vector4 Parse(string input, System.IFormatProvider prov)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			var w = m.Groups["W"].Value;
+			Vector4 ret = new Vector4();
+			ret.x = float.Parse(x, prov);
+			ret.y = float.Parse(y, prov);
+			ret.z = float.Parse(z, prov);
+			ret.w = float.Parse(w, prov);
+			return ret;
+		}
+		public static Vector4 Parse(string input)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			var w = m.Groups["W"].Value;
+			Vector4 ret = new Vector4();
+			ret.x = float.Parse(x);
+			ret.y = float.Parse(y);
+			ret.z = float.Parse(z);
+			ret.w = float.Parse(w);
+			return ret;
+		}
+		public static bool TryParse(string input, System.Globalization.NumberStyles styles, IFormatProvider prov, out Vector4 ret)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			var w = m.Groups["W"].Value;
+			ret = new Vector4();
+			if (float.TryParse(x, styles, prov, out ret.x))
+				if (float.TryParse(y, styles, prov, out ret.y))
+					if (float.TryParse(z, styles, prov, out ret.z))
+						return float.TryParse(w, styles, prov, out ret.w);
+					else return false;
+				else return false;
+			else return false;
+		}
+		public static bool TryParse(string input, out Vector4 ret)
+		{
+			var m = vec_reg.Match(input);
+			var x = m.Groups["X"].Value;
+			var y = m.Groups["Y"].Value;
+			var z = m.Groups["Z"].Value;
+			var w = m.Groups["W"].Value;
+			ret = new Vector4();
+			if (float.TryParse(x, out ret.x))
+				if (float.TryParse(y, out ret.y))
+					if (float.TryParse(z, out ret.z))
+						return float.TryParse(w, out ret.w);
+					else return false;
+				else return false;
+			else return false;
+		}
 
 		public float Length
 		{
