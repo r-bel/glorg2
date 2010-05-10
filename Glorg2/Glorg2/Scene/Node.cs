@@ -17,7 +17,9 @@ namespace Glorg2.Scene
 		private float sim_time;
 
 		LinkedList<Node> children;
-		
+		// Object is marked for deletion
+		internal bool delete;
+
 		[NonSerialized()]
 		Node parent;
 
