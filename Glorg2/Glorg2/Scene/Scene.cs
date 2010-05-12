@@ -14,7 +14,13 @@ namespace Glorg2.Scene
 		internal List<Node> items;
 		[NonSerialized()]
 		private Game owner;
-        
+
+		[NonSerialized()]
+		internal LinkedList<IRenderable> renderables;
+
+		[NonSerialized()]
+		internal LinkedList<Physics.IPhysicsObject> physics;
+
 		internal NodeReference<Camera> camera;
 		[NonSerialized()]
 		private Resource.ResourceManager res;
@@ -31,7 +37,6 @@ namespace Glorg2.Scene
 		public Vector3 gravity;
 		public Vector3 Gravity { get { return gravity; } set { gravity = value; } }
 
-
 		public Resource.ResourceManager Resources { get { return res; } }
 
 		public Camera Camera { get { return camera.Value; } set { camera.Value = value; } }
@@ -44,6 +49,8 @@ namespace Glorg2.Scene
 		}
 		public Scene()
 		{
+			renderables = new LinkedList<IRenderable>();
+			physics = new LinkedList<Physics.IPhysicsObject>();
 			res = new Glorg2.Resource.ResourceManager();
 			items = new List<Node>();
 			camera = new NodeReference<Camera>();
@@ -68,6 +75,12 @@ namespace Glorg2.Scene
 		{
 			AddItem(children);
 			InitNode(children);
+			foreach (var n in items)
+			{
+				var rend = n as IRenderable;
+				if (rend != null)
+					renderables.AddLast(rend);
+			}
 		}
 
 		private void AddItem(Node n)
@@ -141,7 +154,14 @@ namespace Glorg2.Scene
 		}
 		protected void InitNode(Node n)
 		{
-			owner.GraphicInvoke(() => { n.InitializeGraphics(); n.graphics_initialized = true; });
+
+			var rend = n as IRenderable;
+			if (rend != null && !n.graphics_initialized)
+			{
+				n.graphics_initialized = true;
+				owner.GraphicInvoke(new Action(rend.InitializeGraphics));
+			}
+			
 			n.InternalPostSerialize();
 			foreach (var node in n.Children)
 			{
@@ -163,6 +183,7 @@ namespace Glorg2.Scene
 		}
 		public void Dispose()
 		{
+			renderables.Clear();
 			children.Dispose();
 		}
 

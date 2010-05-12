@@ -88,7 +88,7 @@ namespace Glorg2.Resource
 							switch (t)
 							{
 								case "float":
-									if((uni = prog.GetUniformType<ScalarFloatUniform, float>(name)) != null);
+									if((uni = prog.GetUniformType<ScalarFloatUniform, float>(name)) != null)
 										(uni as ScalarFloatUniform).val = float.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
 									break;
 								case "int":
@@ -107,7 +107,10 @@ namespace Glorg2.Resource
 									break;
 								case "texture2d":
 									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null)
-										man.Load(name, out (uni as TextureUniform).val);
+									{
+										var src = node.Attributes["source"].Value;
+										man.Load(src, out (uni as TextureUniform).val);
+									}
 									break;
 							}
 							if (uni != null)

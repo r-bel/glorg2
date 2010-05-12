@@ -165,26 +165,11 @@ namespace Glorg2.Scene
 			return new Vector4();
 		}
 
-		protected internal virtual void InitializeGraphics()
-		{
-
-		}
-
 		public virtual void DoDispose()
 		{
 			
 		}
 
-		public Node(Scene owner)
-			: this()
-		{
-			this.owner = owner;
-			if (owner.Owner != null)
-			{
-                graphics_initialized = true;
-                owner.Owner.GraphicInvoke(new Action(InitializeGraphics));
-			}
-		}
 		public Node()
 		{
             up = Vector3.Up;
@@ -211,11 +196,6 @@ namespace Glorg2.Scene
 			}
 			interp = accumulator / dt;
 		}
-		internal void InternalInitGraphics()
-		{
-			InitializeGraphics();
-			graphics_initialized = true;
-		}
 		public virtual void InternalProcess(float time)
 		{
             Process(time);
@@ -235,8 +215,12 @@ namespace Glorg2.Scene
 						{
 							if (child.parent == this)
 								child.parent = null;
+							var rend = child as IRenderable;
+							if (rend != null)
+								lock (owner.renderables)
+									owner.renderables.Remove(rend);
 							children.Remove(child);
-							owner.items.Add(child);
+							owner.items.Remove(child);
 						}
 					}
 				}
@@ -254,31 +238,25 @@ namespace Glorg2.Scene
 							if (child.parent != this)
 								child.parent = this;
 							children.AddLast(child);
-							//if (!child.graphics_initialized)
-								//owner.Owner.GraphicInvoke(new Action(child.InternalInitGraphics));
+							var rend = child as IRenderable;
+							if (rend != null)
+								lock (owner.renderables)
+									owner.renderables.AddLast(rend);
 							owner.items.Add(child);
 						}
-						
 					}
 				}
-				
 				add_children.Clear();
 			}
 			
 		}
 
-		protected virtual void Render(float time, Graphics.GraphicsDevice dev)
-		{
-		}
-
-
-		protected internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
+		internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
 		{
 			dev.ModelviewMatrix = absolute_transform;
-			if(graphics_initialized)
-				Render(time, dev);
-			foreach (var child in children)
-					child.InternalRender(time, dev);
+			var r = this as IRenderable;
+			if(graphics_initialized && r != null)
+				r.Render(time, dev);
 		}
 
 		public IEnumerable<Node> Find(Predicate<Node> pred)
@@ -333,10 +311,11 @@ namespace Glorg2.Scene
 		/// <remarks>This is not a synchronous function. Children will be added on the next oppurtunity.</remarks>
 		public void Add(Node child)
 		{
-            if (!child.graphics_initialized)
+			var rend = child as IRenderable;
+            if (!child.graphics_initialized && rend != null)
             {
                 child.graphics_initialized = true;
-                owner.Owner.GraphicInvoke(new Action(child.InitializeGraphics));
+                owner.Owner.GraphicInvoke(new Action(rend.InitializeGraphics));
             }
 			add_children.Add(child);
             child.owner = owner;
@@ -459,10 +438,5 @@ namespace Glorg2.Scene
 					hash_code = 0;
 			} 
 		}
-
-
-
-
 	}
-
 }

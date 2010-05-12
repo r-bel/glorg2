@@ -6,19 +6,18 @@ using System.Text;
 namespace Glorg2.Scene
 {
 	[Serializable()]
-	public class Mesh : Node
+	public class Mesh : Node, IRenderable
 	{
 		[NonSerialized()]
 		protected Graphics.Model model;
 
 		public Graphics.Model Model { get { return model; } set { model = value; } }
 
-		public Mesh()
+		public virtual void InitializeGraphics()
 		{
 		}
 
-		public Mesh(Scene owner)
-			: base(owner)
+		public Mesh()
 		{
 		}
 
@@ -29,7 +28,7 @@ namespace Glorg2.Scene
 		}
 		
 
-		protected override void Render(float time, Graphics.GraphicsDevice dev)
+		public virtual void Render(float time, Graphics.GraphicsDevice dev)
 		{
 			if (model != null)
 			{
@@ -42,8 +41,6 @@ namespace Glorg2.Scene
 				dev.SetIndexBuffer(null);
 				dev.SetVertexBuffer(null);
 			}
-
-			base.Render(time, dev);
 		}
 
 
