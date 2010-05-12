@@ -10,15 +10,19 @@ namespace Glorg2.Graphics
 {
 	public class Material : Resource.Resource
 	{
+		internal Material reference;
 		internal List<UniformBase> uniforms;
-
 		Program shader;
 		public List<UniformBase> Entries { get { return uniforms; } }
 		public Program Shader { get { return shader; } set { shader = value; } }
 		public Material()
 		{
 			uniforms = new List<UniformBase>();
-
+		}
+		public override void DoDispose()
+		{
+			shader.Dispose();
+			uniforms.Clear();
 		}
 		
 	}

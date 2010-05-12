@@ -273,8 +273,7 @@ namespace Glorg2
 				old_time = new_time;
 				Glorg2.Scene.Light.DisableAllLights();
 			}
-			/*while (!scene_disposed)
-				System.Threading.Thread.Sleep(0);*/
+
 			scene.Dispose();
 			CleanupResources();
 			GraphicsClosing();
@@ -289,7 +288,12 @@ namespace Glorg2
 
 			if (scene.Camera != null)
 				dev.ProjectionMatrix = scene.Camera.GetProjectionMatrix();
-			scene.ParentNode.InternalRender(frame_time, dev);			
+
+			lock (scene.renderables)
+			{
+				foreach (var n in scene.renderables)
+					(n as Scene.Node).InternalRender(frame_time, dev);
+			}
 			dev.Present();
 		}
 	}

@@ -39,15 +39,6 @@ namespace Glorg2.Scene
 			enabled = true;
 		}
 
-		public Light(Scene owner)
-			: base(owner)
-		{
-			intensity = 1f;
-			diffuse = new Vector4(1, 1, 1, 1);
-			specular = new Vector4(1, 1, 1, 1);
-			enabled = true;
-		}
-
 		internal static void DisableAllLights()
 		{
 			for (int i = 0; i < lights; i++)
