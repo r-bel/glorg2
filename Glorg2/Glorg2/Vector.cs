@@ -33,12 +33,12 @@ namespace Glorg2
         {
             return new Vector2(Math.Abs(x), Math.Abs(y));
         }
-		internal static readonly string float_reg = @"(-?[0-9]((\.|,)[0-9]+)?)|(-?(\.|,)[0-9]+)";
-		private static readonly Regex vec2_reg = new Regex(string.Format(@"\{\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*\}", float_reg));
+		internal static readonly string float_reg = @"-?([0-9]*\.[0-9]+)|([0-9]+(\.[0-9]+))";
+		private static readonly Regex vec_reg = new Regex("{" + string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*", float_reg) + "}");
 
 		public static Vector2 Parse(string input, System.IFormatProvider prov)
 		{
-			var m = vec2_reg.Match(input);
+			var m = vec_reg.Match(input);
 			var x = m.Groups["X"].Value;
 			var y = m.Groups["Y"].Value;
 			Vector2 ret = new Vector2();
@@ -48,7 +48,7 @@ namespace Glorg2
 		}
 		public static Vector2 Parse(string input)
 		{
-			var m = vec2_reg.Match(input);
+			var m = vec_reg.Match(input);
 			var x = m.Groups["X"].Value;
 			var y = m.Groups["Y"].Value;
 			Vector2 ret = new Vector2();
@@ -59,7 +59,7 @@ namespace Glorg2
 		}
 		public static bool TryParse(string input, System.Globalization.NumberStyles styles, IFormatProvider prov, out Vector2 ret)
 		{
-			var m = vec2_reg.Match(input);
+			var m = vec_reg.Match(input);
 			var x = m.Groups["X"].Value;
 			var y = m.Groups["Y"].Value;
 			ret = new Vector2();
@@ -69,7 +69,7 @@ namespace Glorg2
 		}
 		public static bool TryParse(string input, out Vector2 ret)
 		{
-			var m = vec2_reg.Match(input);
+			var m = vec_reg.Match(input);
 			var x = m.Groups["X"].Value;
 			var y = m.Groups["Y"].Value;
 			ret = new Vector2();
@@ -183,7 +183,7 @@ namespace Glorg2
         {
             return new Vector3(Math.Abs(x), Math.Abs(y), Math.Abs(z));
         }
-		private static readonly Regex vec_reg = new Regex(string.Format(@"\{\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*\,\s*(?<Z>{0})\s*\}", Vector2.float_reg));
+		private static readonly Regex vec_reg = new Regex("{" + string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*,\s*(?<Z>{0})\s*", Vector2.float_reg) + "}");
 
 		public static Vector3 Parse(string input, System.IFormatProvider prov)
 		{
@@ -381,7 +381,7 @@ namespace Glorg2
         {
             return new Vector4(Math.Abs(x), Math.Abs(y), Math.Abs(z), Math.Abs(w));
         }
-		private static readonly Regex vec_reg = new Regex(string.Format(@"\{\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*\,\s*(?<Z>{0})\s*\,\s*(?<W>{0})\s*\}", Vector2.float_reg));
+		private static readonly Regex vec_reg = new Regex("{" + string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*,\s*(?<Z>{0})\s*,\s*(?<W>{0})\s*", Vector2.float_reg) + "}");
 		public static Vector4 Parse(string input, System.IFormatProvider prov)
 		{
 			var m = vec_reg.Match(input);
