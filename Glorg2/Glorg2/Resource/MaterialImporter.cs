@@ -107,10 +107,7 @@ namespace Glorg2.Resource
 									break;
 								case "texture2d":
 									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null)
-									{
-										var src = node.Attributes["source"].Value;
-										man.Load(src, out (uni as TextureUniform).val);
-									}
+										man.Load(val, out (uni as TextureUniform).val);
 									break;
 							}
 							if (uni != null)

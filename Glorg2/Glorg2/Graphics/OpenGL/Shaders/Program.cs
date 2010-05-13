@@ -88,6 +88,8 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			int len = 0;
 			OpenGL.glGetInfoLogARB(handle, val.Length, ref len, val);
 			return Encoding.ASCII.GetString(val);
+			Dictionary<string, string> d;
+			
 		}
 
 
