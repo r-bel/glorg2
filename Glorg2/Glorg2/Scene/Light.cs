@@ -66,12 +66,12 @@ namespace Glorg2.Scene
 		{
 			if (enabled)
 			{
-				uint index = CreateLight();
-				OpenGL.glEnable(index);
-				OpenGL.glLightfv(index, OpenGL.Const.GL_POSITION, new float[] {0, 0, 0, 1});
-				OpenGL.glLightfv(index, OpenGL.Const.GL_DIFFUSE, ref diffuse);
-				OpenGL.glLightfv(index, OpenGL.Const.GL_SPECULAR, ref diffuse);
-				OpenGL.glLightf(index, OpenGL.Const.GL_INTENSITY, intensity);
+				//uint index = CreateLight();
+				//OpenGL.glEnable(index);
+				//OpenGL.glLightfv(index, OpenGL.Const.GL_POSITION, new float[] {0, 0, 0, 1});
+				//OpenGL.glLightfv(index, OpenGL.Const.GL_DIFFUSE, ref diffuse);
+				//OpenGL.glLightfv(index, OpenGL.Const.GL_SPECULAR, ref diffuse);
+				//OpenGL.glLightf(index, OpenGL.Const.GL_INTENSITY, intensity);
 			}
 		}
 

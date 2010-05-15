@@ -5,17 +5,17 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL
 {
-    public enum Test : uint
-    {
-        Never = OpenGL.Const.GL_NEVER,
-        Less = OpenGL.Const.GL_LESS,
-        Equal = OpenGL.Const.GL_EQUAL,
-        LessOrEqual = OpenGL.Const.GL_LEQUAL,
-        Greater = OpenGL.Const.GL_GREATER,
-        NotEqual = OpenGL.Const.GL_NOTEQUAL,
-        GreaterOrEqual = OpenGL.Const.GL_GEQUAL,
-        Always = OpenGL.Const.GL_ALWAYS
-    }
+	public enum Test : uint
+	{
+		Never = OpenGL.Const.GL_NEVER,
+		Less = OpenGL.Const.GL_LESS,
+		Equal = OpenGL.Const.GL_EQUAL,
+		LessOrEqual = OpenGL.Const.GL_LEQUAL,
+		Greater = OpenGL.Const.GL_GREATER,
+		NotEqual = OpenGL.Const.GL_NOTEQUAL,
+		GreaterOrEqual = OpenGL.Const.GL_GEQUAL,
+		Always = OpenGL.Const.GL_ALWAYS
+	}
 	public static partial class OpenGL
 	{
 		public static class Const
@@ -1575,6 +1575,14 @@ namespace Glorg2.Graphics.OpenGL
 			public const uint GL_RENDERBUFFER_STENCIL_SIZE = 0x8D55;
 			public const uint GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = 0x8D56;
 			public const uint GL_MAX_SAMPLES = 0x8D57;
+
+			/*public const uint GL_NO_ERROR = 0;
+			public const uint GL_INVALID_ENUM = 0x0500;
+			public const uint GL_INVALID_VALUE = 0x0501;
+			public const uint GL_INVALID_OPERATION = 0x0502;
+			public const uint GL_STACK_OVERFLOW = 0x0503;
+			public const uint GL_STACK_UNDERFLOW = 0x0504;
+			public const uint GL_OUT_OF_MEMORY = 0x0505;*/
 
 			public const uint GL_TEXTURE0_ARB = 0x84C0;
 			public const uint GL_TEXTURE1_ARB = 0x84C1;

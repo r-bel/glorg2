@@ -118,7 +118,12 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			base.StreamRead(input);
 		}
-
+		public void MakeCurrent(uint active)
+		{
+			OpenGL.glEnable(target);
+			OpenGL.glActiveTextureARB(active);
+			OpenGL.glBindTexture(target, handle);
+		}
 		public void MakeCurrent()
 		{
 			OpenGL.glEnable(target);

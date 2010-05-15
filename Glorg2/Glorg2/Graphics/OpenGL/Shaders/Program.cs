@@ -24,7 +24,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		public void MakeCurrent()
 		{
 			//OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, handle);
-			OpenGL.glUseProgramObjectARB(handle);
+			OpenGL.glUseProgram(handle);
 		}
 		/// <summary>
 		/// Makes no program current
@@ -32,7 +32,40 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		public void MakeNonCurrent()
 		{
 			//OpenGL.glBindProgramARB(OpenGL.Const.GL_PROGRAM_OBJECT_ARB, 0);
-			OpenGL.glUseProgramObjectARB(0);
+			OpenGL.glUseProgram(0);
+		}
+
+		public void SetFragmentOutput(string name, uint color)
+		{
+			OpenGL.glBindFragDataLocationEXT(handle, color, name);
+		}
+		public void SetFragmentOutput(string name)
+		{
+			OpenGL.glBindFragDataLocationEXT(handle, 0, name);
+		}
+
+		public int GetAttributeLocation(string attribute)
+		{
+			return OpenGL.glGetAttribLocation(handle, attribute);
+		}
+
+		public Dictionary<string, Uniform> GetUniforms()
+		{
+			var unis = new Dictionary<string, Uniform>();
+			int[] count = new int[1];
+			OpenGL.glGetProgramiv(handle, OpenGL.Const.GL_ACTIVE_UNIFORMS, count);
+			for(int i = 0; i < count[0]; i++)
+			{
+				int len = 0;
+				int size = 0;
+				uint type = 0;
+				byte[] name = new byte[100];
+				OpenGL.glGetActiveUniform(handle, (uint)i, 100, ref len, ref size, ref type, name);
+				string n = Encoding.ASCII.GetString(name);
+				int pos = OpenGL.glGetUniformLocation(handle, n);
+				unis.Add(n, new Uniform(pos));
+			}
+			return unis;
 		}
 		/// <summary>
 		/// Retrieves a standard uniform
@@ -41,7 +74,18 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <returns></returns>
 		public Uniform GetUniform(string name)
 		{
-			return new Uniform(OpenGL.glGetUniformLocationARB(handle, name));
+			
+			var str = Encoding.ASCII.GetBytes(name);
+			byte[] bytes = new byte[str.Length + 1];
+			str.CopyTo(bytes, 0);
+			int loc = OpenGL.glGetUniformLocation(handle, name);
+			if (loc == -1)
+			{
+				var err = OpenGL.glGetError();
+				return null;
+			}
+			else
+				return new Uniform(loc);
 		}
 
 		/// <summary>
@@ -54,6 +98,9 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		public T GetUniformType<T, S>(string name)
 			where T : UniformBaseType<S>, new()
 		{
+			var u = GetUniform(name);
+			if (u == null)
+				return default(T);
 			var ret = new T();
 			ret.name = name;
 			ret.uniform = GetUniform(name);
@@ -67,41 +114,58 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <remarks>Use GetCompileLog to retrieve compile errors if any</remarks>
 		public bool Compile()
 		{
+			bool success = true; ;
 			uint err = OpenGL.glGetError();
 			foreach (var shader in shaders)
 			{
-				shader.Compile();
-				OpenGL.glAttachObjectARB(handle, shader.Handle);
+				if (!shader.Compile())
+					success = false;
+				OpenGL.glAttachShader(handle, shader.Handle);
 			}
-			OpenGL.glLinkProgramARB(handle);
-			err = OpenGL.glGetError();
-			return err == 0;			
+			OpenGL.glLinkProgram(handle);
+			var status = new int[1];
+			OpenGL.glGetProgramiv(handle, OpenGL.Const.GL_LINK_STATUS, status);
+			if (status[0] == 0)
+				return false;
+			else
+				return success;
+		}
+
+		public void Bind()
+		{
+			OpenGL.glBindProgramARB(OpenGL.Const.GL_SHADER_OBJECT_ARB, handle);
 		}
 
 		/// <summary>
 		/// Retrievs the compile log for this shader
 		/// </summary>
 		/// <returns></returns>
-		public string GetCompileLog()
+		public string GetLinkLog()
 		{
-			byte[] val = new byte[8192];
-			int len = 0;
-			OpenGL.glGetInfoLogARB(handle, val.Length, ref len, val);
-			return Encoding.ASCII.GetString(val);
-			Dictionary<string, string> d;
-			
+			byte[] fill;
+			int lv = 0;
+			int[] len = new int[1];
+			OpenGL.glGetProgramiv(handle, OpenGL.Const.GL_INFO_LOG_LENGTH, len);
+			if (len[0] > 1)
+			{
+				fill = new byte[len[0]];
+				OpenGL.glGetProgramInfoLog(handle, len[0], ref lv, fill);
+				return Encoding.ASCII.GetString(fill);
+			}
+			else 
+				return "";
 		}
 
 
 		public Program()
 		{
 			shaders = new List<Shader>();
-			handle = OpenGL.glCreateProgramObjectARB();
+			handle = OpenGL.glCreateProgram();
 		}
 		/// <summary>
 		/// Cleans up unmanaged resources.
 		/// </summary>
-		protected void Cleanup()
+		private void Cleanup()
 		{
 			foreach (var sh in shaders)
 			{

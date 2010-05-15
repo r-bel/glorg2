@@ -205,6 +205,7 @@ namespace Glorg2.Scene
 			foreach (var child in children)
 				child.InternalProcess(time);
 			owner.local_transform = old;
+
 			if (remove_children.Count > 0)
 			{
 				lock (children)

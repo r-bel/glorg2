@@ -31,22 +31,44 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		internal Shader(string source, uint type)
 		{
 			this.source = source;
-			handle = OpenGL.glCreateShaderObjectARB(type);
-			OpenGL.glShaderSourceARB(handle, 1, new string[] { source }, new int[] { source.Length });
+			handle = OpenGL.glCreateShader(type);
+			OpenGL.glShaderSource(handle, 1, new string[] { source }, new int[] { source.Length });
 		}
 
-		internal void Compile()
+		internal bool Compile()
 		{
 			if (!is_compiled)
 			{
-				OpenGL.glCompileShaderARB(handle);
+				OpenGL.glCompileShader(handle);
+				var status = new int[1];
+				OpenGL.glGetShaderiv(handle, OpenGL.Const.GL_COMPILE_STATUS, status);
 				is_compiled = true;
+				return status[0] != 0;
+			}
+			else
+			{
+				var status = new int[1];
+				OpenGL.glGetShaderiv(handle, OpenGL.Const.GL_COMPILE_STATUS, status);
+				return status[0] != 0;
 			}
 		}
-
+		public string GetCompileLog()
+		{
+			int[] len = new int[1];
+			OpenGL.glGetShaderiv(handle, OpenGL.Const.GL_INFO_LOG_LENGTH, len);
+			if (len[0] > 1)
+			{
+				byte[] fill = new byte[len[0]];
+				int tl = 0;
+				OpenGL.glGetShaderInfoLog(handle, len[0], ref tl, fill);
+				return Encoding.ASCII.GetString(fill);
+			}
+			else
+				return "";
+		}
 		protected void Cleanup()
 		{
-			OpenGL.glDeleteObjectARB(handle);
+			OpenGL.glDeleteShader(handle);
 		}
 
 		public override void  DoDispose()
@@ -64,12 +86,13 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// </summary>
 	public class VertexShader : Shader
 	{
-		internal VertexShader(string source)
-			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB)
-		{
-		}
 		public VertexShader(string source, Program parent)
 			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB, parent)
+		{
+		}
+
+		internal VertexShader(string source)
+			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB)
 		{
 		}
 

@@ -17,16 +17,14 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		}
 		public abstract UniformBase Clone();
 		public abstract void SetValue();
-		
+		public Uniform Uniform { get { return uniform; } }
 	}
 	[Serializable()]
 	public abstract class UniformBaseType<T> : UniformBase
 	{
-		[NonSerialized()]
-		
 		internal T val;
 		
-		T Value { get { return val; } set { val = value; if (uniform != null) SetValue(); } }
+		public T Value { get { return val; } set { val = value; if (uniform != null) SetValue(); } }
 		
 
 		
@@ -57,6 +55,23 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 				uniform = uniform,
 				val = val
 			};			
+		}
+	}
+	[Serializable()]
+	public sealed class ScalarIntUniform : UniformBaseType<int>
+	{
+		public override void SetValue()
+		{
+			uniform.SetValue(val);
+		}
+		public override UniformBase Clone()
+		{
+			return new ScalarIntUniform()
+			{
+				name = name,
+				uniform = uniform,
+				val = val
+			};
 		}
 	}
 	[Serializable()]
@@ -112,6 +127,61 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		}
 
 	}
+	[Serializable()]
+	public sealed class Vector4IntUniform : UniformBaseType<Vector4Int>
+	{
+		public override void SetValue()
+		{
+			uniform.SetValue(val);
+		}
+		public override UniformBase Clone()
+		{
+			return new Vector4IntUniform()
+			{
+				name = name,
+				uniform = uniform,
+				val = this.val
+			};
+		}
+
+	}
+	[Serializable()]
+	public sealed class Vector3IntUniform : UniformBaseType<Vector3Int>
+	{
+		public override void SetValue()
+		{
+			uniform.SetValue(val);
+		}
+		public override UniformBase Clone()
+		{
+			return new Vector3IntUniform()
+			{
+				name = name,
+				uniform = uniform,
+				val = this.val
+			};
+		}
+
+	}
+	[Serializable()]
+	public sealed class Vector2IntUniform : UniformBaseType<Vector2Int>
+	{
+		public override void SetValue()
+		{
+			uniform.SetValue(val);
+		}
+		public override UniformBase Clone()
+		{
+			return new Vector2IntUniform()
+			{
+				name = name,
+				uniform = uniform,
+				val = this.val
+			};
+		}
+
+	}
+
 	[Serializable()]
 	public sealed class MatrixUniform : UniformBaseType<Matrix>
 	{
