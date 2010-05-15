@@ -59,6 +59,23 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		{
 			OpenGL.glUniform4fvARB(location, 4, ref value);
 		}
+
+		public void SetValue(Vector2Int value)
+		{
+			OpenGL.glUniform2iARB(location, value.x, value.y);
+		}
+
+		public void SetValue(Vector3Int value)
+		{
+			OpenGL.glUniform3iARB(location, value.x, value.y, value.z);
+		}
+
+		public void SetValue(Vector4Int value)
+		{
+			OpenGL.glUniform4iARB(location, value.x, value.y, value.z, value.w);
+		}
+
+
 		/// <summary>
 		/// Sets the value of this uniform as an 4x4 matrix of floating points
 		/// </summary>

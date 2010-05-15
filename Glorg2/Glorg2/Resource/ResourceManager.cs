@@ -30,10 +30,13 @@ namespace Glorg2.Resource
 		public List<Resource> Janitorial()
 		{
 			List<Resource> remove = new List<Resource>();
-			foreach (var r in resources)
+			lock (resources)
 			{
-				if (r.Links <= 0)
-					remove.Add(r);
+				foreach (var r in resources)
+				{
+					if (r.Links <= 0)
+						remove.Add(r);
+				}
 			}
 			return remove;
 		}

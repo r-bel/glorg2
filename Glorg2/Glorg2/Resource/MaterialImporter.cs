@@ -15,7 +15,7 @@ namespace Glorg2.Resource
 		{
 			get { return "mxl"; }
 		}
-		static readonly Type[] supported_types = new Type[] { typeof(Glorg2.Graphics.Material) };
+		static readonly Type[] supported_types = new Type[] { typeof(Glorg2.Graphics.Material), typeof(Glorg2.Graphics.StdMaterial) };
 		public override IEnumerable<Type> SupportedTypes
 		{
 			get { return supported_types; }
@@ -25,7 +25,7 @@ namespace Glorg2.Resource
 		{
 			get { return 50; }
 		}
-		private static T LoadShader<T>(XmlNode n, ResourceManager man)
+		private static T LoadShader<T>(XmlNode n, ResourceManager man, Program prog)
 			where T : Resource
 		{
 			var att = n.Attributes["src"];
@@ -37,7 +37,7 @@ namespace Glorg2.Resource
 			}
 			else
 			{
-				return Activator.CreateInstance(typeof(T), n.InnerText) as T;
+				return Activator.CreateInstance(typeof(T), n.InnerText, prog) as T;
 			}
 		}
 		public override T Import<T>(System.IO.Stream source, string source_name, ResourceManager man)
@@ -47,33 +47,38 @@ namespace Glorg2.Resource
 			doc.Load(source);
 			if (doc.ChildNodes.Count == 2)
 			{
-				var vsn = doc.SelectSingleNode("Material/VertexShader");
-				var fsn = doc.SelectSingleNode("Material/FragmentShader");
-				var gsn = doc.SelectSingleNode("Material/GeometryShader");
+				var vsn = doc.SelectSingleNode(".//VertexShader");
+				var fsn = doc.SelectSingleNode(".//FragmentShader");
+				var gsn = doc.SelectSingleNode(".//GeometryShader");
 
-				Material ret = new Material();
+				T ret = Activator.CreateInstance<T>();
 
 				if (vsn == null)
 					return default(T);
-				var vs = LoadShader<VertexShader>(vsn, man);
 				Program prog = new Program();
-				prog.shaders.Add(vs);
+				var vs = LoadShader<VertexShader>(vsn, man, prog);
 
 				if (gsn != null)
-				{
-					var gs = LoadShader<GeometryShader>(gsn, man);
-					prog.shaders.Add(gs);
-				}
+					LoadShader<GeometryShader>(gsn, man, prog);
 
 				if (fsn != null)
+					LoadShader<FragmentShader>(fsn, man, prog);
+				(ret as Material).Shader = prog;
+				if (!prog.Compile())
 				{
-					var fs = LoadShader<FragmentShader>(fsn, man);
-					prog.shaders.Add(fs);
+					StringBuilder err = new StringBuilder();
+					foreach (var sh in prog.shaders)
+					{
+						err.AppendLine(sh.SourceName);
+						err.AppendLine(sh.GetCompileLog());
+					}
+					err.AppendLine("Linker:\n");
+					err.AppendLine(prog.GetLinkLog());
+					System.Diagnostics.Debug.WriteLine(err.ToString());
 				}
-				ret.Shader = prog;
-				prog.Compile();
+				
 
-				var uniforms = doc.SelectSingleNode("Material/Uniforms");
+				var uniforms = doc.SelectSingleNode(".//Uniforms");
 				if (uniforms != null && uniforms.HasChildNodes)
 				{
 					foreach (var n in uniforms.ChildNodes)
@@ -88,37 +93,52 @@ namespace Glorg2.Resource
 							switch (t)
 							{
 								case "float":
-									if((uni = prog.GetUniformType<ScalarFloatUniform, float>(name)) != null)
+									if ((uni = prog.GetUniformType<ScalarFloatUniform, float>(name)) != null && !string.IsNullOrEmpty(val))
 										(uni as ScalarFloatUniform).val = float.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
 									break;
-								case "int":
-									break;
 								case "float2":
-									if((uni = prog.GetUniformType<Vector2FloatUniform, Vector2>(name)) != null)
+									if ((uni = prog.GetUniformType<Vector2FloatUniform, Vector2>(name)) != null && !string.IsNullOrEmpty(val))
 										(uni as Vector2FloatUniform).val = Vector2.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
 									break;
 								case "float3":
-									if ((uni = prog.GetUniformType<Vector3FloatUniform, Vector3>(name)) != null)
+									if ((uni = prog.GetUniformType<Vector3FloatUniform, Vector3>(name)) != null && !string.IsNullOrEmpty(val))
 										(uni as Vector3FloatUniform).val = Vector3.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
 									break;
 								case "float4":
-									if ((uni = prog.GetUniformType<Vector4FloatUniform, Vector4>(name)) != null)
+									if ((uni = prog.GetUniformType<Vector4FloatUniform, Vector4>(name)) != null && !string.IsNullOrEmpty(val))
 										(uni as Vector4FloatUniform).val = Vector4.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
 									break;
+								case "int":
+									if ((uni = prog.GetUniformType<ScalarIntUniform, int>(name)) != null && !string.IsNullOrEmpty(val))
+										(uni as ScalarIntUniform).val = int.Parse(val);
+									break;
+								case "int2":
+									if ((uni = prog.GetUniformType<Vector2IntUniform, Vector2Int>(name)) != null && !string.IsNullOrEmpty(val))
+										(uni as Vector2FloatUniform).val = Vector2Int.Parse(val);
+									break;
+								case "int3":
+									if ((uni = prog.GetUniformType<Vector3IntUniform, Vector3Int>(name)) != null && !string.IsNullOrEmpty(val))
+										(uni as Vector3FloatUniform).val = Vector3Int.Parse(val);
+									break;
+								case "int4":
+									if ((uni = prog.GetUniformType<Vector4IntUniform, Vector4Int>(name)) != null && !string.IsNullOrEmpty(val))
+										(uni as Vector4FloatUniform).val = Vector4Int.Parse(val);
+									break;
 								case "texture2d":
-									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null)
+									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null && !string.IsNullOrEmpty(val))
 										man.Load(val, out (uni as TextureUniform).val);
 									break;
 							}
+							var unis = prog.GetUniforms();
 							if (uni != null)
 							{
-								ret.uniforms.Add(uni);
+								(ret as Material).uniforms.Add(uni);
 								uni.SetValue();
 							}
 						}
 					}
 				}
-
+				(ret as Material).SetupMaterial();
 				return ret as T;
 			}
 			else

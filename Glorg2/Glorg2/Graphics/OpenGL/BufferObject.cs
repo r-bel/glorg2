@@ -11,6 +11,8 @@ namespace Glorg2.Graphics.OpenGL
 	}
 	public interface IVertexBuffer : IBufferObject
 	{
+		void ApplyStdMaterial(StdMaterial material);
+		void ApplyMaterial(Material mat, Dictionary<ElementType, string> bindings);
 	}
 	public interface IIndexBuffer : IBufferObject
 	{
@@ -331,6 +333,7 @@ namespace Glorg2.Graphics.OpenGL
 			public uint gl_type;
 			public IntPtr offset_value;
 			public uint channel;
+			public uint attribute;
 		}
 		internal List<ElementInfo> elements;
 		internal List<Action<ElementInfo>> initialize;
@@ -357,25 +360,60 @@ namespace Glorg2.Graphics.OpenGL
 			OpenGL.glBufferSubDataARB((OpenGL.VboTarget)target, offset, size, ptr.AddrOfPinnedObject());
 			ptr.Free();
 		}
+		public void ApplyStdMaterial(StdMaterial mat)
+		{
+			for(int i = 0; i < elements.Count; i++)
+			{
+				ElementType t = (ElementType)(((int)desc.types[i] & 0xf) | ((int)desc.types[i] & 0x0f000000));
+				switch(t)
+				{
+					case ElementType.Position:
+						elements[i].attribute = (uint)mat.PositionAttribute;
+						break;
+					case ElementType.Normals:
+						elements[i].attribute = (uint)mat.NormalAttribute;
+						break;
+					case ElementType.TexCoord:
+						elements[i].attribute = (uint)mat.TexCoord0Attribute;
+						break;
+					case ElementType.TexCoord | (ElementType)0x01000000:
+						elements[i].attribute = (uint)mat.TexCoord1Attribute;
+						break;
+					case ElementType.TexCoord | (ElementType)0x02000000:
+						elements[i].attribute = (uint)mat.TexCoord2Attribute;
+						break;
+					case ElementType.TexCoord | (ElementType)0x03000000:
+						elements[i].attribute = (uint)mat.TexCoord3Attribute;
+						break;
+					case ElementType.Color:
+						elements[i].attribute = (uint)mat.Color0Attribute;
+						break;
+					case ElementType.Color | (ElementType)0x01000000:
+						elements[i].attribute = (uint)mat.Color1Attribute;
+						break;
+					case ElementType.Color | (ElementType)0x02000000:
+						elements[i].attribute = (uint)mat.Color2Attribute;
+						break;
+					case ElementType.Color | (ElementType)0x03000000:
+						elements[i].attribute = (uint)mat.Color3Attribute;
+						break;
 
-		private void SetVertexPointer(ElementInfo info)
-		{
-			OpenGL.glVertexPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
+
+				}
+			}
 		}
-		private void SetNormalPointer(ElementInfo info)
+		public void ApplyMaterial(Material mat, Dictionary<ElementType, string> bindings)
 		{
-			OpenGL.glNormalPointer(info.gl_type, size_of_t, info.offset_value);
+			for (int i = 0; i < elements.Count; i++)
+			{
+				ElementType t = (ElementType)(((int)desc.types[i] & 0xf) | ((int)desc.types[i] & 0x0f000000));
+				string s = "";
+				if (bindings.TryGetValue(t, out s))
+				{
+					elements[i].attribute = (uint)mat.Shader.GetAttributeLocation(s);
+				}
+			}
 		}
-		private void SetTexCoordPointer(ElementInfo info)
-		{
-			OpenGL.glClientActiveTextureARB(info.channel + OpenGL.Const.GL_TEXTURE0);
-			OpenGL.glTexCoordPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
-		}
-		private void SetColorPointer(ElementInfo info)
-		{
-			OpenGL.glColorPointer(info.dimensions, info.gl_type, size_of_t, info.offset_value);
-		}
-		
 
 		private VertexBufferDescriptor desc;
 		/// <summary>
@@ -436,7 +474,7 @@ namespace Glorg2.Graphics.OpenGL
 					channel = ch
 				});
 
-				switch (type)
+				/*switch (type)
 				{
 					case ElementType.Position:
 						initialize.Add(new Action<ElementInfo>(SetVertexPointer));
@@ -459,25 +497,30 @@ namespace Glorg2.Graphics.OpenGL
 						types.Add(0);
 						break;
 
-				}
+				}*/
+				
 				offset += size;
 			}
 		}
 		public override void MakeCurrent()
 		{
 			base.MakeCurrent();
-			foreach (var t in types)
-				OpenGL.glEnableClientState(t);
 
-			for (int i = 0; i < initialize.Count; i++)
-				initialize[i](elements[i]);
+			for (int i = 0; i < elements.Count; i++)
+			{
+				if (elements[i].attribute > 0)
+				{
+					OpenGL.glEnableVertexAttribArrayARB(elements[i].attribute);
+					OpenGL.glVertexAttribPointerARB(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
+				}
+			}
 		}
 		public override void MakeNonCurrent()
 		{
 			base.MakeNonCurrent();
-			foreach (var act in types)
-				if (act != 0)
-					OpenGL.glDisableClientState(act);
+			for(int i = 0; i < elements.Count; i++)
+				if(elements[i].attribute > 0)
+					OpenGL.glDisableVertexAttribArrayARB(elements[i].attribute);
 		}
 	}
 	public sealed class IndexBuffer<T> : BufferObject<T>, IIndexBuffer

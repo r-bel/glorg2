@@ -25,18 +25,27 @@ namespace Glorg2.Graphics
 			uniforms.Clear();
 		}
 
+		public virtual void SetupMaterial()
+		{
+		}
+
 
 		#region IDeviceObject Members
 
 		public void MakeCurrent()
 		{
 			shader.MakeCurrent();
+			uint index = 0;
 			foreach (var u in uniforms)
 			{
-				u.SetValue();
 				var tex = u as TextureUniform;
-				//if(tex != null)
-					//OpenGL.OpenGL.glActiveTextureARB(u.
+				if (tex != null)
+				{
+					tex.val.MakeCurrent(index++);
+					u.Uniform.SetValue(index);
+				}
+				else
+					u.SetValue();
 			}
 		}
 

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using Glorg2.Graphics.OpenGL;
 using GL = Glorg2.Graphics.OpenGL.OpenGL;
+using Glorg2.Graphics;
+using Glorg2.Graphics.OpenGL;
+using Glorg2.Graphics.OpenGL.Shaders;
 namespace Glorg2.Graphics
 {
 	public sealed class GraphicsDevice : IDisposable
@@ -14,6 +17,23 @@ namespace Glorg2.Graphics
 		
 		internal IVertexBuffer vertex_buffer;
 		internal IIndexBuffer index_buffer;
+
+		private Matrix modelview;
+		private Matrix projection;
+		private Matrix texture;
+
+
+		private bool projection_changed;
+		private bool modelview_changed;
+		private bool texture_changed;
+
+		private MatrixUniform projection_uniform;
+		private MatrixUniform modelview_uniform;
+		private MatrixUniform texture_uniform;
+
+		Dictionary<ElementType, string> attributes;
+
+		private Program active_shader;
 
 		/// <summary>
 		/// Gets the context for this rendering device
@@ -39,11 +59,31 @@ namespace Glorg2.Graphics
 			context.Samples = 4;
 			// Create context using platform specific methods
 			context.CreateContext(target);
-
+			GL.InitGeneral(context);
 			foreach (var str in GL.GetSupportedExtensions())
 				Console.WriteLine(str);
 
 			var err = GL.glGetError();
+
+			// Setup default attributes
+			attributes = new Dictionary<OpenGL.ElementType, string>();
+			attributes.Add(OpenGL.ElementType.Position, "in_position");
+			attributes.Add(OpenGL.ElementType.Normals, "in_normal");
+			attributes.Add(OpenGL.ElementType.Color, "in_color");
+			//attributes.Add(OpenGL.ElementType.Color, "in_color0");
+			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x01000000, "in_color1");
+			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x02000000, "in_color2");
+			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x03000000, "in_color3");
+			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x04000000, "in_color4");
+			attributes.Add(OpenGL.ElementType.TexCoord, "in_texcoord");
+			//attributes.Add(OpenGL.ElementType.TexCoord, "in_texcoord0");
+			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x01000000, "in_texcoord1");
+			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x02000000, "in_texcoord2");
+			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x03000000, "in_texcoord3");
+			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x04000000, "in_texcoord4");
+
+			GL.InitGl2(context);
+
 			// Initialize Vertex Buffer Objects
 			GL.InitVbo(context);
 			err = GL.glGetError();
@@ -51,6 +91,8 @@ namespace Glorg2.Graphics
 			
 			GL.InitShaderProgram(context);
 			err = GL.glGetError();
+
+			GL.InitGpuShader4(context);
 
 			// Initialize occlusion queries
 			GL.InitOcclusionQueries(context);
@@ -68,18 +110,22 @@ namespace Glorg2.Graphics
 			
 		}
 
+		public void SetActiveMaterial(Graphics.Material material)
+		{
+			active_shader = material.Shader;
+			active_shader.MakeCurrent();
+			var std = material as IStdShader;
 
-
+			if (std != null)
+			{
+				projection_uniform = std.Projection;
+				modelview_uniform = std.ModelView;
+				texture_uniform = std.Texture;
+			}
+			active_shader.SetFragmentOutput("out_frag", 0xffffffff);
+		}
         
 
-		/// <summary>
-		/// Applies a shader program.
-		/// </summary>
-		/// <param name="prog">Program to apply. Set this to null to disable program</param>
-		public void MakeCurrent(OpenGL.Shaders.Program prog)
-		{
-			GL.glUseProgramObjectARB(prog.Handle);
-		}
 		/// <summary>
 		/// Applies a texture
 		/// </summary>
@@ -100,7 +146,9 @@ namespace Glorg2.Graphics
 				vertex_buffer.MakeNonCurrent();
 			}
 			if (vert != null)
+			{
 				vert.MakeCurrent();
+			}
 			vertex_buffer = vert;
 		}
 		/// <summary>
@@ -163,7 +211,7 @@ namespace Glorg2.Graphics
 		/// <remarks>Values for color, depth and stencil will be the previously set values if they are mentioned in the buffers paramter</remarks>
 		public void Clear(ClearFlags buffers)
 		{
-			GL.glClear((uint)buffers);
+			//GL.glClear((uint)buffers);
 		}
 
 
@@ -192,10 +240,30 @@ namespace Glorg2.Graphics
 		/// <remarks>This function uses the currently set vertex and index buffer (if any) If no index buffer is set, the function will assume that elements follows each other in the vertex buffer.</remarks>
 		public void Draw(DrawMode mode)
 		{
+			if (modelview_changed && modelview_uniform != null)
+			{
+				modelview_uniform.Value = modelview;
+				modelview_uniform.SetValue();
+				modelview_changed = false;
+			}
+			if (projection_changed && projection_uniform != null)
+			{
+				projection_uniform.Value = projection;
+				projection_uniform.SetValue();
+				projection_changed = false;
+			}
+			if (texture_changed && texture_uniform != null)
+			{
+				texture_uniform.Value = texture;
+				texture_uniform.SetValue();
+				texture_changed = false;
+			}
 			if (vertex_buffer == null)
 				throw new InvalidOperationException("No vertex buffer has been set.");
 			if (index_buffer != null)
+			{
 				GL.glDrawElements((uint)mode, index_buffer.Count, index_buffer.Type, IntPtr.Zero);
+			}
 			else
 				GL.glDrawArrays((uint)mode, 0, vertex_buffer.Count);
 		}
@@ -206,14 +274,16 @@ namespace Glorg2.Graphics
 		{
 			get
 			{
-				Matrix ret = new Matrix();
-				GL.glGetFloatv(GL.Const.GL_PROJECTION_MATRIX, ref ret);
-				return ret;
+				//Matrix ret = new Matrix();
+				//GL.glGetFloatv(GL.Const.GL_PROJECTION_MATRIX, ref ret);
+				return projection; ;
 			}
 			set
 			{
-				GL.glMatrixMode((uint)GL.Const.GL_PROJECTION);
-				GL.glLoadMatrixf(ref value);
+				//GL.glMatrixMode((uint)GL.Const.GL_PROJECTION);
+				//GL.glLoadMatrixf(ref value);
+				projection = value;
+				projection_changed = true;
 			}
 		}
 		/// <summary>
@@ -223,14 +293,16 @@ namespace Glorg2.Graphics
 		{
 			get
 			{
-				Matrix ret = new Matrix();
-				GL.glGetFloatv(GL.Const.GL_MODELVIEW_MATRIX, ref ret);
-				return ret;
+				//Matrix ret = new Matrix();
+				//GL.glGetFloatv(GL.Const.GL_MODELVIEW_MATRIX, ref ret);
+				return modelview;
 			}
 			set
 			{
-				GL.glMatrixMode((uint)GL.Const.GL_MODELVIEW);
-				GL.glLoadMatrixf(ref value);
+				//GL.glMatrixMode((uint)GL.Const.GL_MODELVIEW);
+				//GL.glLoadMatrixf(ref value);
+				modelview = value;
+				modelview_changed = true;
 			}
 		}
 		/// <summary>
@@ -240,14 +312,17 @@ namespace Glorg2.Graphics
 		{
 			get
 			{
-				Matrix ret = new Matrix();
-				GL.glGetFloatv(GL.Const.GL_TEXTURE_MATRIX, ref ret);
-				return ret;
+				//Matrix ret = new Matrix();
+				//GL.glGetFloatv(GL.Const.GL_TEXTURE_MATRIX, ref ret);
+				return texture;
+
 			}
 			set
 			{
-				GL.glMatrixMode((uint)GL.Const.GL_TEXTURE);
-				GL.glLoadMatrixf(ref value);
+				//GL.glMatrixMode((uint)GL.Const.GL_TEXTURE);
+				//GL.glLoadMatrixf(ref value);
+				texture = value;
+				texture_changed = true;
 			}
 		}
 		/// <summary>

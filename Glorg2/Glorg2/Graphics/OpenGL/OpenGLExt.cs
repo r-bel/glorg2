@@ -27,9 +27,17 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			if (Extensions == null)
 			{
-				string ext = Marshal.PtrToStringAnsi(glGetString(Const.GL_EXTENSIONS));
-				string[] items = ext.Split(' ');
-				Extensions = items.ToList().AsReadOnly();
+				var count = new int[1];
+				glGetIntegerv(Const.GL_NUM_EXTENSIONS, count);
+				List<string> extensions = new List<string>();
+				for (int i = 0; i < count[0]; i++)
+				{
+					IntPtr ptr = glGetStringi(Const.GL_EXTENSIONS, i);
+					string s = Marshal.PtrToStringAnsi(ptr);
+					extensions.Add(s);
+				}
+
+				Extensions = extensions.AsReadOnly();
 			}
 			return Extensions;
 
@@ -91,6 +99,9 @@ namespace Glorg2.Graphics.OpenGL
 		public unsafe delegate void* MapBufferARB(VboTarget target, VboAccess access);
 		public delegate boolean UnmapBufferARB(VboTarget target);
 
+		public delegate IntPtr GetStringi(uint pname, int index);
+		public static GetStringi glGetStringi;
+
 
 		public static GenBuffersARB glGenBuffersARB;
 		public static BindBufferARB glBindBufferARB;
@@ -99,6 +110,11 @@ namespace Glorg2.Graphics.OpenGL
 		public static DeleteBuffersARB glDeleteBuffersARB;
 		public static MapBufferARB glMapBufferARB;
 		public static UnmapBufferARB glUnmapBufferARB;
+
+		public static void InitGeneral(OpenGLContext ctx)
+		{
+			glGetStringi = ctx.GetProc<GetStringi>("glGetStringi");
+		}
 
 		/// <summary>
 		/// Initializes Vertex Buffer Objects
@@ -126,7 +142,7 @@ namespace Glorg2.Graphics.OpenGL
 		#region Shader Program
 
 		// Shader objects
-		
+
 
 
 		public delegate void VertexAttrib1dARB(uint index, double x);
@@ -165,7 +181,7 @@ namespace Glorg2.Graphics.OpenGL
 		public delegate void VertexAttrib4ubvARB(uint index, byte[] v);
 		public delegate void VertexAttrib4uivARB(uint index, uint[] v);
 		public delegate void VertexAttrib4usvARB(uint index, ushort[] v);
-		public unsafe delegate void VertexAttribPointerARB(uint index, int size, uint type, boolean normalized, int stride, void* pointer);
+		public unsafe delegate void VertexAttribPointerARB(uint index, int size, uint type, boolean normalized, int stride, IntPtr pointer);
 		public delegate void EnableVertexAttribArrayARB(uint index);
 		public delegate void DisableVertexAttribArrayARB(uint index);
 		public delegate void ProgramStringARB(uint target, uint format, int len, [MarshalAs(UnmanagedType.LPWStr)] string code);
@@ -226,7 +242,7 @@ namespace Glorg2.Graphics.OpenGL
 		public delegate void GetObjectParameterivARB(uint obj, uint pname, int[] parameters);
 		public delegate void GetInfoLogARB(uint obj, int maxLength, ref int length, byte[] infoLog);
 		public delegate void GetAttachedObjectsARB(uint containerObj, int maxCount, ref int count, uint[] obj);
-		public delegate int GetUniformLocationARB(uint programObj, string name);
+		public delegate int GetUniformLocationARB(uint programObj, byte[] name);
 		public delegate void GetActiveUniformARB(uint programObj, uint index, int maxLength, ref int length, ref int size, ref uint type, byte[] name);
 		public delegate void GetUniformfvARB(uint programObj, int location, float[] parameters);
 		public delegate void GetUniformivARB(uint programObj, int location, int[] parameters);
@@ -464,7 +480,7 @@ namespace Glorg2.Graphics.OpenGL
 
 		#region Occlusion Query
 
-		
+
 
 		public delegate void GenQueriesARB(int n, uint[] ids);
 		public delegate void DeleteQueriesARB(int n, uint[] ids);
@@ -502,7 +518,7 @@ namespace Glorg2.Graphics.OpenGL
 		#endregion
 
 		#region Multi-texturing
-		
+
 
 
 		public delegate void ActiveTextureARB(uint texture);
@@ -683,6 +699,335 @@ namespace Glorg2.Graphics.OpenGL
 			glBlitFramebuffer = ctx.GetProc<BlitFramebuffer>("glBlitFramebuffer");
 			glRenderbufferStorageMultisample = ctx.GetProc<RenderbufferStorageMultisample>("glRenderbufferStorageMultisample");
 			glFramebufferTextureLayer = ctx.GetProc<FramebufferTextureLayer>("glFramebufferTextureLayer");
+		}
+		#endregion
+
+		#region GL_EXT_gup_shader4
+		public delegate void GetUniformuivEXT(uint program, int location, uint[] parameters);
+		public delegate void BindFragDataLocationEXT(uint program, uint color, string name);
+		public delegate int GetFragDataLocationEXT(uint program, out string name);
+		public delegate void Uniform1uiEXT(int location, int v0);
+		public delegate void Uniform2uiEXT(int location, int v0, uint v1);
+		public delegate void Uniform3uiEXT(int location, int v0, uint v1, uint v2);
+		public delegate void Uniform4uiEXT(int location, int v0, uint v1, uint v2, uint v3);
+		public delegate void Uniform1uivEXT(int location, int count, uint[] value);
+		public delegate void Uniform2uivEXT(int location, int count, uint[] value);
+		public delegate void Uniform3uivEXT(int location, int count, uint[] value);
+		public delegate void Uniform4uivEXT(int location, int count, uint[] value);
+
+		public static GetUniformuivEXT glGetUniformuivEXT;
+		public static BindFragDataLocationEXT glBindFragDataLocationEXT;
+		public static GetFragDataLocationEXT glGetFragDataLocationEXT;
+		public static Uniform1uiEXT glUniform1uiEXT;
+		public static Uniform2uiEXT glUniform2uiEXT;
+		public static Uniform3uiEXT glUniform3uiEXT;
+		public static Uniform4uiEXT glUniform4uiEXT;
+		public static Uniform1uivEXT glUniform1uivEXT;
+		public static Uniform2uivEXT glUniform2uivEXT;
+		public static Uniform3uivEXT glUniform3uivEXT;
+		public static Uniform4uivEXT glUniform4uivEXT;
+
+		public static void InitGpuShader4(OpenGLContext ctx)
+		{
+			glGetUniformuivEXT = ctx.GetProc<GetUniformuivEXT>("glGetUniformuivEXT");
+			glBindFragDataLocationEXT = ctx.GetProc<BindFragDataLocationEXT>("glBindFragDataLocationEXT");
+			glGetFragDataLocationEXT = ctx.GetProc<GetFragDataLocationEXT>("glGetFragDataLocationEXT");
+			glUniform1uiEXT = ctx.GetProc<Uniform1uiEXT>("glUniform1uiEXT");
+			glUniform2uiEXT = ctx.GetProc<Uniform2uiEXT>("glUniform2uiEXT");
+			glUniform3uiEXT = ctx.GetProc<Uniform3uiEXT>("glUniform3uiEXT");
+			glUniform4uiEXT = ctx.GetProc<Uniform4uiEXT>("glUniform4uiEXT");
+			glUniform1uivEXT = ctx.GetProc<Uniform1uivEXT>("glUniform1uivEXT");
+			glUniform2uivEXT = ctx.GetProc<Uniform2uivEXT>("glUniform2uivEXT");
+			glUniform3uivEXT = ctx.GetProc<Uniform3uivEXT>("glUniform3uivEXT");
+			glUniform4uivEXT = ctx.GetProc<Uniform4uivEXT>("glUniform4uivEXT");
+		}
+
+		#endregion
+
+		#region OpenGL_2_0
+		public delegate void BlendEquationSeparate(uint modeRGB, uint modeAlpha);
+public delegate void DrawBuffers(int n,  uint[]bufs);
+public delegate void StencilOpSeparate(uint face, uint sfail, uint dpfail, uint dppass);
+public delegate void StencilFuncSeparate(uint frontfunc, uint backfunc, int reference, uint mask);
+public delegate void StencilMaskSeparate(uint face, uint mask);
+public delegate void AttachShader(uint program, uint shader);
+public delegate void BindAttribLocation(uint program, uint index,  string name);
+public delegate void CompileShader(uint shader);
+public delegate uint CreateProgram();
+public delegate uint CreateShader(uint type);
+public delegate void DeleteProgram(uint program);
+public delegate void DeleteShader(uint shader);
+public delegate void DetachShader(uint program, uint shader);
+public delegate void DisableVertexAttribArray(uint index);
+public delegate void EnableVertexAttribArray(uint index);
+public delegate void GetActiveAttrib(uint program, uint index, int bufSize, int[]length, int[]size, uint[]type, string name);
+public delegate void GetActiveUniform(uint program, uint index, int bufSize, ref int length, ref int size, ref uint type, byte[] name);
+public delegate void GetAttachedShaders(uint program, int maxCount, int[]count, uint[]obj);
+public delegate int GetAttribLocation(uint program,  string name);
+public delegate void GetProgramiv(uint program, uint pname, int[]parameters);
+public delegate void GetProgramInfoLog(uint program, int bufSize, ref int length, byte[] infoLog);
+public delegate void GetShaderiv(uint shader, uint pname, int[]parameters);
+public delegate void GetShaderInfoLog(uint shader, int bufSize, ref int length, byte[] infoLog);
+public delegate void GetShaderSource(uint shader, int bufSize, int[]length, string source);
+public delegate int GetUniformLocation(uint program,  string name);
+public delegate void GetUniformfv(uint program, int location, float[]parameters);
+public delegate void GetUniformiv(uint program, int location, int[]parameters);
+public delegate void GetVertexAttribdv(uint index, uint pname, double[]parameters);
+public delegate void GetVertexAttribfv(uint index, uint pname, float[]parameters);
+public delegate void GetVertexAttribiv(uint index, uint pname, int[]parameters);
+public delegate void GetVertexAttribPointerv(uint index, uint pname, IntPtr[] pointer);
+public delegate boolean IsProgram(uint program);
+public delegate boolean IsShader(uint shader);
+public delegate void LinkProgram(uint program);
+public delegate void ShaderSource(uint shader, int count,  string[] strings,  int[] length);
+public delegate void UseProgram(uint program);
+public delegate void Uniform1f(int location, float v0);
+public delegate void Uniform2f(int location, float v0, float v1);
+public delegate void Uniform3f(int location, float v0, float v1, float v2);
+public delegate void Uniform4f(int location, float v0, float v1, float v2, float v3);
+public delegate void Uniform1i(int location, int v0);
+public delegate void Uniform2i(int location, int v0, int v1);
+public delegate void Uniform3i(int location, int v0, int v1, int v2);
+public delegate void Uniform4i(int location, int v0, int v1, int v2, int v3);
+public delegate void Uniform1fv(int location, int count,  float[]value);
+public delegate void Uniform2fv(int location, int count,  float[]value);
+public delegate void Uniform3fv(int location, int count,  float[]value);
+public delegate void Uniform4fv(int location, int count,  float[]value);
+public delegate void Uniform1iv(int location, int count,  int[]value);
+public delegate void Uniform2iv(int location, int count,  int[]value);
+public delegate void Uniform3iv(int location, int count,  int[]value);
+public delegate void Uniform4iv(int location, int count,  int[]value);
+public delegate void UniformMatrix2fv(int location, int count, boolean transpose,  float[]value);
+public delegate void UniformMatrix3fv(int location, int count, boolean transpose,  float[]value);
+public delegate void UniformMatrix4fv(int location, int count, boolean transpose,  float[]value);
+public delegate void ValidateProgram(uint program);
+public delegate void VertexAttrib1d(uint index, double x);
+public delegate void VertexAttrib1dv(uint index,  double[]v);
+public delegate void VertexAttrib1f(uint index, float x);
+public delegate void VertexAttrib1fv(uint index,  float[]v);
+public delegate void VertexAttrib1s(uint index, short x);
+public delegate void VertexAttrib1sv(uint index,  short[]v);
+public delegate void VertexAttrib2d(uint index, double x, double y);
+public delegate void VertexAttrib2dv(uint index,  double[]v);
+public delegate void VertexAttrib2f(uint index, float x, float y);
+public delegate void VertexAttrib2fv(uint index,  float[]v);
+public delegate void VertexAttrib2s(uint index, short x, short y);
+public delegate void VertexAttrib2sv(uint index,  short[]v);
+public delegate void VertexAttrib3d(uint index, double x, double y, double z);
+public delegate void VertexAttrib3dv(uint index,  double[]v);
+public delegate void VertexAttrib3f(uint index, float x, float y, float z);
+public delegate void VertexAttrib3fv(uint index,  float[]v);
+public delegate void VertexAttrib3s(uint index, short x, short y, short z);
+public delegate void VertexAttrib3sv(uint index,  short[]v);
+public delegate void VertexAttrib4Nbv(uint index,  byte[]v);
+public delegate void VertexAttrib4Niv(uint index,  int[]v);
+public delegate void VertexAttrib4Nsv(uint index,  short[]v);
+public delegate void VertexAttrib4Nub(uint index, byte x, byte y, byte z, byte w);
+public delegate void VertexAttrib4Nubv(uint index,  byte[]v);
+public delegate void VertexAttrib4Nuiv(uint index,  uint[]v);
+public delegate void VertexAttrib4Nusv(uint index,  ushort[]v);
+public delegate void VertexAttrib4bv(uint index,  byte[]v);
+public delegate void VertexAttrib4d(uint index, double x, double y, double z, double w);
+public delegate void VertexAttrib4dv(uint index,  double[]v);
+public delegate void VertexAttrib4f(uint index, float x, float y, float z, float w);
+public delegate void VertexAttrib4fv(uint index,  float[]v);
+public delegate void VertexAttrib4iv(uint index,  int[]v);
+public delegate void VertexAttrib4s(uint index, short x, short y, short z, short w);
+public delegate void VertexAttrib4sv(uint index,  short[]v);
+public delegate void VertexAttrib4ubv(uint index,  byte[]v);
+public delegate void VertexAttrib4uiv(uint index,  uint[]v);
+public delegate void VertexAttrib4usv(uint index,  ushort[]v);
+public delegate void VertexAttribPointer(uint index, int size, uint type, boolean normalized, int stride,  IntPtr pointer);
+
+
+		public static BlendEquationSeparate glBlendEquationSeparate;
+public static DrawBuffers glDrawBuffers;
+public static StencilOpSeparate glStencilOpSeparate;
+public static StencilFuncSeparate glStencilFuncSeparate;
+public static StencilMaskSeparate glStencilMaskSeparate;
+public static AttachShader glAttachShader;
+public static BindAttribLocation glBindAttribLocation;
+public static CompileShader glCompileShader;
+public static CreateProgram glCreateProgram;
+public static CreateShader glCreateShader;
+public static DeleteProgram glDeleteProgram;
+public static DeleteShader glDeleteShader;
+public static DetachShader glDetachShader;
+public static DisableVertexAttribArray glDisableVertexAttribArray;
+public static EnableVertexAttribArray glEnableVertexAttribArray;
+public static GetActiveAttrib glGetActiveAttrib;
+public static GetActiveUniform glGetActiveUniform;
+public static GetAttachedShaders glGetAttachedShaders;
+public static GetAttribLocation glGetAttribLocation;
+public static GetProgramiv glGetProgramiv;
+public static GetProgramInfoLog glGetProgramInfoLog;
+public static GetShaderiv glGetShaderiv;
+public static GetShaderInfoLog glGetShaderInfoLog;
+public static GetShaderSource glGetShaderSource;
+public static GetUniformLocation glGetUniformLocation;
+public static GetUniformfv glGetUniformfv;
+public static GetUniformiv glGetUniformiv;
+public static GetVertexAttribdv glGetVertexAttribdv;
+public static GetVertexAttribfv glGetVertexAttribfv;
+public static GetVertexAttribiv glGetVertexAttribiv;
+public static GetVertexAttribPointerv glGetVertexAttribPointerv;
+public static IsProgram glIsProgram;
+public static IsShader glIsShader;
+public static LinkProgram glLinkProgram;
+public static ShaderSource glShaderSource;
+public static UseProgram glUseProgram;
+public static Uniform1f glUniform1f;
+public static Uniform2f glUniform2f;
+public static Uniform3f glUniform3f;
+public static Uniform4f glUniform4f;
+public static Uniform1i glUniform1i;
+public static Uniform2i glUniform2i;
+public static Uniform3i glUniform3i;
+public static Uniform4i glUniform4i;
+public static Uniform1fv glUniform1fv;
+public static Uniform2fv glUniform2fv;
+public static Uniform3fv glUniform3fv;
+public static Uniform4fv glUniform4fv;
+public static Uniform1iv glUniform1iv;
+public static Uniform2iv glUniform2iv;
+public static Uniform3iv glUniform3iv;
+public static Uniform4iv glUniform4iv;
+public static UniformMatrix2fv glUniformMatrix2fv;
+public static UniformMatrix3fv glUniformMatrix3fv;
+public static UniformMatrix4fv glUniformMatrix4fv;
+public static ValidateProgram glValidateProgram;
+public static VertexAttrib1d glVertexAttrib1d;
+public static VertexAttrib1dv glVertexAttrib1dv;
+public static VertexAttrib1f glVertexAttrib1f;
+public static VertexAttrib1fv glVertexAttrib1fv;
+public static VertexAttrib1s glVertexAttrib1s;
+public static VertexAttrib1sv glVertexAttrib1sv;
+public static VertexAttrib2d glVertexAttrib2d;
+public static VertexAttrib2dv glVertexAttrib2dv;
+public static VertexAttrib2f glVertexAttrib2f;
+public static VertexAttrib2fv glVertexAttrib2fv;
+public static VertexAttrib2s glVertexAttrib2s;
+public static VertexAttrib2sv glVertexAttrib2sv;
+public static VertexAttrib3d glVertexAttrib3d;
+public static VertexAttrib3dv glVertexAttrib3dv;
+public static VertexAttrib3f glVertexAttrib3f;
+public static VertexAttrib3fv glVertexAttrib3fv;
+public static VertexAttrib3s glVertexAttrib3s;
+public static VertexAttrib3sv glVertexAttrib3sv;
+public static VertexAttrib4Nbv glVertexAttrib4Nbv;
+public static VertexAttrib4Niv glVertexAttrib4Niv;
+public static VertexAttrib4Nsv glVertexAttrib4Nsv;
+public static VertexAttrib4Nub glVertexAttrib4Nub;
+public static VertexAttrib4Nubv glVertexAttrib4Nubv;
+public static VertexAttrib4Nuiv glVertexAttrib4Nuiv;
+public static VertexAttrib4Nusv glVertexAttrib4Nusv;
+public static VertexAttrib4bv glVertexAttrib4bv;
+public static VertexAttrib4d glVertexAttrib4d;
+public static VertexAttrib4dv glVertexAttrib4dv;
+public static VertexAttrib4f glVertexAttrib4f;
+public static VertexAttrib4fv glVertexAttrib4fv;
+public static VertexAttrib4iv glVertexAttrib4iv;
+public static VertexAttrib4s glVertexAttrib4s;
+public static VertexAttrib4sv glVertexAttrib4sv;
+public static VertexAttrib4ubv glVertexAttrib4ubv;
+public static VertexAttrib4uiv glVertexAttrib4uiv;
+public static VertexAttrib4usv glVertexAttrib4usv;
+public static VertexAttribPointer glVertexAttribPointer;
+		public static void InitGl2(OpenGLContext ctx)
+		{
+		glBlendEquationSeparate = ctx.GetProc<BlendEquationSeparate>("glBlendEquationSeparate");
+glDrawBuffers = ctx.GetProc<DrawBuffers>("glDrawBuffers");
+glStencilOpSeparate = ctx.GetProc<StencilOpSeparate>("glStencilOpSeparate");
+glStencilFuncSeparate = ctx.GetProc<StencilFuncSeparate>("glStencilFuncSeparate");
+glStencilMaskSeparate = ctx.GetProc<StencilMaskSeparate>("glStencilMaskSeparate");
+glAttachShader = ctx.GetProc<AttachShader>("glAttachShader");
+glBindAttribLocation = ctx.GetProc<BindAttribLocation>("glBindAttribLocation");
+glCompileShader = ctx.GetProc<CompileShader>("glCompileShader");
+glCreateProgram = ctx.GetProc<CreateProgram>("glCreateProgram");
+glCreateShader = ctx.GetProc<CreateShader>("glCreateShader");
+glDeleteProgram = ctx.GetProc<DeleteProgram>("glDeleteProgram");
+glDeleteShader = ctx.GetProc<DeleteShader>("glDeleteShader");
+glDetachShader = ctx.GetProc<DetachShader>("glDetachShader");
+glDisableVertexAttribArray = ctx.GetProc<DisableVertexAttribArray>("glDisableVertexAttribArray");
+glEnableVertexAttribArray = ctx.GetProc<EnableVertexAttribArray>("glEnableVertexAttribArray");
+glGetActiveAttrib = ctx.GetProc<GetActiveAttrib>("glGetActiveAttrib");
+glGetActiveUniform = ctx.GetProc<GetActiveUniform>("glGetActiveUniform");
+glGetAttachedShaders = ctx.GetProc<GetAttachedShaders>("glGetAttachedShaders");
+glGetAttribLocation = ctx.GetProc<GetAttribLocation>("glGetAttribLocation");
+glGetProgramiv = ctx.GetProc<GetProgramiv>("glGetProgramiv");
+glGetProgramInfoLog = ctx.GetProc<GetProgramInfoLog>("glGetProgramInfoLog");
+glGetShaderiv = ctx.GetProc<GetShaderiv>("glGetShaderiv");
+glGetShaderInfoLog = ctx.GetProc<GetShaderInfoLog>("glGetShaderInfoLog");
+glGetShaderSource = ctx.GetProc<GetShaderSource>("glGetShaderSource");
+glGetUniformLocation = ctx.GetProc<GetUniformLocation>("glGetUniformLocation");
+glGetUniformfv = ctx.GetProc<GetUniformfv>("glGetUniformfv");
+glGetUniformiv = ctx.GetProc<GetUniformiv>("glGetUniformiv");
+glGetVertexAttribdv = ctx.GetProc<GetVertexAttribdv>("glGetVertexAttribdv");
+glGetVertexAttribfv = ctx.GetProc<GetVertexAttribfv>("glGetVertexAttribfv");
+glGetVertexAttribiv = ctx.GetProc<GetVertexAttribiv>("glGetVertexAttribiv");
+glGetVertexAttribPointerv = ctx.GetProc<GetVertexAttribPointerv>("glGetVertexAttribPointerv");
+glIsProgram = ctx.GetProc<IsProgram>("glIsProgram");
+glIsShader = ctx.GetProc<IsShader>("glIsShader");
+glLinkProgram = ctx.GetProc<LinkProgram>("glLinkProgram");
+glShaderSource = ctx.GetProc<ShaderSource>("glShaderSource");
+glUseProgram = ctx.GetProc<UseProgram>("glUseProgram");
+glUniform1f = ctx.GetProc<Uniform1f>("glUniform1f");
+glUniform2f = ctx.GetProc<Uniform2f>("glUniform2f");
+glUniform3f = ctx.GetProc<Uniform3f>("glUniform3f");
+glUniform4f = ctx.GetProc<Uniform4f>("glUniform4f");
+glUniform1i = ctx.GetProc<Uniform1i>("glUniform1i");
+glUniform2i = ctx.GetProc<Uniform2i>("glUniform2i");
+glUniform3i = ctx.GetProc<Uniform3i>("glUniform3i");
+glUniform4i = ctx.GetProc<Uniform4i>("glUniform4i");
+glUniform1fv = ctx.GetProc<Uniform1fv>("glUniform1fv");
+glUniform2fv = ctx.GetProc<Uniform2fv>("glUniform2fv");
+glUniform3fv = ctx.GetProc<Uniform3fv>("glUniform3fv");
+glUniform4fv = ctx.GetProc<Uniform4fv>("glUniform4fv");
+glUniform1iv = ctx.GetProc<Uniform1iv>("glUniform1iv");
+glUniform2iv = ctx.GetProc<Uniform2iv>("glUniform2iv");
+glUniform3iv = ctx.GetProc<Uniform3iv>("glUniform3iv");
+glUniform4iv = ctx.GetProc<Uniform4iv>("glUniform4iv");
+glUniformMatrix2fv = ctx.GetProc<UniformMatrix2fv>("glUniformMatrix2fv");
+glUniformMatrix3fv = ctx.GetProc<UniformMatrix3fv>("glUniformMatrix3fv");
+glUniformMatrix4fv = ctx.GetProc<UniformMatrix4fv>("glUniformMatrix4fv");
+glValidateProgram = ctx.GetProc<ValidateProgram>("glValidateProgram");
+glVertexAttrib1d = ctx.GetProc<VertexAttrib1d>("glVertexAttrib1d");
+glVertexAttrib1dv = ctx.GetProc<VertexAttrib1dv>("glVertexAttrib1dv");
+glVertexAttrib1f = ctx.GetProc<VertexAttrib1f>("glVertexAttrib1f");
+glVertexAttrib1fv = ctx.GetProc<VertexAttrib1fv>("glVertexAttrib1fv");
+glVertexAttrib1s = ctx.GetProc<VertexAttrib1s>("glVertexAttrib1s");
+glVertexAttrib1sv = ctx.GetProc<VertexAttrib1sv>("glVertexAttrib1sv");
+glVertexAttrib2d = ctx.GetProc<VertexAttrib2d>("glVertexAttrib2d");
+glVertexAttrib2dv = ctx.GetProc<VertexAttrib2dv>("glVertexAttrib2dv");
+glVertexAttrib2f = ctx.GetProc<VertexAttrib2f>("glVertexAttrib2f");
+glVertexAttrib2fv = ctx.GetProc<VertexAttrib2fv>("glVertexAttrib2fv");
+glVertexAttrib2s = ctx.GetProc<VertexAttrib2s>("glVertexAttrib2s");
+glVertexAttrib2sv = ctx.GetProc<VertexAttrib2sv>("glVertexAttrib2sv");
+glVertexAttrib3d = ctx.GetProc<VertexAttrib3d>("glVertexAttrib3d");
+glVertexAttrib3dv = ctx.GetProc<VertexAttrib3dv>("glVertexAttrib3dv");
+glVertexAttrib3f = ctx.GetProc<VertexAttrib3f>("glVertexAttrib3f");
+glVertexAttrib3fv = ctx.GetProc<VertexAttrib3fv>("glVertexAttrib3fv");
+glVertexAttrib3s = ctx.GetProc<VertexAttrib3s>("glVertexAttrib3s");
+glVertexAttrib3sv = ctx.GetProc<VertexAttrib3sv>("glVertexAttrib3sv");
+glVertexAttrib4Nbv = ctx.GetProc<VertexAttrib4Nbv>("glVertexAttrib4Nbv");
+glVertexAttrib4Niv = ctx.GetProc<VertexAttrib4Niv>("glVertexAttrib4Niv");
+glVertexAttrib4Nsv = ctx.GetProc<VertexAttrib4Nsv>("glVertexAttrib4Nsv");
+glVertexAttrib4Nub = ctx.GetProc<VertexAttrib4Nub>("glVertexAttrib4Nub");
+glVertexAttrib4Nubv = ctx.GetProc<VertexAttrib4Nubv>("glVertexAttrib4Nubv");
+glVertexAttrib4Nuiv = ctx.GetProc<VertexAttrib4Nuiv>("glVertexAttrib4Nuiv");
+glVertexAttrib4Nusv = ctx.GetProc<VertexAttrib4Nusv>("glVertexAttrib4Nusv");
+glVertexAttrib4bv = ctx.GetProc<VertexAttrib4bv>("glVertexAttrib4bv");
+glVertexAttrib4d = ctx.GetProc<VertexAttrib4d>("glVertexAttrib4d");
+glVertexAttrib4dv = ctx.GetProc<VertexAttrib4dv>("glVertexAttrib4dv");
+glVertexAttrib4f = ctx.GetProc<VertexAttrib4f>("glVertexAttrib4f");
+glVertexAttrib4fv = ctx.GetProc<VertexAttrib4fv>("glVertexAttrib4fv");
+glVertexAttrib4iv = ctx.GetProc<VertexAttrib4iv>("glVertexAttrib4iv");
+glVertexAttrib4s = ctx.GetProc<VertexAttrib4s>("glVertexAttrib4s");
+glVertexAttrib4sv = ctx.GetProc<VertexAttrib4sv>("glVertexAttrib4sv");
+glVertexAttrib4ubv = ctx.GetProc<VertexAttrib4ubv>("glVertexAttrib4ubv");
+glVertexAttrib4uiv = ctx.GetProc<VertexAttrib4uiv>("glVertexAttrib4uiv");
+glVertexAttrib4usv = ctx.GetProc<VertexAttrib4usv>("glVertexAttrib4usv");
+glVertexAttribPointer = ctx.GetProc<VertexAttribPointer>("glVertexAttribPointer");
 		}
 		#endregion
 	}

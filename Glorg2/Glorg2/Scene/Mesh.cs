@@ -10,6 +10,8 @@ namespace Glorg2.Scene
 	{
 		[NonSerialized()]
 		protected Graphics.Model model;
+		[NonSerialized()]
+		protected Graphics.StdMaterial mat;
 
 		public Graphics.Model Model { get { return model; } set { model = value; } }
 
@@ -24,6 +26,7 @@ namespace Glorg2.Scene
 		public override void DoDispose()
 		{
 			base.DoDispose();
+			mat.Dispose();
 			model.Dispose();
 		}
 		
@@ -32,6 +35,8 @@ namespace Glorg2.Scene
 		{
 			if (model != null)
 			{
+				if (mat != null)
+					dev.SetActiveMaterial(mat);
 				dev.SetVertexBuffer(model.VertexBuffer);
 				foreach (var part in model.Parts)
 				{
@@ -40,7 +45,10 @@ namespace Glorg2.Scene
 				}
 				dev.SetIndexBuffer(null);
 				dev.SetVertexBuffer(null);
+				if (mat != null)
+					mat.MakeNonCurrent();
 			}
+			
 		}
 
 
