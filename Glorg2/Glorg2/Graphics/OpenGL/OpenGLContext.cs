@@ -46,7 +46,7 @@ namespace Glorg2.Graphics.OpenGL
 		/// Create a new context and setup all necessary information
 		/// </summary>
 		/// <param name="handle">Window handle which represents the destination in the window subsystem such as X or Windows.</param>
-		public abstract void CreateContext(IntPtr handle);
+		public abstract void CreateContext(IntPtr handle, OpenGLContext share);
 
 		/// <summary>
 		/// Make context current

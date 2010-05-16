@@ -138,6 +138,9 @@ namespace Glorg2.Graphics.OpenGL
 		public static GetPixelFormatAttribfvARB wglGetPixelFormatAttribfvARB;
 		public static ChoosePixelFormatARB wglChoosePixelFormatARB;
 
+		[DllImport(GdiDllName)]
+		public static extern bool wglMakeContextCurrentARB (IntPtr hDrawDC, IntPtr hReadDC, IntPtr hglrc);
+		//public static MakeContextCurrentARB wglMakeContextCurrentARB;
 		#endregion
 
 		#region Windows Platform Specific
@@ -398,7 +401,7 @@ namespace Glorg2.Graphics.OpenGL
 		///		}
 		/// }
 		/// </example>
-		public override void CreateContext(IntPtr wnd)
+		public override void CreateContext(IntPtr wnd, OpenGLContext share)
 		{
 			// Force OpenGL library to link
 			// or we will not be able to create a context
@@ -431,6 +434,7 @@ namespace Glorg2.Graphics.OpenGL
 			wglChoosePixelFormatARB = GetProc<ChoosePixelFormatARB>("wglChoosePixelFormatARB");
 			wglGetPixelFormatAttribfvARB = GetProc<GetPixelFormatAttribfvARB>("wglGetPixelFormatAttribfvARB");
 			wglGetPixelFormatAttribivARB = GetProc<GetPixelFormatAttribivARB>("wglGetPixelFormatAttribivARB");
+			
 			string ext = "";
 			if(wglGetExtensionStringARB != null)
 				ext = Marshal.PtrToStringAnsi(wglGetExtensionStringARB(hdc));
@@ -446,8 +450,8 @@ namespace Glorg2.Graphics.OpenGL
 					WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
 					WGL_COLOR_BITS_ARB, 24,
 					WGL_ALPHA_BITS_ARB, 8,
-					WGL_DEPTH_BITS_ARB, 16,
-					WGL_STENCIL_BITS_ARB, 0,
+					WGL_DEPTH_BITS_ARB, 24,
+					WGL_STENCIL_BITS_ARB, 8,
 					WGL_DOUBLE_BUFFER_ARB, 1,
 					WGL_SAMPLE_BUFFERS_ARB, 1,
 					WGL_SAMPLES_ARB, samples ,						// Check For 4x Multisampling
@@ -457,7 +461,8 @@ namespace Glorg2.Graphics.OpenGL
 				valid = wglChoosePixelFormatARB(hdc, iAttributes, fAttributes, 1, ref pixel_format, ref num_formats) && num_formats > 0;
 				if (valid)
 				{
-					wglMakeCurrent(hdc, IntPtr.Zero);
+
+					wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 					wglDeleteContext(handle);
 					SetPixelFormat(hdc, pixel_format, ref desc);
 					handle = wglCreateContext(hdc);
@@ -465,13 +470,10 @@ namespace Glorg2.Graphics.OpenGL
 				}
 			}
 			wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
-			//if (!valid)
-			//{
-			//}
 			var s = OpenGL.glGetString((uint)OpenGL.Const.GL_VERSION);
 			var str = Marshal.PtrToStringAnsi(s);
 			var sub = str.Split('.');
-			int major = 2;
+			int major = 0;
 			int minor = 0;
 			int revision = 0;
 			int.TryParse(sub[0], out major);
@@ -484,22 +486,33 @@ namespace Glorg2.Graphics.OpenGL
 
 				int[] attribs = new int[]
 				{
-					WGL_CONTEXT_MAJOR_VERSION_ARB, major,
-					WGL_CONTEXT_MINOR_VERSION_ARB, minor, 
-					WGL_CONTEXT_FLAGS_ARB, 0,
-					WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB, 
+					WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+					WGL_CONTEXT_MINOR_VERSION_ARB, 2, 
+					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+					WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 
 					0
 				};
-
-				IntPtr newhandle = wglCreateContextAttribsARB(hdc, IntPtr.Zero, attribs);
+				IntPtr share_ctx = IntPtr.Zero;
+				if (share != null)
+					share_ctx = share.Handle;
+				IntPtr newhandle = wglCreateContextAttribsARB(hdc, share_ctx, attribs);
+				wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+				
+				wglDeleteContext(handle);
 				if (newhandle != IntPtr.Zero) // If OpenGL 3.0 context creation failed, fallback to legacy 2.x
 					handle = newhandle;
 			}
-				
-			if (handle != IntPtr.Zero)
-				wglMakeCurrent(hdc, handle);
 			else
-				throw new InvalidOperationException("Could not create OpenGL context");
+				throw new NotSupportedException("OpenGL 3.2 is not supported by your system.");
+
+			if (handle != IntPtr.Zero)
+			{
+				//wglMakeContextCurrentARB = GetProc<MakeContextCurrentARB>("wglMakeContextCurrentARB");
+				//wglMakeContextCurrentARB(hdc, IntPtr.Zero, handle);
+				wglMakeCurrent(hdc, handle);
+			}
+			else
+				throw new NotSupportedException("Could not create OpenGL context");
 
 			
 

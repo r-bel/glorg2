@@ -203,9 +203,9 @@ namespace Glorg2.Graphics.OpenGL
 			h.Free();			
 		}
 
-		internal void AssignTexture()
+		internal void AssignTexture(IntPtr ptr)
 		{
-			OpenGL.glTexImage2D(OpenGL.Const.GL_TEXTURE_2D, 0, (int)int_fmt, width, height, 0, (uint)fmt, (uint)type, IntPtr.Zero);
+			OpenGL.glTexImage2D(target, 0, (int)int_fmt, width, height, 0, (uint)fmt, (uint)type, ptr);
 		}
 
 		public Texture2D(System.IO.Stream src, string sourcename)
@@ -221,11 +221,12 @@ namespace Glorg2.Graphics.OpenGL
 			fmt = OpenGL.Const.GL_RGBA;
 			type = OpenGL.Const.GL_UNSIGNED_BYTE;
 			
-			AssignTexture();
+			AssignTexture(lc.Scan0);
 			//OpenGL.glTexImage2D(target, 0, (int)OpenGL.Const.GL_RGBA8, bmp.Width, bmp.Height, 0, (uint)OpenGL.Const.GL_RGBA, (uint)OpenGL.Const.GL_UNSIGNED_BYTE, lc.Scan0);
 			
 			bmp.UnlockBits(lc);
 			bmp.Dispose();
+			OpenGL.glBindTexture(target, 0);
 		}
 
 		protected override void Cleanup()

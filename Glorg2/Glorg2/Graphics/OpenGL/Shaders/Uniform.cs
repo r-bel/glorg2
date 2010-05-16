@@ -57,22 +57,22 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(Vector4 value)
 		{
-			OpenGL.glUniform4fvARB(location, 4, ref value);
+			OpenGL.glUniform4fv(location, 4, ref value);
 		}
 
 		public void SetValue(Vector2Int value)
 		{
-			OpenGL.glUniform2iARB(location, value.x, value.y);
+			OpenGL.glUniform2i(location, value.x, value.y);
 		}
 
 		public void SetValue(Vector3Int value)
 		{
-			OpenGL.glUniform3iARB(location, value.x, value.y, value.z);
+			OpenGL.glUniform3i(location, value.x, value.y, value.z);
 		}
 
 		public void SetValue(Vector4Int value)
 		{
-			OpenGL.glUniform4iARB(location, value.x, value.y, value.z, value.w);
+			OpenGL.glUniform4i(location, value.x, value.y, value.z, value.w);
 		}
 
 
@@ -82,7 +82,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(Matrix value)
 		{
-			OpenGL.glUniformMatrix4fvARB(location, 16, OpenGL.boolean.FALSE, ref value);
+			OpenGL.glUniformMatrix4fv(location, 1, OpenGL.boolean.FALSE, ref value);
 		}
 		/// <summary>
 		/// Assign s a texture object to this uniform
@@ -90,7 +90,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(Texture value)
 		{
-			OpenGL.glUniform1iARB(location, (int)value.Handle);
+			OpenGL.glUniform1i(location, (int)value.Handle);
 		}
 	}
 }

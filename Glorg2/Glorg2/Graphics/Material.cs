@@ -22,6 +22,15 @@ namespace Glorg2.Graphics
 		public override void DoDispose()
 		{
 			shader.Dispose();
+			foreach (var un in uniforms)
+			{
+				var tex = un as TextureUniform;
+				if (tex != null && tex.val != null)
+				{
+					tex.val.Dispose();
+					tex.val = null;
+				}
+			}
 			uniforms.Clear();
 		}
 

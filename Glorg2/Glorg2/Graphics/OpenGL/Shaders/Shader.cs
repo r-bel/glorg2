@@ -15,17 +15,14 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	{
 		private uint handle;
 		private string source;
-		internal Program parent;
 		private bool is_compiled;
 
 		public uint Handle { get { return handle; } }
 		public string Source { get { return source; } }
-		public Program Program { get { return parent; } }
 
 		protected Shader(string source, uint type, Program parent)
 			: this(source, type)
 		{
-			this.parent = parent;
 			parent.shaders.Add(this);
 		}
 		internal Shader(string source, uint type)
@@ -84,7 +81,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// <summary>
 	/// Represents a vertex shader
 	/// </summary>
-	public class VertexShader : Shader
+	public sealed class VertexShader : Shader
 	{
 		public VertexShader(string source, Program parent)
 			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB, parent)
@@ -100,7 +97,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// <summary>
 	/// Represents a fragment shader
 	/// </summary>
-	public class FragmentShader : Shader
+	public sealed class FragmentShader : Shader
 	{
 		public FragmentShader(string source, Program parent)
 			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER_ARB, parent)
@@ -114,7 +111,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	/// <summary>
 	/// Represents a geometry shader
 	/// </summary>
-	public class GeometryShader : Shader
+	public sealed class GeometryShader : Shader
 	{
 		public GeometryShader(string source, Program parent)
 			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER_ARB, parent)
