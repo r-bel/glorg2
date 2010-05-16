@@ -69,18 +69,23 @@ namespace Glorg2.Resource
 					StringBuilder err = new StringBuilder();
 					foreach (var sh in prog.shaders)
 					{
-						err.AppendLine(sh.SourceName);
+						err.AppendLine(sh.GetType().Name + " " + sh.SourceName + ":");
 						err.AppendLine(sh.GetCompileLog());
 					}
 					err.AppendLine("Linker:\n");
 					err.AppendLine(prog.GetLinkLog());
 					System.Diagnostics.Debug.WriteLine(err.ToString());
 				}
+				string log;
+				if (!prog.Validate(out log))
+				{
+					System.Diagnostics.Debug.WriteLine(log);
+				}
 				
-
 				var uniforms = doc.SelectSingleNode(".//Uniforms");
 				if (uniforms != null && uniforms.HasChildNodes)
 				{
+					int tex_index = 0;
 					foreach (var n in uniforms.ChildNodes)
 					{
 						var node = n as XmlNode;
@@ -126,10 +131,16 @@ namespace Glorg2.Resource
 									break;
 								case "texture2d":
 									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null && !string.IsNullOrEmpty(val))
+									{
 										man.Load(val, out (uni as TextureUniform).val);
+										if (uni != null)
+										{
+											(uni as TextureUniform).TextureIndex = tex_index++;
+										}
+									}
 									break;
 							}
-							var unis = prog.GetUniforms();
+							
 							if (uni != null)
 							{
 								(ret as Material).uniforms.Add(uni);

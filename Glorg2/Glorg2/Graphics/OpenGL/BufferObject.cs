@@ -508,7 +508,7 @@ namespace Glorg2.Graphics.OpenGL
 
 			for (int i = 0; i < elements.Count; i++)
 			{
-				if (elements[i].attribute > 0)
+				if (elements[i].attribute != 0xffffffff)
 				{
 					OpenGL.glEnableVertexAttribArrayARB(elements[i].attribute);
 					OpenGL.glVertexAttribPointerARB(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
@@ -519,7 +519,7 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			base.MakeNonCurrent();
 			for(int i = 0; i < elements.Count; i++)
-				if(elements[i].attribute > 0)
+				if(elements[i].attribute != 0xffffffff)
 					OpenGL.glDisableVertexAttribArrayARB(elements[i].attribute);
 		}
 	}

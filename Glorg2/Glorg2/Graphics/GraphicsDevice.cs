@@ -33,7 +33,7 @@ namespace Glorg2.Graphics
 
 		Dictionary<ElementType, string> attributes;
 
-		private Program active_shader;
+		private Material active_shader;
 
 		/// <summary>
 		/// Gets the context for this rendering device
@@ -58,10 +58,10 @@ namespace Glorg2.Graphics
 
 			context.Samples = 4;
 			// Create context using platform specific methods
-			context.CreateContext(target);
+			context.CreateContext(target, null);
 			GL.InitGeneral(context);
-			foreach (var str in GL.GetSupportedExtensions())
-				Console.WriteLine(str);
+			//foreach (var str in GL.GetSupportedExtensions())
+				//Console.WriteLine(str);
 
 			var err = GL.glGetError();
 
@@ -112,7 +112,7 @@ namespace Glorg2.Graphics
 
 		public void SetActiveMaterial(Graphics.Material material)
 		{
-			active_shader = material.Shader;
+			active_shader = material;
 			active_shader.MakeCurrent();
 			var std = material as IStdShader;
 
@@ -122,7 +122,7 @@ namespace Glorg2.Graphics
 				modelview_uniform = std.ModelView;
 				texture_uniform = std.Texture;
 			}
-			active_shader.SetFragmentOutput("out_frag", 0xffffffff);
+			active_shader.Shader.SetFragmentOutput("out_frag", 0);
 		}
         
 
@@ -147,6 +147,8 @@ namespace Glorg2.Graphics
 			}
 			if (vert != null)
 			{
+				if(active_shader != null && active_shader is StdMaterial)
+					vert.ApplyStdMaterial(active_shader as StdMaterial);
 				vert.MakeCurrent();
 			}
 			vertex_buffer = vert;
@@ -257,6 +259,11 @@ namespace Glorg2.Graphics
 				texture_uniform.Value = texture;
 				texture_uniform.SetValue();
 				texture_changed = false;
+			}
+			if (active_shader != null)
+			{
+				foreach (var u in active_shader.uniforms)
+					u.SetValue();
 			}
 			if (vertex_buffer == null)
 				throw new InvalidOperationException("No vertex buffer has been set.");

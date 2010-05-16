@@ -223,9 +223,17 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	[Serializable()]
 	public sealed class TextureUniform : UniformBaseType<Texture>
 	{
+		public int TextureIndex { get { return tex_index; } set { tex_index = value; } }
+		int tex_index;
 		public override void SetValue()
 		{
-			uniform.SetValue(val);
+			OpenGL.glActiveTextureARB(OpenGL.Const.GL_TEXTURE0 + (uint)tex_index);
+			val.MakeCurrent();
+			uniform.SetValue(tex_index);
+		}
+		public void SetValue(int index)
+		{
+			uniform.SetValue(index);
 		}
 		public override UniformBase Clone()
 		{

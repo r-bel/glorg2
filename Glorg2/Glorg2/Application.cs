@@ -276,6 +276,7 @@ namespace Glorg2
 
 			scene.Dispose();
 			CleanupResources();
+			CleanupResources();
 			GraphicsClosing();
 			scene.GraphicsDispose();
 			dev.Dispose();

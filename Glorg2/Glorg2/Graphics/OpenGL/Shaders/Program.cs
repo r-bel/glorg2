@@ -13,6 +13,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		private uint handle;
 		internal List<Shader> shaders;
 		public uint Handle { get { return handle; } }
+
 		/// <summary>
 		/// Shaders linked to this program
 		/// </summary>
@@ -61,8 +62,8 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 				uint type = 0;
 				byte[] name = new byte[100];
 				OpenGL.glGetActiveUniform(handle, (uint)i, 100, ref len, ref size, ref type, name);
-				string n = Encoding.ASCII.GetString(name);
-				int pos = OpenGL.glGetUniformLocation(handle, n);
+				string n = Encoding.ASCII.GetString(name).Trim('\0');
+				int pos = OpenGL.glGetUniformLocation(handle, name);
 				unis.Add(n, new Uniform(pos));
 			}
 			return unis;
@@ -78,7 +79,8 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			var str = Encoding.ASCII.GetBytes(name);
 			byte[] bytes = new byte[str.Length + 1];
 			str.CopyTo(bytes, 0);
-			int loc = OpenGL.glGetUniformLocation(handle, name);
+			OpenGL.glUseProgram(handle);
+			int loc = OpenGL.glGetUniformLocation(handle, bytes);
 			if (loc == -1)
 			{
 				var err = OpenGL.glGetError();
@@ -106,7 +108,12 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			ret.uniform = GetUniform(name);
 			return ret;
 		}
+		public void Debug()
+		{
+			int[] i = new int[1];
+			OpenGL.glGetProgramiv(handle, OpenGL.Const.GL_ACTIVE_ATTRIBUTES, i);
 
+		}
 		/// <summary>
 		/// Compiles all shaders and links the program
 		/// </summary>
@@ -121,8 +128,12 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 				if (!shader.Compile())
 					success = false;
 				OpenGL.glAttachShader(handle, shader.Handle);
+				err = OpenGL.glGetError();
+				if (err != OpenGL.Const.GL_NO_ERROR)
+					success = false;
 			}
 			OpenGL.glLinkProgram(handle);
+			
 			var status = new int[1];
 			OpenGL.glGetProgramiv(handle, OpenGL.Const.GL_LINK_STATUS, status);
 			if (status[0] == 0)
@@ -130,10 +141,13 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			else
 				return success;
 		}
-
-		public void Bind()
+		public bool Validate(out string ret)
 		{
-			OpenGL.glBindProgramARB(OpenGL.Const.GL_SHADER_OBJECT_ARB, handle);
+			var stat = new int[1];
+			OpenGL.glValidateProgram(handle);
+			OpenGL.glGetProgramiv(handle, OpenGL.Const.GL_VALIDATE_STATUS, stat);
+			ret = GetLinkLog();
+			return stat[0] != 0;
 		}
 
 		/// <summary>
@@ -169,10 +183,11 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		{
 			foreach (var sh in shaders)
 			{
+				OpenGL.glDetachShader(handle, sh.Handle);
 				sh.Dispose();
 			}
 			shaders.Clear();
-			OpenGL.glDeleteObjectARB(handle);
+			OpenGL.glDeleteProgram(handle);
 		}
 
 		/// <summary>
