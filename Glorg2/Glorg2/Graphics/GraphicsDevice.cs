@@ -82,7 +82,10 @@ namespace Glorg2.Graphics
 			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x03000000, "in_texcoord3");
 			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x04000000, "in_texcoord4");
 
+			GL.InitGl13(context);
+
 			GL.InitGl2(context);
+			GL.InitGL32(context);
 
 			// Initialize Vertex Buffer Objects
 			GL.InitVbo(context);
