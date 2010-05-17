@@ -91,6 +91,7 @@ namespace Glorg2.Graphics.OpenGL
 		UnsignedInt = OpenGL.Const.GL_UNSIGNED_INT, 
 		SignedInt = OpenGL.Const.GL_INT, 
 		Float = OpenGL.Const.GL_FLOAT, 
+		Half = OpenGL.Const.GL_HALF_FLOAT_ARB,
 		UnsignedByte_3_3_2 = OpenGL.Const.GL_UNSIGNED_BYTE_3_3_2, 
 		UnsignedByte_2_3_3_Rev = OpenGL.Const.GL_UNSIGNED_BYTE_2_3_3_REV, 
 		UnsignedShort_5_6_5 = OpenGL.Const.GL_UNSIGNED_SHORT_5_6_5, 
@@ -121,7 +122,7 @@ namespace Glorg2.Graphics.OpenGL
 		public void MakeCurrent(uint active)
 		{
 			OpenGL.glEnable(target);
-			OpenGL.glActiveTextureARB(active);
+			OpenGL.glActiveTextureARB(OpenGL.Const.GL_TEXTURE0 + active);
 			OpenGL.glBindTexture(target, handle);
 		}
 		public void MakeCurrent()
@@ -187,7 +188,7 @@ namespace Glorg2.Graphics.OpenGL
 		}
 
 		public Texture2D(int width, int height, InternalFormat pixel_format, PixelDataType format, PixelType type, string sourcename)
-			: base()
+			: this()
 		{
 			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_2D, handle);
 			int_fmt = (int)pixel_format;
@@ -217,16 +218,16 @@ namespace Glorg2.Graphics.OpenGL
 			height = bmp.Height;
 			var lc = bmp.LockBits(new System.Drawing.Rectangle(0, 0, width, height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
 			OpenGL.glBindTexture(target, handle);
-			int_fmt = (int)OpenGL.Const.GL_RGBA8;
-			fmt = OpenGL.Const.GL_RGBA;
+			int_fmt = (int)OpenGL.Const.GL_RGB8;
+			fmt = OpenGL.Const.GL_RGB;
 			type = OpenGL.Const.GL_UNSIGNED_BYTE;
 			
 			AssignTexture(lc.Scan0);
 			//OpenGL.glTexImage2D(target, 0, (int)OpenGL.Const.GL_RGBA8, bmp.Width, bmp.Height, 0, (uint)OpenGL.Const.GL_RGBA, (uint)OpenGL.Const.GL_UNSIGNED_BYTE, lc.Scan0);
-			
+			OpenGL.glBindTexture(target, 0);
 			bmp.UnlockBits(lc);
 			bmp.Dispose();
-			OpenGL.glBindTexture(target, 0);
+			
 		}
 
 		protected override void Cleanup()
