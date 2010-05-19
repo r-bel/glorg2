@@ -13,10 +13,11 @@ namespace Glorg2.Scene
 		[NonSerialized()]
 		protected Graphics.StdMaterial mat;
 
-		public Graphics.Model Model { get { return model; } set { model = value; } }
+		public Graphics.Model Model { get { return model; } }
 
 		public virtual void InitializeGraphics()
 		{
+			
 		}
 
 		public Mesh()

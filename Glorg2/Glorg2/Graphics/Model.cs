@@ -34,7 +34,7 @@ namespace Glorg2.Graphics
 		public OpenGL.VertexBuffer<Vertex> VertexBuffer { get { return vb; } set { vb = value; } }
 		public List<ModelPart> Parts { get { return parts; } }
 
-		public BoundingBox BoundingBox { get { return bounds; } }
+		public BoundingBox BoundingBox { get { return bounds; } set { bounds = value; } }
 
 		public Model()
 		{

@@ -173,6 +173,7 @@ namespace Glorg2.Scene
 
 		public Node()
 		{
+			absolute_transform = Matrix.Identity;
             up = Vector3.Up;
 			identifier = Guid.NewGuid();
 			angular_momentum = Quaternion.Identity;
@@ -197,6 +198,7 @@ namespace Glorg2.Scene
 				accumulator -= dt;
 			}
 			interp = accumulator / dt;
+			
 		}
 		public virtual void InternalProcess(float time)
 		{
