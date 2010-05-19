@@ -42,39 +42,38 @@ namespace Glorg2.Scene
 
 		internal int hash_code;
 		Physics.ObjectState linear_state;
-		Physics.ObjectStateQuat angular_state;
+		Physics.ObjectState angular_state;
 		Vector4 acceleration;
-		Quaternion angular_acceleration;
+		Vector4 angular_acceleration;
 		Vector4 center_of_mass;
-        Vector3 up;
+		Vector3 up;
 
 		[NonSerialized()]
 		internal Matrix absolute_transform;
-		
+
 
 		float radius;
-		Quaternion angular_momentum;
 		Quaternion orientation;
-        
+
 		float mass;
 
-        NodeReference<Node> target;
+		NodeReference<Node> target;
 
-        /// <summary>
-        /// Defines an object which this node will look at
-        /// </summary>
-        public Node Target { get { return target.Value; } set { target.Value = value; } }
+		/// <summary>
+		/// Defines an object which this node will look at
+		/// </summary>
+		public Node Target { get { return target.Value; } set { target.Value = value; } }
 
 
-        /// <summary>
-        /// The scene which owns this node
-        /// </summary>
-        public Scene Owner { get { return owner; } }
+		/// <summary>
+		/// The scene which owns this node
+		/// </summary>
+		public Scene Owner { get { return owner; } }
 
-        /// <summary>
-        /// The up vector for this node. This is used by the PerformLookAt() function.
-        /// </summary>
-        public Vector3 Up { get { return up; } set { up = value; } }
+		/// <summary>
+		/// The up vector for this node. This is used by the PerformLookAt() function.
+		/// </summary>
+		public Vector3 Up { get { return up; } set { up = value; } }
 
 		public virtual bool HitTest(Ray ray, out Vector3 pos)
 		{
@@ -82,17 +81,17 @@ namespace Glorg2.Scene
 			return false;
 		}
 
-        /// <summary>
-        /// Makes this nodes orientation look at 'Target'
-        /// </summary>
-        protected void PerformLookAt()
-        {
-            if (target.Value != null)
-            {
-                var mat = Matrix.LookAt(this.Position.ToVector3(), target.Value.Position.ToVector3(), up);
-                orientation = mat.ToQuaternion().Normalize();
-            }
-        }
+		/// <summary>
+		/// Makes this nodes orientation look at 'Target'
+		/// </summary>
+		protected void PerformLookAt()
+		{
+			if (target.Value != null)
+			{
+				var mat = Matrix.LookAt(this.Position.ToVector3(), target.Value.Position.ToVector3(), up);
+				orientation = mat.ToQuaternion().Normalize();
+			}
+		}
 
 		internal void InternalPostSerialize()
 		{
@@ -101,10 +100,10 @@ namespace Glorg2.Scene
 			var fields = t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance);
 			foreach (var f in fields)
 			{
-				
+
 				//if (f.FieldType.IsSubclassOf(typeof(Resource.Resource)))
 				//{
-					//f.FieldType.InvokeMember("BuildResource", System.Reflection.BindingFlags.Instance, null, f.GetValue(this), new object[] {owner.Resources});
+				//f.FieldType.InvokeMember("BuildResource", System.Reflection.BindingFlags.Instance, null, f.GetValue(this), new object[] {owner.Resources});
 				//}
 				//else
 				{
@@ -116,11 +115,11 @@ namespace Glorg2.Scene
 						if (s == "NodeReference")
 						{
 							var nd = f.GetValue(this) as INodeReference;
-                            if (nd != null)
-                            {
-                                nd.Owner = owner;
-                                nd.Update();
-                            }
+							if (nd != null)
+							{
+								nd.Owner = owner;
+								nd.Update();
+							}
 
 						}
 					}
@@ -129,9 +128,9 @@ namespace Glorg2.Scene
 
 			PostSerialize();
 		}
-        /// <summary>
-        /// This functions is called afters serialization, and is used to seet up data which cannot be serialized.
-        /// </summary>
+		/// <summary>
+		/// This functions is called afters serialization, and is used to seet up data which cannot be serialized.
+		/// </summary>
 		public virtual void PostSerialize()
 		{
 
@@ -144,23 +143,23 @@ namespace Glorg2.Scene
 			DoDispose();
 			Parent = null;
 		}
-        /// <summary>
-        /// This function defines a linear acceleration function. Override this to implement non-constant accelerations.
-        /// </summary>
-        /// <param name="state"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
+		/// <summary>
+		/// This function defines a linear acceleration function. Override this to implement non-constant accelerations.
+		/// </summary>
+		/// <param name="state"></param>
+		/// <param name="t"></param>
+		/// <returns></returns>
 		protected virtual Vector4 LinearAcceleratiom(Physics.ObjectState state, float t)
 		{
 			return acceleration * t;
 		}
-        /// <summary>
-        /// This function defines an angular acceleration. Override this to implement non-constant accelerations.
-        /// </summary>
-        /// <param name="state"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
-		protected virtual Quaternion AngularAcceleration(Physics.ObjectStateQuat state, float t)
+		/// <summary>
+		/// This function defines an angular acceleration. Override this to implement non-constant accelerations.
+		/// </summary>
+		/// <param name="state"></param>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		protected virtual Vector4 AngularAcceleration(Physics.ObjectState state, float t)
 		{
 			//return angular_momentum * t;
 			return angular_acceleration * t;
@@ -168,15 +167,14 @@ namespace Glorg2.Scene
 
 		public virtual void DoDispose()
 		{
-			
+
 		}
 
 		public Node()
 		{
 			absolute_transform = Matrix.Identity;
-            up = Vector3.Up;
+			up = Vector3.Up;
 			identifier = Guid.NewGuid();
-			angular_momentum = Quaternion.Identity;
 			orientation = Quaternion.Identity;
 			name = "";
 			children = new LinkedList<Node>();
@@ -188,30 +186,32 @@ namespace Glorg2.Scene
 		{
 			//position += velocity * time;
 			//velocity += acceleration * time;
-            PerformLookAt();
+			PerformLookAt();
 			accumulator += time;
 			// If we are lagging to much, we need to speed up.
 			if (accumulator > .2f)
 			{
 				Physics.Integration.RK4Integrate(ref linear_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-				Physics.Integration.RK4Integrate(ref angular_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectStateQuat, float, Quaternion>(AngularAcceleration));
+				Physics.Integration.RK4Integrate(ref angular_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
 			}
 			else
 			{
 				while (accumulator >= dt)
 				{
 					Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-					Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectStateQuat, float, Quaternion>(AngularAcceleration));
+					Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
 					sim_time += dt;
 					accumulator -= dt;
 				}
 				interp = accumulator / dt;
+
 			}
-			
+			Quaternion spin = .5f * new Quaternion(angular_state.Velocity.x, angular_state.Velocity.y, angular_state.Velocity.z, 0) * orientation;
+			orientation += spin;
 		}
 		public virtual void InternalProcess(float time)
 		{
-            Process(time);
+			Process(time);
 			Matrix old = owner.local_transform;
 			owner.local_transform = owner.local_transform * GetTransform();
 			absolute_transform = owner.local_transform;
@@ -262,14 +262,14 @@ namespace Glorg2.Scene
 				}
 				add_children.Clear();
 			}
-			
+
 		}
 
 		internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
 		{
 			dev.ModelviewMatrix = absolute_transform;
 			var r = this as IRenderable;
-			if(graphics_initialized && r != null)
+			if (graphics_initialized && r != null)
 				r.Render(time, dev);
 		}
 
@@ -311,12 +311,12 @@ namespace Glorg2.Scene
 		/// <remarks>This is not a synchronous function. Children will be added on the next oppurtunity.</remarks>
 		public void Add(IEnumerable<Node> nodes)
 		{
-            
+
 			add_children.AddRange(nodes);
-            foreach (var node in nodes)
-            {
-                node.owner = owner;
-            }
+			foreach (var node in nodes)
+			{
+				node.owner = owner;
+			}
 		}
 		/// <summary>
 		/// Adds a child node to this node
@@ -326,13 +326,13 @@ namespace Glorg2.Scene
 		public void Add(Node child)
 		{
 			var rend = child as IRenderable;
-            if (!child.graphics_initialized && rend != null)
-            {
-                child.graphics_initialized = true;
-                owner.Owner.GraphicInvoke(new Action(rend.InitializeGraphics));
-            }
+			if (!child.graphics_initialized && rend != null)
+			{
+				child.graphics_initialized = true;
+				owner.Owner.GraphicInvoke(new Action(rend.InitializeGraphics));
+			}
 			add_children.Add(child);
-            child.owner = owner;
+			child.owner = owner;
 		}
 		/// <summary>
 		/// Removes child nodes from this node
@@ -342,8 +342,8 @@ namespace Glorg2.Scene
 		public void Remove(IEnumerable<Node> nodes)
 		{
 			remove_children.AddRange(nodes);
-            foreach (var node in nodes)
-                node.owner = null;
+			foreach (var node in nodes)
+				node.owner = null;
 
 		}
 		/// <summary>
@@ -355,7 +355,7 @@ namespace Glorg2.Scene
 		public void Remove(Node child)
 		{
 			remove_children.Add(child);
-            child.owner = null;
+			child.owner = null;
 		}
 
 		public override int GetHashCode()
@@ -393,7 +393,7 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the orientation of this node
 		/// </summary>
-		public virtual Quaternion Orientation { get { return angular_state.Value; } set { angular_state.Value = value; } }
+		public virtual Quaternion Orientation { get { return orientation; } set { orientation = value; } }
 		/// <summary>
 		/// Gets or sets the velocity of this node
 		/// </summary>
@@ -413,9 +413,9 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the angular momentum for this node
 		/// </summary>
-		public virtual Quaternion AngularVelocity { get { return angular_state.Velocity; } set { angular_state.Velocity = value; } }
+		public virtual Vector4 AngularVelocity { get { return angular_state.Velocity; } set { angular_state.Velocity = value; } }
 
-		public virtual Quaternion ConstAngularAcceleration { get { return angular_acceleration; } set { angular_acceleration = value; } }
+		public virtual Vector4 ConstAngularAcceleration { get { return angular_acceleration; } set { angular_acceleration = value; } }
 		/// <summary>
 		/// Gets the local matrix transform for this object
 		/// </summary>
@@ -436,14 +436,14 @@ namespace Glorg2.Scene
 		/// Names must be strings of at least two characters. 
 		/// Note that names does not necessarily have to be unique.
 		/// This function also generates a hash code which can be obtained from the GetHashCode function</remarks>
-		public string Name 
-		{ 
-			get 
-			{ 
-				return name; 
-			} 
-			set 
-			{ 
+		public string Name
+		{
+			get
+			{
+				return name;
+			}
+			set
+			{
 				name = value;
 				if (!string.IsNullOrEmpty(value) && value.Length > 2)
 				{
@@ -451,7 +451,7 @@ namespace Glorg2.Scene
 				}
 				else
 					hash_code = 0;
-			} 
+			}
 		}
 	}
 }

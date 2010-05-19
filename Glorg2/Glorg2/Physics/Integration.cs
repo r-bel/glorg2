@@ -102,8 +102,8 @@ namespace Glorg2.Physics
 			Quaternion dxdt = 1f / 6 * (a.Velocity + 2f * (b.Velocity + c.Velocity) + d.Velocity);
 			Quaternion dvdt = 1f / 6 * (a.Acceletaion + 2f * (b.Acceletaion + c.Acceletaion) + d.Acceletaion);
 
-			state.Value = (state.Value + dxdt * dt).Normalize();
-			state.Velocity = (state.Velocity + dvdt * dt).Normalize();
+			state.Value = state.Value + dxdt * dt;
+			state.Velocity = state.Velocity + dvdt * dt;
 
 		}
 
