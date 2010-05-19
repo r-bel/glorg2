@@ -79,7 +79,10 @@ namespace Glorg2
 			//if (!IsUnit)
 			{
 				float mag = Magnitude;
-				return new Quaternion(x / mag, y / mag, z / mag, w / mag);
+				if(!float.IsNaN(mag) && mag != 0f)
+					return new Quaternion(x / mag, y / mag, z / mag, w / mag);
+				else 
+					return this;
 			}
 			//else
 				//return this;

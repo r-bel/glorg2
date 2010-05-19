@@ -415,14 +415,14 @@ namespace Glorg2.Scene
 		/// </summary>
 		public virtual Quaternion AngularVelocity { get { return angular_state.Velocity; } set { angular_state.Velocity = value; } }
 
-		public virtual Quaternion ConstAngularAcceleration { get { return angular_momentum; } set { angular_momentum = value; } }
+		public virtual Quaternion ConstAngularAcceleration { get { return angular_acceleration; } set { angular_acceleration = value; } }
 		/// <summary>
 		/// Gets the local matrix transform for this object
 		/// </summary>
 		/// <returns>A translation+rotation matrix representing position and orientation</returns>
 		public virtual Matrix GetTransform()
 		{
-			var mat = orientation.ToMatrix();
+			var mat = Orientation.ToMatrix();
 			mat.m14 = linear_state.Value.x;
 			mat.m24 = linear_state.Value.y;
 			mat.m34 = linear_state.Value.z;
