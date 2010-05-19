@@ -42,8 +42,9 @@ namespace Glorg2.Scene
 
 		internal int hash_code;
 		Physics.ObjectState linear_state;
-		Physics.ObjectState angualar_state;
+		Physics.ObjectStateQuat angular_state;
 		Vector4 acceleration;
+		Quaternion angular_acceleration;
 		Vector4 center_of_mass;
         Vector3 up;
 
@@ -159,10 +160,10 @@ namespace Glorg2.Scene
         /// <param name="state"></param>
         /// <param name="t"></param>
         /// <returns></returns>
-		protected virtual Vector4 AnguralAcceleration(Physics.ObjectState state, float t)
+		protected virtual Quaternion AngularAcceleration(Physics.ObjectStateQuat state, float t)
 		{
 			//return angular_momentum * t;
-			return new Vector4();
+			return angular_acceleration * t;
 		}
 
 		public virtual void DoDispose()
@@ -191,6 +192,7 @@ namespace Glorg2.Scene
 			while(accumulator >= dt)
 			{
 				Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
+				Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectStateQuat, float, Quaternion>(AngularAcceleration));
 				sim_time += dt;
 				accumulator -= dt;
 			}
@@ -380,15 +382,15 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the orientation of this node
 		/// </summary>
-		public virtual Quaternion Orientation { get { return orientation; } set { orientation = value; } }
+		public virtual Quaternion Orientation { get { return angular_state.Value; } set { angular_state.Value = value; } }
 		/// <summary>
 		/// Gets or sets the velocity of this node
 		/// </summary>
-		public virtual Vector4 Velocity { get { return linear_state.Velocity; } set { linear_state.Velocity = value; } }
+		public virtual Vector4 LinearVelocity { get { return linear_state.Velocity; } set { linear_state.Velocity = value; } }
 		/// <summary>
 		/// Gets or sets the acceleration of this node
 		/// </summary>
-		public virtual Vector4 Acceleration { get { return acceleration; } set { acceleration = value; } }
+		public virtual Vector4 ConstLinearAcceleration { get { return acceleration; } set { acceleration = value; } }
 		/// <summary>
 		/// Gets or sets the mass of this node
 		/// </summary>
@@ -400,8 +402,9 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the angular momentum for this node
 		/// </summary>
-		public virtual Quaternion AngularMomentum { get { return angular_momentum; } set { angular_momentum = value; } }
+		public virtual Quaternion AngularVelocity { get { return angular_state.Velocity; } set { angular_state.Velocity = value; } }
 
+		public virtual Quaternion ConstAngularAcceleration { get { return angular_momentum; } set { angular_momentum = value; } }
 		/// <summary>
 		/// Gets the local matrix transform for this object
 		/// </summary>
