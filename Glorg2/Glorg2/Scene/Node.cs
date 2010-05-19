@@ -8,7 +8,7 @@ namespace Glorg2.Scene
 	[Serializable()]
 	public class Node : IDisposable
 	{
-		internal const float dt = 0.0001f;
+		internal const float dt = .001f;
 		[NonSerialized()]
 		private float accumulator;
 		[NonSerialized()]
@@ -190,14 +190,23 @@ namespace Glorg2.Scene
 			//velocity += acceleration * time;
             PerformLookAt();
 			accumulator += time;
-			while(accumulator >= dt)
+			// If we are lagging to much, we need to speed up.
+			if (accumulator > .2f)
 			{
-				Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-				Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectStateQuat, float, Quaternion>(AngularAcceleration));
-				sim_time += dt;
-				accumulator -= dt;
+				Physics.Integration.RK4Integrate(ref linear_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
+				Physics.Integration.RK4Integrate(ref angular_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectStateQuat, float, Quaternion>(AngularAcceleration));
 			}
-			interp = accumulator / dt;
+			else
+			{
+				while (accumulator >= dt)
+				{
+					Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
+					Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectStateQuat, float, Quaternion>(AngularAcceleration));
+					sim_time += dt;
+					accumulator -= dt;
+				}
+				interp = accumulator / dt;
+			}
 			
 		}
 		public virtual void InternalProcess(float time)
