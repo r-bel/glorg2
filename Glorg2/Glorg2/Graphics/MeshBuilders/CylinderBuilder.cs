@@ -109,8 +109,8 @@ namespace Glorg2.Graphics.MeshBuilders
 				ib[index++] = (uint)((i4 + 4 + 3) % (vertices - 2));
 			}
 
-			vb.BufferData(OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
-			ib.BufferData(OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+			vb.BufferData(OpenGL.VboUsage.GL_STATIC_DRAW);
+			ib.BufferData(OpenGL.VboUsage.GL_STATIC_DRAW);
 
 			ret.VertexBuffer = vb;
 			ret.Parts.Add(new ModelPart() { IndexBuffer = ib });

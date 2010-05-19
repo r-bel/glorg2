@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Glorg2.Graphics.OpenGL
 {
-	public abstract class RenderBuffer
+	public abstract class RenderBuffer : IDeviceObject
 	{
 		protected uint handle;
 		FrameBuffer framebuffer;
@@ -20,9 +20,17 @@ namespace Glorg2.Graphics.OpenGL
 			fb.render_buffers.Add(this);
 
 		}
-		protected void MakeCurrent()
+		public void Dispose()
+		{
+			OpenGL.glDeleteRenderbuffers(1, new uint[handle]);
+		}
+		public void MakeCurrent()
 		{
 			OpenGL.glBindRenderbuffer(OpenGL.Const.GL_RENDERBUFFER, handle);
+		}
+		public void MakeNonCurrent()
+		{
+			OpenGL.glBindRenderbuffer(OpenGL.Const.GL_RENDERBUFFER, 0);
 		}
 	}
 

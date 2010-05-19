@@ -185,7 +185,7 @@ namespace Glorg2.Resource
             //uint version2 = ReadInt(source);
             ReadChunk(ch, source, 0);
             ret.GenerateNormals();
-            ret.VertexBuffer.BufferData(Glorg2.Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+            ret.VertexBuffer.BufferData(Glorg2.Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
             return ret as T;
 		}
 
@@ -278,7 +278,7 @@ namespace Glorg2.Resource
                             part.VertexCount = vertex_list.Count;
                             part.IndexBuffer = new Glorg2.Graphics.OpenGL.IndexBuffer<uint>();
                             part.IndexBuffer.Add(index_list);
-                            part.IndexBuffer.BufferData(Glorg2.Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+                            part.IndexBuffer.BufferData(Glorg2.Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
                             ret.Parts.Add(part);
                             index_offset += (uint)vertex_list.Count;
                             vertex_list = null;

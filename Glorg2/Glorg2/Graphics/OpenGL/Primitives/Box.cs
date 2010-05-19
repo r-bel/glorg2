@@ -55,15 +55,15 @@ namespace Glorg2.Graphics.OpenGL.Primitives
 			ib[22] = 5;
 			ib[23] = 1;
 
-			vb.BufferData(OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
-			ib.BufferData(OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+			vb.BufferData(VboUsage.GL_STATIC_DRAW);
+			ib.BufferData(VboUsage.GL_STATIC_DRAW);
 			// Client data is no longer needed. Free it!
 			vb.FreeClientData();
 			ib.FreeClientData();
 		}
 		public override DrawMode DrawMode
 		{
-			get { return Graphics.DrawMode.Quads; }
+			get { return Graphics.DrawMode.Triangles; }
 		}
 	}
 }

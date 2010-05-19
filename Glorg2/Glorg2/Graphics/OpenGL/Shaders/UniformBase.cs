@@ -218,8 +218,6 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 
 	}
 
-
-
 	[Serializable()]
 	public sealed class TextureUniform : UniformBaseType<Texture>
 	{
@@ -227,7 +225,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		int tex_index;
 		public override void SetValue()
 		{
-			OpenGL.glActiveTexture(OpenGL.Const.GL_TEXTURE0 + (uint)tex_index);
+			OpenGL.glActiveTexture(OpenGL.Const.GL_TEXTURE1 + (uint)tex_index);
 			val.MakeCurrent();
 			uniform.SetValue(tex_index);
 		}

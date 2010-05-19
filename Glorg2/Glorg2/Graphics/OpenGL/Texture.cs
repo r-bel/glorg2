@@ -17,17 +17,17 @@ namespace Glorg2.Graphics.OpenGL
 		Bgr = OpenGL.Const.GL_BGR,
 		Rgba = OpenGL.Const.GL_RGBA,
 		Bgra = OpenGL.Const.GL_BGRA,
-		Luminance = OpenGL.Const.GL_LUMINANCE,
-		LuminanceAlpha = OpenGL.Const.GL_LUMINANCE_ALPHA
+		//Luminance = OpenGL.Const.GL_LUMINANCE_EXT,
+		//LuminanceAlpha = OpenGL.Const.GL_LUMINANCE_ALPHA_EXT
 	}
 
 	public enum InternalFormat : uint
 	{
 		Alpha = OpenGL.Const.GL_ALPHA, 
-		Alpha4 = OpenGL.Const.GL_ALPHA4, 
-		Alpha8 = OpenGL.Const.GL_ALPHA8, 
-		Alpha12 = OpenGL.Const.GL_ALPHA12, 
-		Alpha16 = OpenGL.Const.GL_ALPHA16, 
+		Alpha4 = OpenGL.Const.GL_ALPHA4_EXT, 
+		Alpha8 = OpenGL.Const.GL_ALPHA8_EXT, 
+		Alpha12 = OpenGL.Const.GL_ALPHA12_EXT, 
+		Alpha16 = OpenGL.Const.GL_ALPHA16_EXT, 
 		//CompressedAlpha = OpenGL.Const.GL_COMPRESSED_ALPHA, 
 		//CompressedLuminance = OpenGL.Const.GL_COMPRESSED_LUMINANCE, 
 		//CompressedLuminanceAlpha = OpenGL.Const.GL_COMPRESSED_LUMINANCE_ALPHA, 
@@ -38,23 +38,23 @@ namespace Glorg2.Graphics.OpenGL
 		DepthComponent16 = OpenGL.Const.GL_DEPTH_COMPONENT16, 
 		DepthComponent24 = OpenGL.Const.GL_DEPTH_COMPONENT24, 
 		DepthComponent32 = OpenGL.Const.GL_DEPTH_COMPONENT32, 
-		Luminance = OpenGL.Const.GL_LUMINANCE, 
-		Luminance4 = OpenGL.Const.GL_LUMINANCE4, 
-		Luminance8 = OpenGL.Const.GL_LUMINANCE8, 
-		Luminance12 = OpenGL.Const.GL_LUMINANCE12, 
-		Luminance16 = OpenGL.Const.GL_LUMINANCE16, 
-		LuminanceAlpha = OpenGL.Const.GL_LUMINANCE_ALPHA, 
-		Luminance4Alpha4 = OpenGL.Const.GL_LUMINANCE4_ALPHA4, 
-		Luminance6Alpha2 = OpenGL.Const.GL_LUMINANCE6_ALPHA2, 
-		Luminance8Alpha8 = OpenGL.Const.GL_LUMINANCE8_ALPHA8, 
-		Luminance12Alpga4 = OpenGL.Const.GL_LUMINANCE12_ALPHA4,
-		Luminance12Alpha12 = OpenGL.Const.GL_LUMINANCE12_ALPHA12, 
-		Luminance16Alpha16 = OpenGL.Const.GL_LUMINANCE16_ALPHA16, 
-		Intensity = OpenGL.Const.GL_INTENSITY, 
-		Intensity4 = OpenGL.Const.GL_INTENSITY4, 
-		Intensity8 = OpenGL.Const.GL_INTENSITY8, 
-		Intensity12 = OpenGL.Const.GL_INTENSITY12, 
-		Intensity16 = OpenGL.Const.GL_INTENSITY16, 
+		Luminance = OpenGL.Const.GL_LUMINANCE8_EXT, 
+		Luminance4 = OpenGL.Const.GL_LUMINANCE4_EXT, 
+		Luminance8 = OpenGL.Const.GL_LUMINANCE8_EXT, 
+		Luminance12 = OpenGL.Const.GL_LUMINANCE12_EXT, 
+		Luminance16 = OpenGL.Const.GL_LUMINANCE16_EXT, 
+		LuminanceAlpha = OpenGL.Const.GL_LUMINANCE8_EXT, 
+		Luminance4Alpha4 = OpenGL.Const.GL_LUMINANCE4_ALPHA4_EXT, 
+		Luminance6Alpha2 = OpenGL.Const.GL_LUMINANCE6_ALPHA2_EXT, 
+		Luminance8Alpha8 = OpenGL.Const.GL_LUMINANCE8_ALPHA8_EXT, 
+		Luminance12Alpga4 = OpenGL.Const.GL_LUMINANCE12_ALPHA4_EXT,
+		Luminance12Alpha12 = OpenGL.Const.GL_LUMINANCE12_ALPHA12_EXT, 
+		Luminance16Alpha16 = OpenGL.Const.GL_LUMINANCE16_ALPHA16_EXT, 
+		Intensity = OpenGL.Const.GL_INTENSITY_EXT, 
+		Intensity4 = OpenGL.Const.GL_INTENSITY4_EXT, 
+		Intensity8 = OpenGL.Const.GL_INTENSITY8_EXT, 
+		Intensity12 = OpenGL.Const.GL_INTENSITY12_EXT, 
+		Intensity16 = OpenGL.Const.GL_INTENSITY16_EXT, 
 		R3G3B2 = OpenGL.Const.GL_R3_G3_B2, 
 		Rgb = OpenGL.Const.GL_RGB, 
 		Rbb4 = OpenGL.Const.GL_RGB4,
@@ -85,13 +85,13 @@ namespace Glorg2.Graphics.OpenGL
 	{
 		UnsignedByte = OpenGL.Const.GL_UNSIGNED_BYTE,
 		SignedByte = OpenGL.Const.GL_BYTE, 
-		Bitmap = OpenGL.Const.GL_BITMAP, 
+		//Bitmap = OpenGL.Const.GL_BITMAP, 
 		UnsignedShort = OpenGL.Const.GL_UNSIGNED_SHORT, 
 		SignedShort = OpenGL.Const.GL_SHORT, 
 		UnsignedInt = OpenGL.Const.GL_UNSIGNED_INT, 
 		SignedInt = OpenGL.Const.GL_INT, 
 		Float = OpenGL.Const.GL_FLOAT, 
-		Half = OpenGL.Const.GL_HALF_FLOAT_ARB,
+		Half = OpenGL.Const.GL_HALF_FLOAT,
 		UnsignedByte_3_3_2 = OpenGL.Const.GL_UNSIGNED_BYTE_3_3_2, 
 		UnsignedByte_2_3_3_Rev = OpenGL.Const.GL_UNSIGNED_BYTE_2_3_3_REV, 
 		UnsignedShort_5_6_5 = OpenGL.Const.GL_UNSIGNED_SHORT_5_6_5, 
@@ -122,7 +122,7 @@ namespace Glorg2.Graphics.OpenGL
 		public void MakeCurrent(uint active)
 		{
 			OpenGL.glEnable(target);
-			OpenGL.glActiveTextureARB(OpenGL.Const.GL_TEXTURE0 + active);
+			OpenGL.glActiveTexture(OpenGL.Const.GL_TEXTURE1 + active);
 			OpenGL.glBindTexture(target, handle);
 		}
 		public void MakeCurrent()
@@ -265,12 +265,12 @@ namespace Glorg2.Graphics.OpenGL
 
 	public enum CubemapSide
 	{
-			PositiveX = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
-			NegativeX = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
-			PositiveY = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
-			NegativeY = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
-			PositiveZ = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
-			NegativeZ = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB		
+			PositiveX = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_X_EXT,
+			NegativeX = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_X_EXT,
+			PositiveY = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_Y_EXT,
+			NegativeY = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_EXT,
+			PositiveZ = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_POSITIVE_Z_EXT,
+			NegativeZ = (int)OpenGL.Const.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_EXT		
 	}
 	[Serializable()]
 	public sealed class CubeTexture : Texture

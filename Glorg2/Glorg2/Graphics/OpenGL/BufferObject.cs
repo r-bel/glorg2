@@ -35,7 +35,7 @@ namespace Glorg2.Graphics.OpenGL
 			count = 0;
 			size_of_t = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
 			uint[] buffers = new uint[1] { 0 };
-			OpenGL.glGenBuffersARB(1, buffers);
+			OpenGL.glGenBuffers(1, buffers);
 			handle = buffers[0];
 		}
 		/// <summary>
@@ -115,12 +115,12 @@ namespace Glorg2.Graphics.OpenGL
 		/// <remarks>Where the data is stored is implementation specific, and the usage variable is considered a hint, not a command.</remarks>
 		/// <param name="usage">Data usage.</param>
 		/// <seealso cref="Glorg2.Graphics.OpenGL.OpenGL.VboUsage"/>
-		public void BufferData(OpenGL.VboUsage usage)
+		public void BufferData(VboUsage usage)
 		{
 			
-			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, handle);
+			OpenGL.glBindBuffer(target, handle);
 			var h = System.Runtime.InteropServices.GCHandle.Alloc(internal_array, System.Runtime.InteropServices.GCHandleType.Pinned);
-			OpenGL.glBufferDataARB((OpenGL.VboTarget)target, size_of_t * internal_array.Length, h.AddrOfPinnedObject(), usage);
+			OpenGL.glBufferData(target, new IntPtr(size_of_t * internal_array.Length), h.AddrOfPinnedObject(), (uint)usage);
 			h.Free();
 		}
 		/// <summary>
@@ -128,20 +128,20 @@ namespace Glorg2.Graphics.OpenGL
 		/// </summary>
 		public virtual void MakeCurrent()
 		{
-			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, handle);
+			OpenGL.glBindBuffer(target, handle);
 		}
 		/// <summary>
 		/// Sets the current vertex buffer object as null (disabling vertex buffer objects)
 		/// </summary>
 		public virtual void MakeNonCurrent()
 		{
-			OpenGL.glBindBufferARB((OpenGL.VboTarget)target, 0);
+			OpenGL.glBindBuffer(target, 0);
 		}
 		protected void Cleanup()
 		{
 			if (handle != 0)
 			{
-				OpenGL.glDeleteBuffersARB(1, new uint[] { handle });
+				OpenGL.glDeleteBuffers(1, new uint[] { handle });
 				handle = 0;
 			}
 		}
@@ -357,7 +357,7 @@ namespace Glorg2.Graphics.OpenGL
 				size += VertexBufferDescriptor.GetElementSize(desc.types[i]);
 
 			var ptr = System.Runtime.InteropServices.GCHandle.Alloc(internal_array, System.Runtime.InteropServices.GCHandleType.Pinned);
-			OpenGL.glBufferSubDataARB((OpenGL.VboTarget)target, offset, size, ptr.AddrOfPinnedObject());
+			OpenGL.glBufferSubData(target, new IntPtr(offset), new IntPtr(size), ptr.AddrOfPinnedObject());
 			ptr.Free();
 		}
 		public void ApplyStdMaterial(StdMaterial mat)
@@ -425,7 +425,7 @@ namespace Glorg2.Graphics.OpenGL
 		public VertexBuffer(VertexBufferDescriptor desc)
 			: base()
 		{
-			target = (uint)OpenGL.VboTarget.GL_ARRAY_BUFFER_ARB;
+			target = (uint)VboTarget.GL_ARRAY_BUFFER;
 			if (typeof(T) != desc.Type)
 				throw new InvalidCastException("Vertex buffer descriptor does not describe contained type");
 			this.desc = desc;
@@ -458,7 +458,7 @@ namespace Glorg2.Graphics.OpenGL
 				else if (bits == 4 && data_type == ElementType.Integer)
 					gl_datatype = (uint)OpenGL.Const.GL_INT;
 				else if (bits == 2 && data_type == ElementType.Float)
-					gl_datatype = OpenGL.Const.GL_HALF_FLOAT_ARB;
+					gl_datatype = OpenGL.Const.GL_HALF_FLOAT;
 				else if (bits == 4 && data_type == ElementType.Float)
 					gl_datatype = (uint)OpenGL.Const.GL_FLOAT;
 				else if (bits == 8 && data_type == ElementType.Float)
@@ -510,8 +510,8 @@ namespace Glorg2.Graphics.OpenGL
 			{
 				if (elements[i].attribute != 0xffffffff)
 				{
-					OpenGL.glEnableVertexAttribArrayARB(elements[i].attribute);
-					OpenGL.glVertexAttribPointerARB(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
+					OpenGL.glEnableVertexAttribArray(elements[i].attribute);
+					OpenGL.glVertexAttribPointer(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
 				}
 			}
 		}
@@ -520,7 +520,7 @@ namespace Glorg2.Graphics.OpenGL
 			base.MakeNonCurrent();
 			for(int i = 0; i < elements.Count; i++)
 				if(elements[i].attribute != 0xffffffff)
-					OpenGL.glDisableVertexAttribArrayARB(elements[i].attribute);
+					OpenGL.glDisableVertexAttribArray(elements[i].attribute);
 		}
 	}
 	public sealed class IndexBuffer<T> : BufferObject<T>, IIndexBuffer
@@ -533,7 +533,7 @@ namespace Glorg2.Graphics.OpenGL
 		public IndexBuffer()
 			: base()
 		{
-			target = (uint)OpenGL.VboTarget.GL_ELEMENT_ARRAY_BUFFER_ARB;
+			target = (uint)VboTarget.GL_ELEMENT_ARRAY_BUFFER;
 			if (typeof(T) == typeof(byte))
 				type = (uint)OpenGL.Const.GL_UNSIGNED_BYTE;
 			else if (typeof(T) == typeof(sbyte))

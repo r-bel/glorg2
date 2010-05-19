@@ -45,10 +45,8 @@ namespace Glorg2.Graphics.OpenGL
 		public void AttachTexture(CubeTexture tex, CubemapSide side)
 		{
 			MakeCurrent();
-			OpenGL.glFramebufferTextureFaceARB(OpenGL.Const.GL_FRAMEBUFFER, OpenGL.Const.GL_COLOR_ATTACHMENT0, tex.Handle, 0, (uint)side);
-		}
-
-		
+			//OpenGL.glFramebufferTexture(OpenGL.Const.GL_FRAMEBUFFER, OpenGL.Const.GL_COLOR_ATTACHMENT0, tex.Handle, 0, (uint)side);
+		}		
 
 		public void MakeCurrent()
 		{

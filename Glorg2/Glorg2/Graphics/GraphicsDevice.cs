@@ -59,56 +59,28 @@ namespace Glorg2.Graphics
 			context.Samples = 4;
 			// Create context using platform specific methods
 			context.CreateContext(target, null);
-			GL.InitGeneral(context);
+			//GL.InitGeneral(context);
 			//foreach (var str in GL.GetSupportedExtensions())
 				//Console.WriteLine(str);
 
 			var err = GL.glGetError();
+			GL.InitGL_1_2(context);
+			GL.InitGL_1_3(context);
+			GL.InitGL_1_4(context);
+			GL.InitGL_1_5(context);
+			GL.InitGL_2_0(context);
+			GL.InitGL_2_1(context);
+			GL.InitGL_3_0(context);
+			GL.InitGL_3_1(context);
+			GL.InitGL_3_2(context);
 
-			// Setup default attributes
-			attributes = new Dictionary<OpenGL.ElementType, string>();
-			attributes.Add(OpenGL.ElementType.Position, "in_position");
-			attributes.Add(OpenGL.ElementType.Normals, "in_normal");
-			attributes.Add(OpenGL.ElementType.Color, "in_color");
-			//attributes.Add(OpenGL.ElementType.Color, "in_color0");
-			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x01000000, "in_color1");
-			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x02000000, "in_color2");
-			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x03000000, "in_color3");
-			attributes.Add(OpenGL.ElementType.Color | (ElementType)0x04000000, "in_color4");
-			attributes.Add(OpenGL.ElementType.TexCoord, "in_texcoord");
-			//attributes.Add(OpenGL.ElementType.TexCoord, "in_texcoord0");
-			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x01000000, "in_texcoord1");
-			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x02000000, "in_texcoord2");
-			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x03000000, "in_texcoord3");
-			attributes.Add(OpenGL.ElementType.TexCoord | (ElementType)0x04000000, "in_texcoord4");
-
-			GL.InitGl13(context);
-
-			GL.InitGl2(context);
-			GL.InitGL32(context);
-
-			// Initialize Vertex Buffer Objects
-			GL.InitVbo(context);
 			err = GL.glGetError();
-			// Initialize shaders
-			
-			GL.InitShaderProgram(context);
-			err = GL.glGetError();
-
-			GL.InitGpuShader4(context);
-
-			// Initialize occlusion queries
-			GL.InitOcclusionQueries(context);
-			err = GL.glGetError();
-
-			GL.InitMultiTexture(context);
 
 			GL.glEnable(GL.Const.GL_TEXTURE_2D);
 
 			state = new OpenGLState(this);
 			state.Culling = true;
 			state.DepthTest = true;
-			state.Normalize = true;
 			
 			
 		}
@@ -135,7 +107,7 @@ namespace Glorg2.Graphics
 		/// <param name="texture"></param>
 		public void MakeCurrent(OpenGL.Texture texture, uint index)
 		{
-			GL.glActiveTextureARB(index);
+			GL.glActiveTexture(index);
 			GL.glBindTexture((uint)texture.target, texture.Handle);
 		}
 		/// <summary>
@@ -365,9 +337,12 @@ namespace Glorg2.Graphics
 		Triangles = GL.Const.GL_TRIANGLES,
 		TriangleFan = GL.Const.GL_TRIANGLE_FAN,
 		TriangleStrip = GL.Const.GL_TRIANGLE_STRIP,
-		Quads = GL.Const.GL_QUADS,
-		QuadStrip = GL.Const.GL_QUAD_STRIP,
-		Polygon = GL.Const.GL_POLYGON,
+
+		// Quads and polygons not supported in OpenGL 3
+
+		//Quads = GL.Const.GL_QUADS,
+		//QuadStrip = GL.Const.GL_QUAD_STRIP,
+		//Polygon = GL.Const.GL_POLYGON,
 		Points = GL.Const.GL_POINTS,
 		Lines = GL.Const.GL_LINES,
 		LineLoop = GL.Const.GL_LINE_LOOP,
@@ -431,23 +406,6 @@ namespace Glorg2.Graphics
 			}
 		}
 		/// <summary>
-		/// Gets or sets if lighting is enabled
-		/// </summary>
-		public bool Lighting
-		{
-			get
-			{
-				return GL.glIsEnabled(GL.Const.GL_LIGHTING) == GL.boolean.TRUE;
-			}
-			set
-			{
-				if (value)
-					GL.glEnable(GL.Const.GL_LIGHTING);
-				else
-					GL.glDisable(GL.Const.GL_LIGHTING);
-			}
-		}
-		/// <summary>
 		/// Gets or sets if face culling is enabled
 		/// </summary>
 		public bool Culling
@@ -481,23 +439,6 @@ namespace Glorg2.Graphics
 			}
 		}
 		/// <summary>
-		/// Gets or sets automatic normalization
-		/// </summary>
-		public bool Normalize
-		{
-			get
-			{
-				return GL.glIsEnabled(GL.Const.GL_NORMALIZE) == GL.boolean.TRUE;
-			}
-			set
-			{
-				if (value)
-					GL.glEnable(GL.Const.GL_NORMALIZE);
-				else
-					GL.glDisable(GL.Const.GL_NORMALIZE);
-			}
-		}
-		/// <summary>
 		/// Gets polygon mode for a face
 		/// </summary>
 		/// <param name="face">Face to get</param>
@@ -505,7 +446,7 @@ namespace Glorg2.Graphics
 		public PolygonMode GetPolygonMode(CullFace face)
 		{
 				int[] vals = new int[1];
-				GL.glGetIntegerv(GL.Const.GL_POLYGON_MODE, vals);
+				//GL.glGetIntegerv(GL.Const.GL_POLYGON_MODE, vals);
 				return (PolygonMode)vals[0];
 		}
 		/// <summary>
@@ -533,7 +474,7 @@ namespace Glorg2.Graphics
             }
         }
 
-        public bool AlphaTest
+        /*public bool AlphaTest
         {
             get
             {
@@ -546,7 +487,7 @@ namespace Glorg2.Graphics
                 else
                     GL.glDisable(GL.Const.GL_ALPHA_TEST);
             }
-        }
+        }*/
 
         public bool Blend
         {
@@ -582,9 +523,9 @@ namespace Glorg2.Graphics
         {
             get
             {
-                int ret = 0;
-                GL.glGetIntegerv(GL.Const.GL_DEPTH_FUNC, ref ret);
-                return (Test)ret;
+				int[] ret = new int[1];
+                GL.glGetIntegerv(GL.Const.GL_DEPTH_FUNC, ret);
+                return (Test)ret[0];
             }
             set
             {
@@ -592,7 +533,7 @@ namespace Glorg2.Graphics
             }
         }
 
-        public Test AlphaTestFunction
+        /*public Test AlphaTestFunction
         {
             get
             {
@@ -609,12 +550,8 @@ namespace Glorg2.Graphics
                 GL.glGetFloatv(GL.Const.GL_ALPHA_TEST_REF, ref r);
                 return r;
             }
-        }
-        public void SetAlphaFunction(Test value, float reference)
-        {
-            GL.glAlphaFunc((uint)value, reference);
-        }
-
+        }*/
+ 
         public ColorMask ColorMask
         {
             get
