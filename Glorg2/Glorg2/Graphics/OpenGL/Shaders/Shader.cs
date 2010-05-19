@@ -84,12 +84,12 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	public sealed class VertexShader : Shader
 	{
 		public VertexShader(string source, Program parent)
-			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB, parent)
+			: base(source, OpenGL.Const.GL_VERTEX_SHADER, parent)
 		{
 		}
 
 		internal VertexShader(string source)
-			: base(source, OpenGL.Const.GL_VERTEX_SHADER_ARB)
+			: base(source, OpenGL.Const.GL_VERTEX_SHADER)
 		{
 		}
 
@@ -100,11 +100,11 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	public sealed class FragmentShader : Shader
 	{
 		public FragmentShader(string source, Program parent)
-			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER_ARB, parent)
+			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER, parent)
 		{
 		}
 		internal FragmentShader(string source)
-			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER_ARB)
+			: base(source, OpenGL.Const.GL_FRAGMENT_SHADER)
 		{
 		}
 	}
@@ -114,11 +114,11 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 	public sealed class GeometryShader : Shader
 	{
 		public GeometryShader(string source, Program parent)
-			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER_ARB, parent)
+			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER, parent)
 		{
 		}
 		internal GeometryShader(string source)
-			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER_ARB)
+			: base(source, OpenGL.Const.GL_GEOMETRY_SHADER)
 		{
 		}
 	}

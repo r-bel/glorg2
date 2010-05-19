@@ -77,7 +77,7 @@ namespace Glorg2.Resource
 				Name = name
 			};
 			part.IndexBuffer.Add(indices);
-			part.IndexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+			part.IndexBuffer.BufferData(Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
 			mod.Parts.Add(part);
 			//mod.VertexBuffer.Add(verts);
 			return count;
@@ -199,7 +199,7 @@ namespace Glorg2.Resource
 					Emit(pos, tex, nrm, indices, vi, ret, name);
 
 				ret.VertexBuffer.Add(verts);
-				ret.VertexBuffer.BufferData(Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+				ret.VertexBuffer.BufferData(Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
 				verts = null;
 				indices = null;
 				unique = null;

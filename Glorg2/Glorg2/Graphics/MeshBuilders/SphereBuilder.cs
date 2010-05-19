@@ -60,7 +60,7 @@ namespace Glorg2.Graphics.MeshBuilders
 				};
 			}
             ret.VertexBuffer = vb;
-            vb.BufferData(Glorg2.Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+            vb.BufferData(Glorg2.Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
 			return ret;
 		}
 	}

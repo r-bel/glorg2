@@ -25,7 +25,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(int value)
 		{
-			OpenGL.glUniform1iARB(location, value);
+			OpenGL.glUniform1i(location, value);
 		}
 		/// <summary>
 		/// Sets the value of this uniform as a 32-bit floating point
@@ -33,7 +33,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(float value)
 		{
-			OpenGL.glUniform1fARB(location, value);
+			OpenGL.glUniform1f(location, value);
 		}
 		/// <summary>
 		/// Sets the value of this uniform as an 2-dimensional vector of 32-bit floating points
@@ -41,7 +41,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(Vector2 value)
 		{
-			OpenGL.glUniform2fvARB(location, 2, ref value);
+			OpenGL.glUniform2fv(location, 2, ref value);
 		}
 		/// <summary>
 		/// Sets the value of this uniform as an 3-dimensional vector of 32-bit floating points
@@ -49,7 +49,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		/// <param name="value"></param>
 		public void SetValue(Vector3 value)
 		{
-			OpenGL.glUniform3fvARB(location, 3, ref value);
+			OpenGL.glUniform3fv(location, 3, ref value);
 		}
 		/// <summary>
 		/// Sets the value of this uniform as an 4-dimensional vector of 32-bit floating points
@@ -74,7 +74,6 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		{
 			OpenGL.glUniform4i(location, value.x, value.y, value.z, value.w);
 		}
-
 
 		/// <summary>
 		/// Sets the value of this uniform as an 4x4 matrix of floating points

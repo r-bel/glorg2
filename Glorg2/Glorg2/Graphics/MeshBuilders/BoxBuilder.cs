@@ -234,8 +234,8 @@ namespace Glorg2.Graphics.MeshBuilders
                 offset = AddFaces(i * 4, offset, ib);
             }
 
-            vb.BufferData(Glorg2.Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
-            ib.BufferData(Glorg2.Graphics.OpenGL.OpenGL.VboUsage.GL_STATIC_DRAW_ARB);
+            vb.BufferData(Glorg2.Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
+            ib.BufferData(Glorg2.Graphics.OpenGL.VboUsage.GL_STATIC_DRAW);
 
             return ret;
             

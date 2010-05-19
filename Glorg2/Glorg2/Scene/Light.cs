@@ -10,13 +10,6 @@ namespace Glorg2.Scene
 	[Serializable()]
 	public class Light : Node
 	{
-
-		//private static HashSet<uint> Lights = new List<uint>();
-
-		
-
-		private static uint lights;
-
 		private bool enabled;
 		private float inner_radius;
 		private float outer_radius;
@@ -39,17 +32,6 @@ namespace Glorg2.Scene
 			enabled = true;
 		}
 
-		internal static void DisableAllLights()
-		{
-			for (int i = 0; i < lights; i++)
-				OpenGL.glDisable((uint)(OpenGL.Const.GL_LIGHT0 + i));
-			lights = 0;
-		}
-		private static uint CreateLight()
-		{
-			return OpenGL.Const.GL_LIGHT0 + lights++;
-		}
-
 		public bool Enabled
 		{
 			get
@@ -61,22 +43,6 @@ namespace Glorg2.Scene
 				enabled = value;
 			}
 		}
-
-		internal void SetLight()
-		{
-			if (enabled)
-			{
-				//uint index = CreateLight();
-				//OpenGL.glEnable(index);
-				//OpenGL.glLightfv(index, OpenGL.Const.GL_POSITION, new float[] {0, 0, 0, 1});
-				//OpenGL.glLightfv(index, OpenGL.Const.GL_DIFFUSE, ref diffuse);
-				//OpenGL.glLightfv(index, OpenGL.Const.GL_SPECULAR, ref diffuse);
-				//OpenGL.glLightf(index, OpenGL.Const.GL_INTENSITY, intensity);
-			}
-		}
-
-
-
 
 	}
 }
