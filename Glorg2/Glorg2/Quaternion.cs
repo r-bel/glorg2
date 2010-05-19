@@ -84,6 +84,19 @@ namespace Glorg2
 			//else
 				//return this;
 		}
+		public static Quaternion operator +(Quaternion a, Quaternion b)
+		{
+			return new Quaternion(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w).Normalize();
+		}
+		public static Quaternion operator *(Quaternion a, float b)
+		{
+			return new Quaternion(a.x, a.y, a.z, a.w * b);
+		}
+		public static Quaternion operator *(float a, Quaternion b)
+		{
+			return new Quaternion(b.x, b.y, b.z, b.w * a);
+		}
+
 		public static Quaternion operator *(Quaternion a, Quaternion b)
 		{
             return new Quaternion()
