@@ -21,7 +21,23 @@ namespace Glorg2
 		public Vector3 Position;
 		public Vector3 Size;
 
-		
+
+		public BoundingBox Scale(float scale)
+		{
+			return new BoundingBox()
+			{
+				Position = this.Position,
+				Size = this.Size * scale
+			};
+		}
+		public BoundingBox Scale(Vector3 scale)
+		{
+			return new BoundingBox()
+			{
+				Position = this.Position,
+				Size = this.Size * scale
+			};
+		}
 
 		
 

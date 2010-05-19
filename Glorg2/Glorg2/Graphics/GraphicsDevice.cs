@@ -55,7 +55,9 @@ namespace Glorg2.Graphics
 				context = new OpenGL.glXContext();
 			else if ((Environment.OSVersion.Platform & PlatformID.MacOSX) == PlatformID.MacOSX)
 				throw new NotSupportedException("Mac OS X not yet supported.");
-
+			modelview = Matrix.Identity;
+			projection = Matrix.Identity;
+			texture = Matrix.Identity;
 			context.Samples = 4;
 			// Create context using platform specific methods
 			context.CreateContext(target, null);
