@@ -105,6 +105,7 @@
     <Compile Include="Graphics\OpenGL\Shaders\UniformBase.cs" />
     <Compile Include="Graphics\OpenGL\Texture.cs" />
     <Compile Include="Graphics\StdMaterial.cs" />
+    <Compile Include="Physics\Force.cs" />
     <Compile Include="VectorInt.cs" />
     <Compile Include="Graphics\OpenGL\WglContext.cs" />
     <Compile Include="Graphics\OpenGL\glXContext.cs" />

@@ -55,13 +55,13 @@ namespace Glorg2.Physics
 		/// <param name="state">Physics state</param>
 		/// <param name="t">Time</param>
 		/// <param name="dt">Time derived (step)</param>
-		/// <param name="acceleration"></param>
+		/// <param name="acceleration">Acceleration function</param>
 		public static void RK4Integrate(ref ObjectState state, float t, float dt, Func<ObjectState, float, Vector4> acceleration)
 		{
          StateDerivative a = EulerEvaluate(state, t, 0.0f, new StateDerivative(), acceleration);
          StateDerivative b = EulerEvaluate(state, t + dt * .5f, dt * .5f, a, acceleration);
          StateDerivative c = EulerEvaluate(state, t + dt * .5f, dt * .5f, b, acceleration);
-         StateDerivative d = EulerEvaluate(state, t+dt, dt, c, acceleration);
+         StateDerivative d = EulerEvaluate(state, t + dt, dt, c, acceleration);
 
          Vector4 dxdt = 1f / 6 * (a.Velocity + 2 *(b.Velocity + c.Velocity) + d.Velocity);
 		 Vector4 dvdt = 1f / 6 * (a.Acceletaion + 2 * (b.Acceletaion + c.Acceletaion) + d.Acceletaion);
@@ -69,6 +69,15 @@ namespace Glorg2.Physics
          state.Value = state.Value + dxdt * dt;
          state.Velocity = state.Velocity + dvdt * dt;
 
+		}
+
+		public static float RK4(float x, float y, float dt, Func<float, float, float> f)
+		{
+			float K1 = (dt * f(x, y));
+			float K2 = (dt * f((x + .5f * dt), (y + .5f * K1)));
+			float K3 = (dt * f((x + .5f * dt), (y + .5f * K2)));
+			float K4 = (dt * f((x + dt), (y + K3)));
+			return (y + ((K1 + 2 * K2 + 2 * K3 + K4) / 6));
 		}
 
 		public static StateDerivativeQuat EulerEvaluate(ObjectStateQuat initial, float t, float dt, StateDerivativeQuat der, Func<ObjectStateQuat, float, Quaternion> acceleration)
