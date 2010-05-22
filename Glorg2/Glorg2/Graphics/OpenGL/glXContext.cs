@@ -13,7 +13,6 @@ namespace Glorg2.Graphics.OpenGL
 		public const string XDllName = "libX11.so";
 
 
-		private IntPtr display;
 		private IntPtr wnd;
 		private IntPtr visual;
 		public struct XVisualInfo
@@ -76,6 +75,11 @@ namespace Glorg2.Graphics.OpenGL
 		private const int GLX_RGBA = 4;
 		public const int GLX_DEPTH_SIZE = 12;
 		public const int GLX_DOUBLEBUFFER = 5;
+		public const int GLX_CONTEXT_MAJOR_VERSION_ARB = 0x2091;
+		public const int GLX_CONTEXT_MINOR_VERSION_ARB = 0x2092;
+		public delegate IntPtr XCreateContextAttribsARBProc(IntPtr display, IntPtr GLXFBConfig, IntPtr share_context, bool something, int[] parameters);
+
+		public static XCreateContextAttribsARBProc glXCreateContextAttribsARB;
 
 		public override T GetProc<T>(string procname)
 		{
@@ -144,6 +148,28 @@ namespace Glorg2.Graphics.OpenGL
 				throw new InvalidOperationException("Unable to create OpenGL context");
 
 			Glx.glXMakeCurrent(display, visual, handle);
+
+			int[] parameters = new int[]
+			{
+				GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+				GLX_CONTEXT_MINOR_VERSION_ARB, 2,
+				0
+			};
+
+			glXCreateContextAttribsARB = GetProc<XCreateContextAttribsARBProc>("glXCreateContextAttribsARB");
+
+			if (glXCreateContextAttribsARB == null)
+				throw new NotSupportedException("OpenGL 3.0 not supported.");
+
+			IntPtr new_handle = glXCreateContextAttribsARB(display, info_ptr, share.Handle, true, parameters);
+			if (new_handle == IntPtr.Zero)
+				throw new NotSupportedException("OpenGL 3.0 not supported.");
+
+			Glx.glXMakeCurrent(display, visual, IntPtr.Zero);
+			Glx.glXDestroyContext(display, handle);
+			Glx.glXMakeCurrent(display, visual, new_handle);
+			handle = new_handle;
+
 
 		}
 

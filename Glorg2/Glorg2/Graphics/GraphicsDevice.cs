@@ -5,7 +5,6 @@ using System.Text;
 using Glorg2.Graphics.OpenGL;
 using GL = Glorg2.Graphics.OpenGL.OpenGL;
 using Glorg2.Graphics;
-using Glorg2.Graphics.OpenGL;
 using Glorg2.Graphics.OpenGL.Shaders;
 namespace Glorg2.Graphics
 {

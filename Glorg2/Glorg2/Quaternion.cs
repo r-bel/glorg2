@@ -156,7 +156,16 @@ namespace Glorg2
             };
 
         }
+		public static Quaternion FromGreatCircle(Vector3 a, Vector3 b)
+		{
+			Vector3 axis = Vector3.Cross(a, b);
+			float angle = (float)Math.Acos(Vector3.Dot(a, b));
 
+			axis = axis.Normalize();
+
+			return FromAxisAngle(angle, axis);
+
+		}
 		/// <summary>
 		/// Creates a new matrix representing the quaternion
 		/// </summary>
