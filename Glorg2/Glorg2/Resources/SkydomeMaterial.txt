@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<material>
+	<VertexShader>
+	#version 140
+	uniform mat4 projection_mat;
+	uniform mat4 modelview_mat;
+	
+	in vec3 in_normal;
+	in vec4 in_position;
+	
+
+	out vec4 position;
+	out vec3 normal;
+
+	void main()
+	{	
+		position = projection_mat * modelview_mat * in_position;
+		gl_Position = position;
+		normal = in_normal;
+	} 
+	</VertexShader>
+
+	<FragmentShader>
+	#version 140
+	in vec4 position;	
+	in vec3 normal;
+
+	out vec4 out_frag;
+
+	void main()
+	{
+		vec4 clrb = vec4(0, 0, 0.7490196, 1);
+		vec4 clra = vec4(0.5294118, 0.8078431, 0.9215686, 1);
+	    float i = -normal.y;
+		out_frag = mix(clra, clrb, i);
+	}
+	</FragmentShader>
+</material>

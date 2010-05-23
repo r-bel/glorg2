@@ -67,6 +67,7 @@ namespace Glorg2.Resource
 				if (!prog.Compile())
 				{
 					StringBuilder err = new StringBuilder();
+					err.AppendLine("Compile and link failed for " + source_name);
 					foreach (var sh in prog.shaders)
 					{
 						err.AppendLine(sh.GetType().Name + " " + sh.SourceName + ":");
