@@ -481,6 +481,14 @@ namespace Glorg2.Graphics.OpenGL
 			if(sub.Length >= 3)
 				int.TryParse(sub[0], out revision);
 
+			System.Diagnostics.Debug.WriteLine("OpenGL version " + major + "." + minor + " supported by your system.");
+
+			if (major < 3)
+				throw new NotSupportedException("OpenGL 3 is not supported.");
+			if (minor < 2 && major == 3)
+				System.Diagnostics.Debug.WriteLine("OpenGL 3.2 is not supported. Consider upgrading display drivers.");
+				
+
 			if (wglCreateContextAttribsARB != null)
 			{
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <material>
 	<VertexShader>
-	#version 140
+	#version 130
 	uniform mat4 projection_mat;
 	uniform mat4 modelview_mat;
 	
@@ -21,7 +21,7 @@
 	</VertexShader>
 
 	<FragmentShader>
-	#version 140
+	#version 130
 	in vec4 position;	
 	in vec3 normal;
 
