@@ -10,10 +10,12 @@ namespace Glorg2.Resource
 		List<ResourceImporter> importers;
 		List<Resource> resources;
 
+
 		public ResourceManager()
 		{
 			var asm = System.Reflection.Assembly.GetCallingAssembly();
-			var types = asm.GetTypes();
+			var types = new List<Type>(asm.GetTypes());
+			types.AddRange(System.Reflection.Assembly.GetEntryAssembly().GetTypes());
 			importers = new List<ResourceImporter>();
 			resources = new List<Resource>();
 			foreach (var t in types)
@@ -48,6 +50,18 @@ namespace Glorg2.Resource
 				return new System.IO.FileStream(fname, System.IO.FileMode.Open, System.IO.FileAccess.Read);
 			else
 			{
+				try
+				{
+					object res = Properties.Resources.ResourceManager.GetObject(res_name);
+					if (res is string)
+						return new System.IO.MemoryStream(Encoding.UTF8.GetBytes(res as string), false);
+					else
+						return null;
+				}
+				catch (Exception)
+				{
+					return null;
+				}
 				return null;
 			}
 		}

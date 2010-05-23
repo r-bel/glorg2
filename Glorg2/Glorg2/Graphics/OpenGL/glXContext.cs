@@ -114,7 +114,7 @@ namespace Glorg2.Graphics.OpenGL
 							//Glx.GLX_STENCIL_SIZE    , 8,
 							Glx.GLX_DOUBLEBUFFER    , 1,
 							0, 0 };
-
+			
 			API.MapWindow(display, wnd);
 			int def_screen = API.DefaultScreen(display);
 			Console.WriteLine("Display: 0x" + display.ToString("x"));
@@ -169,6 +169,8 @@ namespace Glorg2.Graphics.OpenGL
 			Glx.glXDestroyContext(display, handle);
 			Glx.glXMakeCurrent(display, visual, new_handle);
 			handle = new_handle;
+
+			Console.WriteLine("glX Initialization succeded.");
 
 
 		}

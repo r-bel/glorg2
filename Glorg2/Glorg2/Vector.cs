@@ -394,6 +394,7 @@ namespace Glorg2
 			ret.y = float.Parse(y, prov);
 			ret.z = float.Parse(z, prov);
 			ret.w = float.Parse(w, prov);
+			
 			return ret;
 		}
 		public static Vector4 Parse(string input)

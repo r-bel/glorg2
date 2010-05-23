@@ -118,9 +118,7 @@ namespace Glorg2.Graphics
 		public void SetVertexBuffer(OpenGL.IVertexBuffer vert)
 		{
 			if (vertex_buffer != null)
-			{
 				vertex_buffer.MakeNonCurrent();
-			}
 			if (vert != null)
 			{
 				if(active_shader != null && active_shader is StdMaterial)
@@ -218,28 +216,41 @@ namespace Glorg2.Graphics
 		/// <remarks>This function uses the currently set vertex and index buffer (if any) If no index buffer is set, the function will assume that elements follows each other in the vertex buffer.</remarks>
 		public void Draw(DrawMode mode)
 		{
-			if (modelview_changed && modelview_uniform != null)
+			Draw(mode, true);
+		}
+
+		/// <summary>
+		/// Draw buffers
+		/// </summary>
+		/// <param name="mode">Element type to draw</param>
+		/// <remarks>This function uses the currently set vertex and index buffer (if any) If no index buffer is set, the function will assume that elements follows each other in the vertex buffer.</remarks>
+		public void Draw(DrawMode mode, bool update_values)
+		{
+			if (update_values)
 			{
-				modelview_uniform.Value = modelview;
-				modelview_uniform.SetValue();
-				modelview_changed = false;
-			}
-			if (projection_changed && projection_uniform != null)
-			{
-				projection_uniform.Value = projection;
-				projection_uniform.SetValue();
-				projection_changed = false;
-			}
-			if (texture_changed && texture_uniform != null)
-			{
-				texture_uniform.Value = texture;
-				texture_uniform.SetValue();
-				texture_changed = false;
-			}
-			if (active_shader != null)
-			{
-				foreach (var u in active_shader.uniforms)
-					u.SetValue();
+				if (modelview_changed && modelview_uniform != null)
+				{
+					modelview_uniform.Value = modelview;
+					modelview_uniform.SetValue();
+					modelview_changed = false;
+				}
+				if (projection_changed && projection_uniform != null)
+				{
+					projection_uniform.Value = projection;
+					projection_uniform.SetValue();
+					projection_changed = false;
+				}
+				if (texture_changed && texture_uniform != null)
+				{
+					texture_uniform.Value = texture;
+					texture_uniform.SetValue();
+					texture_changed = false;
+				}
+				if (active_shader != null)
+				{
+					foreach (var u in active_shader.uniforms)
+						u.SetValue();
+				}
 			}
 			if (vertex_buffer == null)
 				throw new InvalidOperationException("No vertex buffer has been set.");
