@@ -36,6 +36,7 @@ namespace Glorg2
 
 		public static int Hash(string data)
 		{
+
 			return Hash(Encoding.Unicode.GetBytes(data));
 		}
 
@@ -50,6 +51,9 @@ namespace Glorg2
 
 		public static int Hash(byte[] data)
 		{
+			var hash = System.Security.Cryptography.MD5.Create();
+			var ret = hash.ComputeHash(data);
+			return BitConverter.ToInt32(ret, 0);
 			unchecked
 			{
 				uint result;

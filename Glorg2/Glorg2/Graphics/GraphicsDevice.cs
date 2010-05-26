@@ -88,17 +88,25 @@ namespace Glorg2.Graphics
 
 		public void SetActiveMaterial(Graphics.Material material)
 		{
-			active_shader = material;
-			active_shader.MakeCurrent();
-			var std = material as IStdShader;
-
-			if (std != null)
+			if (active_shader != material)
 			{
-				projection_uniform = std.Projection;
-				modelview_uniform = std.ModelView;
-				texture_uniform = std.Texture;
+				if (active_shader != null)
+				{
+					active_shader.MakeNonCurrent();
+				}
+
+				active_shader = material;
+				active_shader.MakeCurrent();
+				var std = material as IStdShader;
+
+				if (std != null)
+				{
+					projection_uniform = std.Projection;
+					modelview_uniform = std.ModelView;
+					texture_uniform = std.Texture;
+				}
+				active_shader.Shader.SetFragmentOutput("out_frag");
 			}
-			active_shader.Shader.SetFragmentOutput("out_frag", 0);
 		}
         
 

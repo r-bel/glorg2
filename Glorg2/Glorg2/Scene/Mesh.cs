@@ -46,8 +46,7 @@ namespace Glorg2.Scene
 				}
 				dev.SetIndexBuffer(null);
 				dev.SetVertexBuffer(null);
-				if (mat != null)
-					mat.MakeNonCurrent();
+				dev.SetActiveMaterial(null);
 			}
 			
 		}
