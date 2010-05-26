@@ -36,13 +36,13 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 			OpenGL.glUseProgram(0);
 		}
 
-		public void SetFragmentOutput(string name, uint color)
+		public void SetFragmentOutput(string name, uint colorNumber)
 		{
-			OpenGL.glBindFragDataLocation(handle, color, name);
+			OpenGL.glBindFragDataLocation(handle, colorNumber, name);
 		}
 		public void SetFragmentOutput(string name)
 		{
-			OpenGL.glBindFragDataLocation(handle, 0, name);
+			OpenGL.glBindFragDataLocation(handle, 1, name);
 		}
 
 		public int GetAttributeLocation(string attribute)

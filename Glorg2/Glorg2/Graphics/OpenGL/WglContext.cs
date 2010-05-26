@@ -494,8 +494,8 @@ namespace Glorg2.Graphics.OpenGL
 
 				int[] attribs = new int[]
 				{
-					WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-					WGL_CONTEXT_MINOR_VERSION_ARB, 2, 
+					WGL_CONTEXT_MAJOR_VERSION_ARB, major,
+					WGL_CONTEXT_MINOR_VERSION_ARB, minor, 
 					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
 					WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 
 					0
@@ -507,16 +507,17 @@ namespace Glorg2.Graphics.OpenGL
 				wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 				
 				wglDeleteContext(handle);
+				handle = IntPtr.Zero;
 				if (newhandle != IntPtr.Zero) // If OpenGL 3.0 context creation failed, fallback to legacy 2.x
 					handle = newhandle;
+				else
+					throw new NotSupportedException("Could not initialize OpenGL " + major + "." + minor);
 			}
 			else
 				throw new NotSupportedException("OpenGL 3.2 is not supported by your system.");
 
 			if (handle != IntPtr.Zero)
 			{
-				//wglMakeContextCurrentARB = GetProc<MakeContextCurrentARB>("wglMakeContextCurrentARB");
-				//wglMakeContextCurrentARB(hdc, IntPtr.Zero, handle);
 				wglMakeCurrent(hdc, handle);
 			}
 			else

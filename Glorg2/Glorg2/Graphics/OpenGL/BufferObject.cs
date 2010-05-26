@@ -537,13 +537,13 @@ namespace Glorg2.Graphics.OpenGL
 			if (typeof(T) == typeof(byte))
 				type = (uint)OpenGL.Const.GL_UNSIGNED_BYTE;
 			else if (typeof(T) == typeof(sbyte))
-				type = (uint)OpenGL.Const.GL_BYTE;
+				type = (uint)OpenGL.Const.GL_UNSIGNED_BYTE;
 			else if (typeof(T) == typeof(short))
-				type = (uint)OpenGL.Const.GL_SHORT;
+				type = (uint)OpenGL.Const.GL_UNSIGNED_SHORT;
 			else if (typeof(T) == typeof(ushort))
 				type = (uint)OpenGL.Const.GL_UNSIGNED_SHORT;
 			else if (typeof(T) == typeof(int))
-				type = (uint)OpenGL.Const.GL_INT;
+				type = (uint)OpenGL.Const.GL_UNSIGNED_INT;
 			else if (typeof(T) == typeof(uint))
 				type = (uint)OpenGL.Const.GL_UNSIGNED_INT;
 			else

@@ -106,6 +106,7 @@ namespace Glorg2.Resource
                     if (stream != null)
                     {
                         var res = imp.Import<T>(stream, name, this);
+						res.SourceName = name;
                         res.handled = true;
                         ++res.Links;
                         lock (resources)
