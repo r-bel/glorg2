@@ -144,6 +144,17 @@ namespace Glorg2
                 w = cz * cy * cx + sz * sy * sx
             };
         }
+
+		/// <summary>
+		/// Gets a directional vector for this quaternion
+		/// </summary>
+		/// <returns>A rotated by the quaternion</returns>
+		public Vector3 ToNormal()
+		{
+			Matrix mat = ToMatrix().Transpose();
+			return mat * new Vector3(0, 0, -1);
+		}
+
         public static Quaternion FromAxisAngle(float angle, Vector3 axis)
         {
 			float s = (float)Math.Sin(angle / 2);

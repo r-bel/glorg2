@@ -114,7 +114,7 @@ namespace Glorg2.Scene
 			if (this.owner.Device != null)
 			{
 
-				var worldview = camera.Value.GetCameraTransform();
+				var worldview = camera.Value.GetTransform().Invert();
 				var proj = camera.Value.GetProjectionMatrix();
 				var vp = this.owner.Device.Viewport;
 				var p = (worldview * proj).Invert() * new Vector3(
