@@ -197,9 +197,10 @@ namespace Glorg2
 				scene.sim_time += frame_time;
 				FrameStep(frame_time);
 				if (scene.camera.Value != null)
-					scene.local_transform = scene.camera.Value.GetCameraTransform();
+					scene.local_transform = scene.camera.Value.GetTransform().Invert();
 				else
-					scene.local_transform = Matrix.Identity;						 
+					scene.local_transform = Matrix.Identity;
+
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;

@@ -14,15 +14,6 @@ namespace Glorg2.Scene
 
 		protected abstract Matrix BuildCamera();
 
-		public virtual Matrix GetCameraTransform()
-		{
-			var or = Orientation;
-			or.w = -or.w;
-			var mat = or.ToMatrix();
-			var trans = Matrix.Translate(Position);
-			return mat * trans;
-		}
-
         public void SetActive()
         {
 			owner.camera.Value = this;

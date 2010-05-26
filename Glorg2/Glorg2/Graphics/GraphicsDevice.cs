@@ -17,20 +17,32 @@ namespace Glorg2.Graphics
 		internal IVertexBuffer vertex_buffer;
 		internal IIndexBuffer index_buffer;
 
-		private Matrix modelview;
-		private Matrix projection;
-		private Matrix texture;
+
+		public class MatrixState
+		{
+
+			public MatrixState()
+			{
+				matrix = Matrix.Identity;
+				changed = true;
+			}
+
+			internal MatrixUniform uniform;
+			internal Matrix matrix;
+			private bool changed;
+			public bool Changed { internal set { changed = value; } get { return changed && uniform != null; } }
+			public Matrix Value { get { return matrix; } set { matrix = value;  Changed = true; } }
+			public void Update()
+			{
+				if (changed && uniform != null)
+					uniform.Value = matrix;
+			}
+		}
 
 
-		private bool projection_changed;
-		private bool modelview_changed;
-		private bool texture_changed;
-
-		private MatrixUniform projection_uniform;
-		private MatrixUniform modelview_uniform;
-		private MatrixUniform texture_uniform;
-
-		Dictionary<ElementType, string> attributes;
+		MatrixState projection_matrix;
+		MatrixState modelview_matrix;
+		MatrixState texture_matrix;
 
 		private Material active_shader;
 
@@ -54,15 +66,17 @@ namespace Glorg2.Graphics
 				context = new OpenGL.glXContext();
 			else if ((Environment.OSVersion.Platform & PlatformID.MacOSX) == PlatformID.MacOSX)
 				throw new NotSupportedException("Mac OS X not yet supported.");
-			modelview = Matrix.Identity;
-			projection = Matrix.Identity;
-			texture = Matrix.Identity;
+
 			context.Samples = 4;
 			// Create context using platform specific methods
 			context.CreateContext(target, null);
 			//GL.InitGeneral(context);
 			//foreach (var str in GL.GetSupportedExtensions())
 				//Console.WriteLine(str);
+
+			modelview_matrix = new MatrixState();
+			projection_matrix = new MatrixState();
+			texture_matrix = new MatrixState();
 
 			var err = GL.glGetError();
 			GL.InitGL_1_2(context);
@@ -96,16 +110,19 @@ namespace Glorg2.Graphics
 				}
 
 				active_shader = material;
-				active_shader.MakeCurrent();
-				var std = material as IStdShader;
-
-				if (std != null)
+				if (active_shader != null)
 				{
-					projection_uniform = std.Projection;
-					modelview_uniform = std.ModelView;
-					texture_uniform = std.Texture;
+					active_shader.MakeCurrent();
+					var std = material as IStdShader;
+
+					if (std != null)
+					{
+						projection_matrix.uniform = std.Projection;
+						modelview_matrix.uniform = std.ModelView;
+						texture_matrix.uniform = std.Texture;
+					}
+					active_shader.Shader.SetFragmentOutput("out_frag");
 				}
-				active_shader.Shader.SetFragmentOutput("out_frag");
 			}
 		}
         
@@ -236,24 +253,10 @@ namespace Glorg2.Graphics
 		{
 			if (update_values)
 			{
-				if (modelview_changed && modelview_uniform != null)
-				{
-					modelview_uniform.Value = modelview;
-					modelview_uniform.SetValue();
-					modelview_changed = false;
-				}
-				if (projection_changed && projection_uniform != null)
-				{
-					projection_uniform.Value = projection;
-					projection_uniform.SetValue();
-					projection_changed = false;
-				}
-				if (texture_changed && texture_uniform != null)
-				{
-					texture_uniform.Value = texture;
-					texture_uniform.SetValue();
-					texture_changed = false;
-				}
+					modelview_matrix.Update();
+					projection_matrix.Update();
+					texture_matrix.Update();
+				
 				if (active_shader != null)
 				{
 					foreach (var u in active_shader.uniforms)
@@ -263,9 +266,7 @@ namespace Glorg2.Graphics
 			if (vertex_buffer == null)
 				throw new InvalidOperationException("No vertex buffer has been set.");
 			if (index_buffer != null)
-			{
 				GL.glDrawElements((uint)mode, index_buffer.Count, index_buffer.Type, IntPtr.Zero);
-			}
 			else
 				GL.glDrawArrays((uint)mode, 0, vertex_buffer.Count);
 		}
@@ -276,16 +277,12 @@ namespace Glorg2.Graphics
 		{
 			get
 			{
-				//Matrix ret = new Matrix();
-				//GL.glGetFloatv(GL.Const.GL_PROJECTION_MATRIX, ref ret);
-				return projection; ;
+				return projection_matrix.Value;
 			}
 			set
 			{
-				//GL.glMatrixMode((uint)GL.Const.GL_PROJECTION);
-				//GL.glLoadMatrixf(ref value);
-				projection = value;
-				projection_changed = true;
+				projection_matrix.Value = value;
+				
 			}
 		}
 		/// <summary>
@@ -295,16 +292,12 @@ namespace Glorg2.Graphics
 		{
 			get
 			{
-				//Matrix ret = new Matrix();
-				//GL.glGetFloatv(GL.Const.GL_MODELVIEW_MATRIX, ref ret);
-				return modelview;
+				return modelview_matrix.Value;
 			}
 			set
 			{
-				//GL.glMatrixMode((uint)GL.Const.GL_MODELVIEW);
-				//GL.glLoadMatrixf(ref value);
-				modelview = value;
-				modelview_changed = true;
+				modelview_matrix.Value = value;
+				
 			}
 		}
 		/// <summary>
@@ -314,17 +307,12 @@ namespace Glorg2.Graphics
 		{
 			get
 			{
-				//Matrix ret = new Matrix();
-				//GL.glGetFloatv(GL.Const.GL_TEXTURE_MATRIX, ref ret);
-				return texture;
+				return texture_matrix.Value;
 
 			}
 			set
 			{
-				//GL.glMatrixMode((uint)GL.Const.GL_TEXTURE);
-				//GL.glLoadMatrixf(ref value);
-				texture = value;
-				texture_changed = true;
+				texture_matrix.Value = value;
 			}
 		}
 		/// <summary>
