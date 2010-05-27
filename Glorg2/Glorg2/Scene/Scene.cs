@@ -42,6 +42,9 @@ namespace Glorg2.Scene
 		public Camera Camera { get { return camera.Value; } set { camera.Value = value; } }
 		public Game Owner { get { return owner; } }
 
+		[NonSerialized()]
+		internal Matrix camera_mat;
+
 		public Scene(Game owner)
 			: this()
 		{
@@ -157,9 +160,9 @@ namespace Glorg2.Scene
 		{
 
 			var rend = n as IRenderable;
-			if (rend != null && !n.graphics_initialized)
+			if (rend != null && !n.graphics_pending)
 			{
-				n.graphics_initialized = true;
+				n.graphics_pending = true;
 				owner.GraphicInvoke(new Action(rend.InitializeGraphics));
 			}
 			

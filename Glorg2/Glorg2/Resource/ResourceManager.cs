@@ -28,7 +28,10 @@ namespace Glorg2.Resource
 			}
 			
 		}
-
+		/// <summary>
+		/// Creates a list of objects ready for removal (i.e. has no current references)
+		/// </summary>
+		/// <returns></returns>
 		public List<Resource> Janitorial()
 		{
 			List<Resource> remove = new List<Resource>();
@@ -62,7 +65,17 @@ namespace Glorg2.Resource
 				{
 					return null;
 				}
-				return null;
+			}
+		}
+
+		public void Manage(Resource resource, string name)
+		{
+			if (resource.handled)
+				throw new InvalidOperationException("Object is already managed.");
+			resource.SourceName = name;
+			lock (resources)
+			{
+				resources.Add(resource);
 			}
 		}
 

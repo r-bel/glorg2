@@ -111,6 +111,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Scene\DynamicNode.cs" />
     <Compile Include="Scene\SkyDome.cs" />
     <Compile Include="VectorInt.cs" />
     <Compile Include="Graphics\OpenGL\WglContext.cs" />

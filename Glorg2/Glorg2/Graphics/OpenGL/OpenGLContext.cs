@@ -20,7 +20,10 @@ namespace Glorg2.Graphics.OpenGL
 		protected bool multisampling_enabled;
 		protected IntPtr handle;
 		protected IntPtr display;
+		protected IntPtr drawable;
 		protected DynamicLinking linker;
+
+		public IntPtr Drawable { get { return drawable; } }
 
 		/// <summary>
 		/// This is a hint for the context creation to at least try to obtain this number of samples
@@ -40,13 +43,13 @@ namespace Glorg2.Graphics.OpenGL
 		/// <summary>
 		/// Handle to subsystem window
 		/// </summary>
-		public IntPtr DisplayHandle { get { return handle; } }
+		public IntPtr DisplayHandle { get { return display; } }
 
 		/// <summary>
 		/// Create a new context and setup all necessary information
 		/// </summary>
 		/// <param name="handle">Window handle which represents the destination in the window subsystem such as X or Windows.</param>
-		public abstract void CreateContext(IntPtr handle, OpenGLContext share);
+		public abstract void CreateContext(IntPtr handle, IntPtr drawable, OpenGLContext share);
 
 		/// <summary>
 		/// Make context current
@@ -81,5 +84,19 @@ namespace Glorg2.Graphics.OpenGL
 		/// </summary>
 		/// <returns></returns>
 		public DynamicLinking Linker { get { return linker; } }
+
+
+		public static OpenGLContext GetContext()
+		{
+			if ((Environment.OSVersion.Platform & PlatformID.Win32NT) == PlatformID.Win32NT)
+				return new WglContext();
+			else if ((Environment.OSVersion.Platform & PlatformID.Unix) == PlatformID.Unix)
+				return new glXContext();
+			else if ((Environment.OSVersion.Platform & PlatformID.MacOSX) == PlatformID.MacOSX)
+				throw new NotSupportedException("Mac OS X not yet supported.");
+			else
+				throw new NotSupportedException("System is not supported.");
+
+		}
 	}
 }

@@ -11,6 +11,7 @@ namespace Glorg2.Resource
         internal bool handled;
 		private string source_name;
 		
+		
 		[NonSerialized()]
 		private int hash;
 		

@@ -168,6 +168,29 @@ namespace Glorg2.Graphics.OpenGL
 			OpenGL.glDeleteTextures(1, new uint[] { handle });
 		}
 	}
+
+	public enum MinFilter : uint 
+	{
+		Nearest = OpenGL.Const.GL_NEAREST,
+		Linear = OpenGL.Const.GL_LINEAR,
+		NearestMipmapNearest = OpenGL.Const.GL_NEAREST_MIPMAP_NEAREST,
+		LinearMipmapNearest = OpenGL.Const.GL_LINEAR_MIPMAP_NEAREST,
+		NearestMipmapLinear = OpenGL.Const.GL_NEAREST_MIPMAP_LINEAR,
+		LinearMipmapLinear = OpenGL.Const.GL_LINEAR_MIPMAP_LINEAR
+	}
+	public enum MagFilter : uint 
+	{
+		Nearest = OpenGL.Const.GL_NEAREST,
+		Linear = OpenGL.Const.GL_LINEAR
+	}
+	public enum Repeat : uint 
+	{
+		ClampToEdge = OpenGL.Const.GL_CLAMP_TO_EDGE,
+		ClampToBorder = OpenGL.Const.GL_CLAMP_TO_BORDER,
+		Repeat = OpenGL.Const.GL_REPEAT,
+		Mirror = OpenGL.Const.GL_MIRRORED_REPEAT
+	}
+
 	[Serializable()]
 	public sealed class Texture2D : Texture
 	{
@@ -199,14 +222,76 @@ namespace Glorg2.Graphics.OpenGL
 		public void AssignBuffer<T>(T[] array)
 		{
 			var h = System.Runtime.InteropServices.GCHandle.Alloc(array, System.Runtime.InteropServices.GCHandleType.Pinned);
-			OpenGL.glBindTexture(OpenGL.Const.GL_TEXTURE_2D, handle);
-			OpenGL.glTexImage2D(OpenGL.Const.GL_TEXTURE_2D, 0, int_fmt, width, height, 0, fmt, type, h.AddrOfPinnedObject());
+			OpenGL.glBindTexture(target, handle);
+			OpenGL.glTexImage2D(target, 0, int_fmt, width, height, 0, fmt, type, h.AddrOfPinnedObject());
+			OpenGL.glGenerateMipmap(target);
 			h.Free();			
 		}
 
 		internal void AssignTexture(IntPtr ptr)
 		{
+			OpenGL.glBindTexture(target, handle);
 			OpenGL.glTexImage2D(target, 0, (int)int_fmt, width, height, 0, (uint)fmt, (uint)type, ptr);
+			OpenGL.glGenerateMipmap(target);
+		}
+
+		MinFilter minfilter;
+		MagFilter magfilter;
+		Repeat urep;
+		Repeat vrep;
+
+		public Repeat URepeat
+		{
+			get
+			{
+				return urep;
+			}
+			set
+			{
+				urep = value;
+				var vals = new int[] { (int)value };
+				OpenGL.glTexParameterIiv(target, OpenGL.Const.GL_TEXTURE_WRAP_S, vals);
+			}
+		}
+		public Repeat VRepeat
+		{
+			get
+			{
+				return vrep;
+			}
+			set
+			{
+				vrep = value;
+				var vals = new int[] { (int)value };
+				OpenGL.glTexParameterIiv(target, OpenGL.Const.GL_TEXTURE_WRAP_T, vals);
+			}
+		}
+
+		public MinFilter MinFilter
+		{
+			get
+			{
+				return minfilter;
+			}
+			set
+			{
+				minfilter = value;
+				int[] vals = new int[] { (int)value };
+				OpenGL.glTexParameterIiv(target, OpenGL.Const.GL_TEXTURE_MIN_FILTER, vals);
+			}
+		}
+		public MagFilter MagFilter
+		{
+			get
+			{
+				return magfilter;
+			}
+			set
+			{
+				magfilter = value;
+				int[] vals = new int[] { (int)value };
+				OpenGL.glTexParameterIiv(target, OpenGL.Const.GL_TEXTURE_MAG_FILTER, vals);
+			}
 		}
 
 		public Texture2D(System.IO.Stream src, string sourcename)
@@ -218,11 +303,28 @@ namespace Glorg2.Graphics.OpenGL
 			height = bmp.Height;
 			var lc = bmp.LockBits(new System.Drawing.Rectangle(0, 0, width, height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
 			OpenGL.glBindTexture(target, handle);
-			int_fmt = (int)OpenGL.Const.GL_RGB8;
-			fmt = OpenGL.Const.GL_RGB;
+			switch(bmp.PixelFormat)
+			{
+				case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+					int_fmt = (int)OpenGL.Const.GL_RGB8;
+					fmt = OpenGL.Const.GL_RGB;
+					break;
+				case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
+					int_fmt = (int)OpenGL.Const.GL_RGBA8;
+					fmt = OpenGL.Const.GL_RGBA;
+					break;
+				case System.Drawing.Imaging.PixelFormat.Format32bppRgb:
+					int_fmt = (int)OpenGL.Const.GL_RGBA8;
+					fmt = OpenGL.Const.GL_RGB;
+					break;
+				default:
+					throw new NotSupportedException("Texture format '" + bmp.PixelFormat.ToString() + "' not supported.");
+			}
 			type = OpenGL.Const.GL_UNSIGNED_BYTE;
 			
 			AssignTexture(lc.Scan0);
+			MagFilter = Graphics.OpenGL.MagFilter.Linear;
+			MinFilter = Graphics.OpenGL.MinFilter.LinearMipmapLinear;
 			//OpenGL.glTexImage2D(target, 0, (int)OpenGL.Const.GL_RGBA8, bmp.Width, bmp.Height, 0, (uint)OpenGL.Const.GL_RGBA, (uint)OpenGL.Const.GL_UNSIGNED_BYTE, lc.Scan0);
 			OpenGL.glBindTexture(target, 0);
 			bmp.UnlockBits(lc);

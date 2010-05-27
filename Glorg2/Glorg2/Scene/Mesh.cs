@@ -13,11 +13,16 @@ namespace Glorg2.Scene
 		[NonSerialized()]
 		protected Graphics.StdMaterial mat;
 
+		[NonSerialized()]
+		protected bool init_finished;
+
+		public bool GraphicsInitialized { get { return init_finished; } internal set { init_finished = value; } }
+
 		public Graphics.Model Model { get { return model; } }
 
 		public virtual void InitializeGraphics()
 		{
-			
+			init_finished = true;
 		}
 
 		public Mesh()
@@ -34,7 +39,7 @@ namespace Glorg2.Scene
 
 		public virtual void Render(float time, Graphics.GraphicsDevice dev)
 		{
-			if (model != null)
+			if (model != null && mat != null)
 			{
 				if (mat != null)
 					dev.SetActiveMaterial(mat);

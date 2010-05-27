@@ -576,7 +576,11 @@ return ret;*/
 			- m13 * m22 * m31) / v;
 
 			return ret;*/
-			return Adjoint() * (1f / Determinant());
+			float det = Determinant();
+			if (det == 0)
+				return Matrix.Identity;
+			else 
+				return Adjoint() * (1f / det);
 		}
 
 		public Matrix Cofactor()
