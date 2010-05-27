@@ -172,6 +172,18 @@ namespace Glorg2
 			return mat * new Vector3(0, 0, -1);
 		}
 
+		public void ToAxisAngle(out float angle, out Vector3 axis)
+		{
+			angle = (float)(2 * Math.Acos(w));
+			if (angle < float.Epsilon && angle > -float.Epsilon)
+				axis = new Vector3(1, 0, 0);
+			else
+			{
+				axis.x = (float)(x / Math.Sqrt(1 - w * w));
+				axis.y = (float)(y / Math.Sqrt(1 - w * w));
+				axis.z = (float)(z / Math.Sqrt(1 - w * w));
+			}
+		}
         public static Quaternion FromAxisAngle(float angle, Vector3 axis)
         {
 			float s = (float)Math.Sin(angle / 2);
@@ -227,6 +239,13 @@ namespace Glorg2
 		public static explicit operator Vector4(Quaternion quat)
 		{
 			return new Vector4(quat.x, quat.y, quat.z, quat.w);
+		}
+		public override string ToString()
+		{
+			float angle = 0;
+			Vector3 axis;
+			ToAxisAngle(out angle, out axis);
+			return "{" + angle.ToString() + ", {" + axis.x.ToString() + ", " + axis.y.ToString() + ", " + axis.z.ToString() + "}}";
 		}
 	}
 }

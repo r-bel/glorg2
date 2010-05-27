@@ -69,6 +69,7 @@ namespace Glorg2.Scene
 		}
 		public Scene()
 		{
+			background = Colors.Black;
 			local_transform = Matrix.Identity;
 			renderables = new LinkedList<IRenderable>();
 			physics = new LinkedList<Physics.IPhysicsObject>();

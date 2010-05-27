@@ -329,7 +329,10 @@ namespace Glorg2
 			threads_ready |= ThreadReady.MainThread;
 
 			while (threads_ready != ThreadReady.All)
+			{
+				System.Windows.Forms.Application.DoEvents();
 				Thread.Sleep(0);
+			}
 
 
 			while (running)
@@ -346,8 +349,13 @@ namespace Glorg2
 						item();
 					}
 				}
-				scene.camera_mat = scene.Camera.absolute_transform.Invert();
-				scene.sim_time += frame_time;
+				if (scene.Camera != null)
+				{
+					scene.camera_mat = scene.Camera.absolute_transform.Invert();
+					scene.sim_time += frame_time;
+				}
+				else
+					scene.camera_mat = Matrix.Identity;
 				FrameStep(frame_time);
 
 				scene.local_transform = Matrix.Identity;
@@ -422,7 +430,7 @@ namespace Glorg2
 
 			scene.Dispose();
 			CleanupResources();
-			CleanupResources();
+			CleanupResources(); // Do this again to ensure that resources which are referenced by other resources are freed
 			GraphicsClosing();
 			scene.GraphicsDispose();
 			dev.Dispose();
@@ -444,6 +452,7 @@ namespace Glorg2
 			dev.Present();
 		}
 	}
+	[System.Flags()]
 	public enum ThreadReady
 	{
 		MainThread = 1,
