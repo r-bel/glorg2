@@ -108,6 +108,11 @@ namespace Glorg2
 		{
 			return new Quaternion(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w).Normalize();
 		}
+		public static Quaternion operator -(Quaternion a, Quaternion b)
+		{
+			return new Quaternion(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w).Normalize();
+		}
+
 		public static Quaternion operator *(Quaternion a, float b)
 		{
 			return new Quaternion(a.x, a.y, a.z, a.w * b);
@@ -126,23 +131,6 @@ namespace Glorg2
                 z = a.x * b.y - a.y * b.x + a.w * b.z + a.z * b.w,
                 w = a.w * b.w - Vector3.Dot((Vector3)a, (Vector3)b)
             };
-                
-
-
-            
-            /*return new Quaternion()
-            {
-                w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
-                x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
-                y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
-                z = a.w * b.z + a.x * b.y - a.y * b.x + a.z + b.w
-            };*/
-            /*
-             (Q1 * Q2).w = (w1w2 - x1x2 - y1y2 - z1z2)
-(Q1 * Q2).x = (w1x2 + x1w2 + y1z2 - z1y2)
-(Q1 * Q2).y = (w1y2 - x1z2 + y1w2 + z1x2)
-(Q1 * Q2).z = (w1z2 + x1y2 - y1x2 + z1w2 
-             */
         }
         public static Quaternion FromEulerAngle(float x, float y, float z)
         {
