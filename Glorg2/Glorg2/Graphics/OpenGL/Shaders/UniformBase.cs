@@ -227,7 +227,7 @@ namespace Glorg2.Graphics.OpenGL.Shaders
 		{
 			OpenGL.glActiveTexture(OpenGL.Const.GL_TEXTURE1 + (uint)tex_index);
 			val.MakeCurrent();
-			uniform.SetValue(tex_index);
+			uniform.SetValue(tex_index + 1);
 		}
 		public void SetValue(int index)
 		{

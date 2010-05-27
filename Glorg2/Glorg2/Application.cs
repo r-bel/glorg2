@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Glorg2
 {
 	public abstract class Game
 	{
-		System.Threading.Thread RenderThread;
-		System.Threading.Thread SimulationThread;
+		Thread RenderThread;
+		Thread LogicThread;
+		Thread PhysicsThread;
+		Thread ResourceThread;
+		
 		Glorg2.Graphics.GraphicsDevice dev;
+
+		Glorg2.Graphics.OpenGL.OpenGLContext res_ctx;
+
 		System.Windows.Forms.Control target;
 		
 		volatile bool running;
@@ -19,6 +26,11 @@ namespace Glorg2
 		volatile float total_time;
 		Scene.Scene scene;
 		Queue<Action> graphic_invoke;
+		Queue<Action> physics_invoke;
+		Queue<Action> logic_invoke;
+		Queue<Action> resource_invoke;
+
+		volatile ThreadReady threads_ready;
 
 		public Scene.Scene Scene { get { return scene; } }
 
@@ -56,6 +68,9 @@ namespace Glorg2
 		{
 			running = true;
 			graphic_invoke = new Queue<Action>();
+			physics_invoke = new Queue<Action>();
+			logic_invoke = new Queue<Action>();
+			resource_invoke = new Queue<Action>();
 			scene = new Glorg2.Scene.Scene(this);
 			RenderThread = new System.Threading.Thread(new System.Threading.ThreadStart(RenderLoop));
 			RenderThread.Name = "Rendering thread";
@@ -71,7 +86,10 @@ namespace Glorg2
 			this.target = target;
 			ready = true;
 			StartInternal();
+			PhysicsThread = new Thread(new ThreadStart(PhysicsLoop));
+			PhysicsThread.Name = "Physics thread";
 			RenderThread.Start();
+			PhysicsThread.Start();
 			MainLoop();
 		}
 		public void Start()
@@ -81,7 +99,10 @@ namespace Glorg2
 			target.Update();
 			ready = true;
 			StartInternal();
+			PhysicsThread = new Thread(new ThreadStart(PhysicsLoop));
+			PhysicsThread.Name = "Physics thread";
 			RenderThread.Start();
+			PhysicsThread.Start();
             MainLoop();
 		}
 		public void StartAsync()
@@ -91,19 +112,25 @@ namespace Glorg2
 			target.Update();
 			ready = true;
 			StartInternal();
-			SimulationThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
-			SimulationThread.Name = "Simulation thread";
+			LogicThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
+			LogicThread.Name = "Logic thread";
+			PhysicsThread = new Thread(new ThreadStart(PhysicsLoop));
+			PhysicsThread.Name = "Physics thread";
 			RenderThread.Start();
-			SimulationThread.Start();
+			LogicThread.Start();
+			PhysicsThread.Start();
 		}
 		public void StartAsync(System.Windows.Forms.Control target)
 		{
 			this.target = target;
-			SimulationThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
-			SimulationThread.Name = "Simulation thread";
+			LogicThread = new System.Threading.Thread(new System.Threading.ThreadStart(MainLoop));
+			LogicThread.Name = "Logic thread";
+			PhysicsThread = new Thread(new ThreadStart(PhysicsLoop));
+			PhysicsThread.Name = "Physics thread";
 			StartInternal();
 			RenderThread.Start();
-			SimulationThread.Start();
+			LogicThread.Start();
+			PhysicsThread.Start();
 		}
 		protected virtual void FrameStep(float time)
 		{
@@ -123,9 +150,9 @@ namespace Glorg2
 		{
 		}
 
-		private void JoinThread(System.Threading.Thread th)
+		private void JoinThread(Thread th)
 		{
-			while (th.ThreadState == System.Threading.ThreadState.Running)
+			while (th.ThreadState == ThreadState.Running)
 			{
 				System.Windows.Forms.Application.DoEvents();
 			}
@@ -134,8 +161,8 @@ namespace Glorg2
 		{
 			running = false;
 			JoinThread(RenderThread);
-			if (SimulationThread != null)
-				JoinThread(SimulationThread);
+			if (LogicThread != null)
+				JoinThread(LogicThread);
 		}
 		/// <summary>
 		/// Invokes an action in the rendering thread.
@@ -147,6 +174,27 @@ namespace Glorg2
 			lock (graphic_invoke)
 			{
 				graphic_invoke.Enqueue(act);
+			}
+		}
+		public void ResourceInvoke(Action act)
+		{
+			lock (resource_invoke)
+			{
+				resource_invoke.Enqueue(act);
+			}
+		}
+		public void PhysicsInvoke(Action act)
+		{
+			lock (physics_invoke)
+			{
+				physics_invoke.Enqueue(act);
+			}
+		}
+		public void LogicInvoke(Action act)
+		{
+			lock (logic_invoke)
+			{
+				logic_invoke.Enqueue(act);
 			}
 		}
 		private void DoJanitorial(IEnumerable<Resource.Resource> res)
@@ -168,20 +216,44 @@ namespace Glorg2
 				scene.Resources.Remove(r);
 			}
 		}
-		private void MainLoop()
+
+		private void ResourceLoop()
 		{
-			long old_time;
-			Init();
-			old_time = System.Diagnostics.Stopwatch.GetTimestamp();
-			target.Resize += (sender, e) => { GraphicInvoke(new Action(InternalSizeChanged));};
+			/*System.Windows.Forms.NativeWindow render_offscreen = new System.Windows.Forms.NativeWindow()
+			{
+
+			};
+			render_offscreen.CreateHandle(new System.Windows.Forms.CreateParams()
+			{
+				Caption = "Offsecreen resource loading window"
+			});
+			res_ctx = Graphics.OpenGL.OpenGLContext.GetContext();
+			res_ctx.CreateContext(render_offscreen.Handle, IntPtr.Zero, dev.Context);*/
+			threads_ready |= ThreadReady.ResourceThread;
+
+			while (threads_ready != ThreadReady.All)
+				Thread.Sleep(0);
+
+			long old_time = System.Diagnostics.Stopwatch.GetTimestamp();
 			while (running)
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
+				old_time = new_time;
+
+				lock (resource_invoke)
+				{
+					while (resource_invoke.Count > 0)
+					{
+						var item = resource_invoke.Dequeue();
+						item();
+					}
+				}
+
 				var res = scene.Resources.Janitorial();
 				if (res.Count > 0)
 				{
-					GraphicInvoke(() =>
+					GraphicInvoke(new Action(delegate
 					{
 						foreach (var r in res)
 						{
@@ -191,15 +263,77 @@ namespace Glorg2
 						{
 							scene.Resources.Remove(res);
 						}
-					});
+					}));
+				}
+				System.Threading.Thread.Sleep(5000);
+			}
+			//res_ctx.Dispose();
+			//render_offscreen.DestroyHandle();
+		}
+
+		private void PhysicsLoop()
+		{
+			threads_ready |= ThreadReady.PhysicsThread;
+			while (threads_ready != ThreadReady.All)
+				Thread.Sleep(0);
+
+			long old_time = System.Diagnostics.Stopwatch.GetTimestamp();
+			while (running)
+			{
+				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
+				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
+				old_time = new_time;
+				lock (physics_invoke)
+				{
+					while (physics_invoke.Count > 0)
+					{
+						var item = physics_invoke.Dequeue();
+						item();
+					}
 				}
 
+				lock (scene.physics)
+				{
+					foreach (var obj in scene.physics)
+					{
+						obj.SimulationStep(frame_time);
+					}
+				}
+			}
+		}
+
+		private void MainLoop()
+		{
+			long old_time;
+			Init();
+			old_time = System.Diagnostics.Stopwatch.GetTimestamp();
+			target.Resize += (sender, e) => { GraphicInvoke(new Action(InternalSizeChanged));};
+
+			threads_ready |= ThreadReady.MainThread;
+
+			while (threads_ready != ThreadReady.All)
+				Thread.Sleep(0);
+
+
+			while (running)
+			{
+				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
+				frame_time = (new_time - old_time) / (float)System.Diagnostics.Stopwatch.Frequency;
+
+
+				lock (logic_invoke)
+				{
+					while (logic_invoke.Count > 0)
+					{
+						var item = logic_invoke.Dequeue();
+						item();
+					}
+				}
+				scene.camera_mat = scene.Camera.absolute_transform.Invert();
 				scene.sim_time += frame_time;
 				FrameStep(frame_time);
-				if (scene.camera.Value != null)
-					scene.local_transform = scene.camera.Value.GetTransform().Invert();
-				else
-					scene.local_transform = Matrix.Identity;
+
+				scene.local_transform = Matrix.Identity;
 
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
@@ -227,6 +361,16 @@ namespace Glorg2
 			}
 			IntPtr handle = (IntPtr)target.Invoke(new Func<IntPtr>(() => target.Handle));
 			dev = new Glorg2.Graphics.GraphicsDevice(handle);
+
+			ResourceThread = new Thread(new ThreadStart(ResourceLoop));
+			ResourceThread.Name = "Resource thread";
+			ResourceThread.Start();
+
+			threads_ready |= ThreadReady.RenderThread;
+			while (threads_ready != ThreadReady.All)
+				Thread.Sleep(0);
+
+
 			InitializeGraphics();
 			old_time = System.Diagnostics.Stopwatch.GetTimestamp();
 
@@ -282,5 +426,14 @@ namespace Glorg2
 			}
 			dev.Present();
 		}
+	}
+	public enum ThreadReady
+	{
+		MainThread = 1,
+		RenderThread = 2,
+		ResourceThread = 4,
+		PhysicsThread = 8,
+		All = MainThread | RenderThread | ResourceThread | PhysicsThread
+
 	}
 }

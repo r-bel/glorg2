@@ -90,7 +90,7 @@ namespace Glorg2.Graphics.OpenGL
 			return (T)Convert.ChangeType(obj, typeof(T));
 		}
 
-		public override void CreateContext(IntPtr wnd_handle, OpenGLContext share)
+		public override void CreateContext(IntPtr wnd_handle, IntPtr drawable, OpenGLContext share)
 		{
 			// Force loading of OpenGL library
 			// This is later used by the OpenGL class to implement extensions.

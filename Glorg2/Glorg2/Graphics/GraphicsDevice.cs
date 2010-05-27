@@ -8,6 +8,24 @@ using Glorg2.Graphics;
 using Glorg2.Graphics.OpenGL.Shaders;
 namespace Glorg2.Graphics
 {
+
+	public enum Blend : uint 
+	{
+		Zero = GL.Const.GL_ZERO,
+		One = GL.Const.GL_ONE, 
+		DstColor = GL.Const.GL_DST_COLOR, 
+		OneMinusDstColor = GL.Const.GL_ONE_MINUS_DST_COLOR, 
+		SrcAlpha = GL.Const.GL_SRC_ALPHA, 
+		OneMinusSrcAlpha = GL.Const.GL_ONE_MINUS_SRC_ALPHA, 
+		DstAlpha = GL.Const.GL_DST_ALPHA, 
+		OneMinusDstAlpha = GL.Const.GL_ONE_MINUS_DST_ALPHA, 
+		SrcAlphaSaturate = GL.Const.GL_SRC_ALPHA_SATURATE, 
+		ConstantColor = GL.Const.GL_CONSTANT_COLOR, 
+		OneMinusConstantColor = GL.Const.GL_ONE_MINUS_CONSTANT_COLOR, 
+		ConstantAlpha = GL.Const.GL_CONSTANT_ALPHA, 
+		OneMinusConstantAlpha = GL.Const.GL_ONE_MINUS_CONSTANT_ALPHA
+	}
+
 	public sealed class GraphicsDevice : IDisposable
 	{
 
@@ -60,16 +78,11 @@ namespace Glorg2.Graphics
 
 		public GraphicsDevice(IntPtr target)
 		{
-			if ((Environment.OSVersion.Platform & PlatformID.Win32NT) == PlatformID.Win32NT)
-				context = new OpenGL.WglContext();
-			else if ((Environment.OSVersion.Platform & PlatformID.Unix) == PlatformID.Unix)
-				context = new OpenGL.glXContext();
-			else if ((Environment.OSVersion.Platform & PlatformID.MacOSX) == PlatformID.MacOSX)
-				throw new NotSupportedException("Mac OS X not yet supported.");
+			context = OpenGLContext.GetContext();
 
 			context.Samples = 4;
 			// Create context using platform specific methods
-			context.CreateContext(target, null);
+			context.CreateContext(target, IntPtr.Zero, null);
 			//GL.InitGeneral(context);
 			//foreach (var str in GL.GetSupportedExtensions())
 				//Console.WriteLine(str);
@@ -88,12 +101,15 @@ namespace Glorg2.Graphics
 			GL.InitGL_3_0(context);
 			GL.InitGL_3_1(context);
 			GL.InitGL_3_2(context);
+			GL.InitFramebuffers(context);
 
 			err = GL.glGetError();
 
 			GL.glEnable(GL.Const.GL_TEXTURE_2D);
 
 			state = new OpenGLState(this);
+			state.Blend = true;
+			state.BlendFunction(Blend.SrcAlpha, Blend.OneMinusSrcAlpha);
 			state.Culling = true;
 			state.DepthTest = true;
 			
@@ -430,6 +446,9 @@ namespace Glorg2.Graphics
 					GL.glDisable(GL.Const.GL_CULL_FACE);
 			}
 		}
+
+
+
 		/// <summary>
 		/// Gets or sets which side(s) to cull
 		/// </summary>
@@ -482,21 +501,19 @@ namespace Glorg2.Graphics
             }
         }
 
-        /*public bool AlphaTest
-        {
-            get
-            {
-                return GL.glIsEnabled(GL.Const.GL_ALPHA_TEST) == GL.boolean.TRUE;
-            }
-            set
-            {
-                if (value)
-                    GL.glEnable(GL.Const.GL_ALPHA_TEST);
-                else
-                    GL.glDisable(GL.Const.GL_ALPHA_TEST);
-            }
-        }*/
+		/// <summary>
+		/// Sets the blending function
+		/// </summary>
+		/// <param name="sfactor">Source factor</param>
+		/// <param name="dfactor">Destination factor</param>
+		public void BlendFunction(Blend sfactor, Blend dfactor)
+		{
+			GL.glBlendFunc((uint)sfactor, (uint)dfactor);
+		}
 
+		/// <summary>
+		/// Sets or gets the state of blending
+		/// </summary>
         public bool Blend
         {
             get
@@ -541,25 +558,7 @@ namespace Glorg2.Graphics
             }
         }
 
-        /*public Test AlphaTestFunction
-        {
-            get
-            {
-                int ret = 0;
-                GL.glGetIntegerv(GL.Const.GL_ALPHA_TEST_FUNC, ref ret);
-                return (Test)ret;
-            }
-        }
-        public float AlphaTestReference
-        {
-            get
-            {
-                float r = 0;
-                GL.glGetFloatv(GL.Const.GL_ALPHA_TEST_REF, ref r);
-                return r;
-            }
-        }*/
- 
+         
         public ColorMask ColorMask
         {
             get
@@ -624,4 +623,6 @@ namespace Glorg2.Graphics
 		Point = GL.Const.GL_POINT,
 		Fill = GL.Const.GL_FILL
 	}
+	
+
 }

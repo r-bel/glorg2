@@ -376,8 +376,6 @@ namespace Glorg2.Graphics.OpenGL
 		}
 
 		private IntPtr hwnd;
-		private IntPtr hdc;
-		public IntPtr Hdc { get { return hdc; } }
 
 		/// <summary>
 		/// 
@@ -401,33 +399,36 @@ namespace Glorg2.Graphics.OpenGL
 		///		}
 		/// }
 		/// </example>
-		public override void CreateContext(IntPtr wnd, OpenGLContext share)
+		public override void CreateContext(IntPtr wnd, IntPtr draw, OpenGLContext share)
 		{
 			// Force OpenGL library to link
 			// or we will not be able to create a context
 			linker = GetLinker();
 
 			hwnd = wnd;
+			display = hwnd;
 
 			int pixel_format = 0;
 			bool valid = false;
-
-			hdc = GetDC(wnd);
-
 			PIXELFORMATDESCRIPTOR desc = new PIXELFORMATDESCRIPTOR();
+			if (draw == IntPtr.Zero)
+				drawable = GetDC(wnd);
+			else
+				drawable = draw;
+				
 			desc.nSize = (short)Marshal.SizeOf(desc);
 			desc.nVersion = 1;
 			desc.dwFlags = PixelFormatFlags.PFD_DOUBLEBUFFER | PixelFormatFlags.PFD_DRAW_TO_WINDOW | PixelFormatFlags.PFD_SUPPORT_OPENGL;
 			desc.cDepthBits = 32;
 			desc.cColorBits = 32;
-			pixel_format = ChoosePixelFormat(hdc, ref desc);
+			pixel_format = ChoosePixelFormat(drawable, ref desc);
 
-			SetPixelFormat(hdc, pixel_format, ref desc);
-
+			SetPixelFormat(drawable, pixel_format, ref desc);
+			
 			// Create legacy OpenGL context
-			handle = wglCreateContext(hdc);
+			handle = wglCreateContext(drawable);
 
-			wglMakeCurrent(hdc, handle);
+			wglMakeCurrent(drawable, handle);
 
 
 			wglGetExtensionStringARB = GetProc<GetExtensionsStringARB>("wglGetExtensionStringARB");
@@ -437,11 +438,11 @@ namespace Glorg2.Graphics.OpenGL
 			
 			string ext = "";
 			if(wglGetExtensionStringARB != null)
-				ext = Marshal.PtrToStringAnsi(wglGetExtensionStringARB(hdc));
+				ext = Marshal.PtrToStringAnsi(wglGetExtensionStringARB(drawable));
 
 			var extensions = ext.Split(' ');
 
-			if (wglChoosePixelFormatARB != null)
+			if (drawable != IntPtr.Zero && wglChoosePixelFormatARB != null)
 			{
 				var fAttributes = new float[] { 0, 0 };
 				var iAttributes = new int[] 
@@ -458,15 +459,15 @@ namespace Glorg2.Graphics.OpenGL
 					0,0
 				};
 				uint num_formats = 0;
-				valid = wglChoosePixelFormatARB(hdc, iAttributes, fAttributes, 1, ref pixel_format, ref num_formats) && num_formats > 0;
+				valid = wglChoosePixelFormatARB(drawable, iAttributes, fAttributes, 1, ref pixel_format, ref num_formats) && num_formats > 0;
 				if (valid)
 				{
 
 					wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 					wglDeleteContext(handle);
-					SetPixelFormat(hdc, pixel_format, ref desc);
-					handle = wglCreateContext(hdc);
-					wglMakeCurrent(hdc, handle);
+					SetPixelFormat(drawable, pixel_format, ref desc);
+					handle = wglCreateContext(drawable);
+					wglMakeCurrent(drawable, handle);
 				}
 			}
 			wglCreateContextAttribsARB = GetProc<CreateContextAttribsARB>("wglCreateContextAttribsARB");
@@ -497,28 +498,35 @@ namespace Glorg2.Graphics.OpenGL
 					WGL_CONTEXT_MAJOR_VERSION_ARB, major,
 					WGL_CONTEXT_MINOR_VERSION_ARB, minor, 
 					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-					WGL_CONTEXT_PROFILE_MASK_ARB, 	WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 
+					WGL_CONTEXT_PROFILE_MASK_ARB, 	( share != null ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB),
 					0
 				};
 				IntPtr share_ctx = IntPtr.Zero;
 				if (share != null)
 					share_ctx = share.Handle;
-				IntPtr newhandle = wglCreateContextAttribsARB(hdc, share_ctx, attribs);
-				wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-				
-				wglDeleteContext(handle);
-				handle = IntPtr.Zero;
-				if (newhandle != IntPtr.Zero) // If OpenGL 3.0 context creation failed, fallback to legacy 2.x
-					handle = newhandle;
-				else
-					throw new NotSupportedException("Could not initialize OpenGL " + major + "." + minor);
+				IntPtr newhandle = wglCreateContextAttribsARB(drawable, share_ctx, attribs);
+				if (newhandle != IntPtr.Zero)
+				{
+					wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+					var err = OpenGL.glGetError();
+					wglDeleteContext(handle);
+					handle = IntPtr.Zero;
+					if (newhandle != IntPtr.Zero) // If OpenGL 3.0 context creation failed, fallback to legacy 2.x
+						handle = newhandle;
+					else
+						throw new NotSupportedException("Could not initialize OpenGL " + major + "." + minor + " : " + err.ToString());
+				}
+				else if (share_ctx != IntPtr.Zero)
+				{
+					wglShareLists(handle, share_ctx);
+				}
 			}
 			else
 				throw new NotSupportedException("OpenGL 3.2 is not supported by your system.");
 
 			if (handle != IntPtr.Zero)
 			{
-				wglMakeCurrent(hdc, handle);
+				wglMakeCurrent(drawable, handle);
 			}
 			else
 				throw new NotSupportedException("Could not create OpenGL context");
@@ -532,18 +540,18 @@ namespace Glorg2.Graphics.OpenGL
 		}
 		public override void MakeCurrent()
 		{
-			wglMakeCurrent(hdc, handle);
+			wglMakeCurrent(drawable, handle);
 		}
 		public override void Swap()
 		{
-			SwapBuffers(hdc);
+			SwapBuffers(drawable);
 		}
 
 		private void Cleanup()
 		{
 			wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 			wglDeleteContext(handle);
-			ReleaseDC(hwnd, hdc);
+			ReleaseDC(hwnd, drawable);
 		}
 
 		public override void Dispose()

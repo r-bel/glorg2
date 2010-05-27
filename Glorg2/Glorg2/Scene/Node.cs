@@ -8,13 +8,7 @@ namespace Glorg2.Scene
 	[Serializable()]
 	public class Node : IDisposable
 	{
-		internal const float dt = .001f;
-		[NonSerialized()]
-		private float accumulator;
-		[NonSerialized()]
-		private float interp;
-		[NonSerialized()]
-		private float sim_time;
+
 
 		LinkedList<Node> children;
 		// Object is marked for deletion
@@ -27,7 +21,7 @@ namespace Glorg2.Scene
 		internal Scene owner;
 
 		[NonSerialized()]
-		internal volatile bool graphics_initialized;
+		internal volatile bool graphics_pending;
 
 		[NonSerialized()]
 		private List<Node> remove_children;
@@ -41,21 +35,15 @@ namespace Glorg2.Scene
 		public Guid Guid { get { return identifier; } }
 
 		internal int hash_code;
-		Physics.ObjectState linear_state;
-		Physics.ObjectState angular_state;
-		Vector4 acceleration;
-		Vector4 angular_acceleration;
-		Vector4 center_of_mass;
 		Vector3 up;
 
 		[NonSerialized()]
 		internal Matrix absolute_transform;
 
+		protected Vector4 position;
 
-		float radius;
 		Quaternion orientation;
 
-		float mass;
 
 		NodeReference<Node> target;
 
@@ -143,27 +131,7 @@ namespace Glorg2.Scene
 			DoDispose();
 			Parent = null;
 		}
-		/// <summary>
-		/// This function defines a linear acceleration function. Override this to implement non-constant accelerations.
-		/// </summary>
-		/// <param name="state"></param>
-		/// <param name="t"></param>
-		/// <returns></returns>
-		protected virtual Vector4 LinearAcceleratiom(Physics.ObjectState state, float t)
-		{
-			return acceleration * t;
-		}
-		/// <summary>
-		/// This function defines an angular acceleration. Override this to implement non-constant accelerations.
-		/// </summary>
-		/// <param name="state"></param>
-		/// <param name="t"></param>
-		/// <returns></returns>
-		protected virtual Vector4 AngularAcceleration(Physics.ObjectState state, float t)
-		{
-			//return angular_momentum * t;
-			return angular_acceleration * t;
-		}
+
 
 		public virtual void DoDispose()
 		{
@@ -172,6 +140,7 @@ namespace Glorg2.Scene
 
 		public Node()
 		{
+			position = new Vector4(0, 0, 0, 1);
 			absolute_transform = Matrix.Identity;
 			up = Vector3.Up;
 			identifier = Guid.NewGuid();
@@ -187,27 +156,7 @@ namespace Glorg2.Scene
 			//position += velocity * time;
 			//velocity += acceleration * time;
 			PerformLookAt();
-			accumulator += time;
-			// If we are lagging to much, we need to speed up.
-			if (accumulator > .2f)
-			{
-				Physics.Integration.RK4Integrate(ref linear_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-				Physics.Integration.RK4Integrate(ref angular_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
-			}
-			else
-			{
-				while (accumulator >= dt)
-				{
-					Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-					Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
-					sim_time += dt;
-					accumulator -= dt;
-				}
-				interp = accumulator / dt;
 
-			}
-			Quaternion spin = .5f * new Quaternion(angular_state.Velocity.x, angular_state.Velocity.y, angular_state.Velocity.z, 0) * orientation;
-			orientation += spin;
 		}
 		public virtual void InternalProcess(float time)
 		{
@@ -215,6 +164,8 @@ namespace Glorg2.Scene
 			Matrix old = owner.local_transform;
 			owner.local_transform = owner.local_transform * GetTransform();
 			absolute_transform = owner.local_transform;
+			if(float.IsNaN(absolute_transform.m11))
+				System.Diagnostics.Debugger.Break();
 			foreach (var child in children)
 				child.InternalProcess(time);
 			owner.local_transform = old;
@@ -233,6 +184,11 @@ namespace Glorg2.Scene
 							if (rend != null)
 								lock (owner.renderables)
 									owner.renderables.Remove(rend);
+							var ph = child as Physics.IPhysicsObject;
+							if (ph != null)
+								lock (owner.physics)
+									owner.physics.Remove(ph);
+
 							children.Remove(child);
 							owner.items.Remove(child);
 						}
@@ -256,6 +212,10 @@ namespace Glorg2.Scene
 							if (rend != null)
 								lock (owner.renderables)
 									owner.renderables.AddLast(rend);
+							var ph = child as Physics.IPhysicsObject;
+							if (ph != null)
+								lock (owner.physics)
+									owner.physics.AddLast(ph);
 							owner.items.Add(child);
 						}
 					}
@@ -267,9 +227,9 @@ namespace Glorg2.Scene
 
 		internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
 		{
-			dev.ModelviewMatrix = absolute_transform;
+			dev.ModelviewMatrix = owner.camera_mat * absolute_transform;
 			var r = this as IRenderable;
-			if (graphics_initialized && r != null)
+			if (r != null && r.GraphicsInitialized)
 				r.Render(time, dev);
 		}
 
@@ -312,10 +272,9 @@ namespace Glorg2.Scene
 		public void Add(IEnumerable<Node> nodes)
 		{
 
-			add_children.AddRange(nodes);
 			foreach (var node in nodes)
 			{
-				node.owner = owner;
+				Add(node);
 			}
 		}
 		/// <summary>
@@ -326,9 +285,9 @@ namespace Glorg2.Scene
 		public void Add(Node child)
 		{
 			var rend = child as IRenderable;
-			if (!child.graphics_initialized && rend != null)
+			if (!child.graphics_pending && rend != null)
 			{
-				child.graphics_initialized = true;
+				child.graphics_pending = true;
 				owner.Owner.GraphicInvoke(new Action(rend.InitializeGraphics));
 			}
 			add_children.Add(child);
@@ -389,7 +348,7 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the position of this node
 		/// </summary>
-		public virtual Vector4 Position { get { return linear_state.Value; } set { linear_state.Value = value; } }
+		public virtual Vector4 Position { get { return position; } set { position = value; } }
 		/// <summary>
 		/// Gets or sets the orientation of this node
 		/// </summary>
@@ -397,25 +356,7 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// Gets or sets the velocity of this node
 		/// </summary>
-		public virtual Vector4 LinearVelocity { get { return linear_state.Velocity; } set { linear_state.Velocity = value; } }
-		/// <summary>
-		/// Gets or sets the acceleration of this node
-		/// </summary>
-		public virtual Vector4 ConstLinearAcceleration { get { return acceleration; } set { acceleration = value; } }
-		/// <summary>
-		/// Gets or sets the mass of this node
-		/// </summary>
-		public virtual float Mass { get { return mass; } set { mass = value; } }
-		/// <summary>
-		/// Gets or sets the center of mass for this node
-		/// </summary>
-		public virtual Vector4 CenterOfMass { get { return center_of_mass; } set { center_of_mass = value; } }
-		/// <summary>
-		/// Gets or sets the angular momentum for this node
-		/// </summary>
-		public virtual Vector4 AngularVelocity { get { return angular_state.Velocity; } set { angular_state.Velocity = value; } }
 
-		public virtual Vector4 ConstAngularAcceleration { get { return angular_acceleration; } set { angular_acceleration = value; } }
 		/// <summary>
 		/// Gets the local matrix transform for this object
 		/// </summary>
@@ -423,10 +364,9 @@ namespace Glorg2.Scene
 		public virtual Matrix GetTransform()
 		{
 			var mat = Orientation.ToMatrix();
-			mat.m14 = linear_state.Value.x;
-			mat.m24 = linear_state.Value.y;
-			mat.m34 = linear_state.Value.z;
-			return mat;
+			mat.m44 = 1;
+			mat = Matrix.Translate(position) * mat;
+			return  mat;
 		}
 
 		/// <summary>

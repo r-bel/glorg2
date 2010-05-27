@@ -29,6 +29,10 @@ namespace Glorg2.Scene
 		[NonSerialized()]
 		IndexBuffer<uint> ib;
 
+		private bool init_finished;
+
+		public bool GraphicsInitialized { get { return init_finished; } }
+
 		public override void DoDispose()
 		{
 			mat.Dispose();
@@ -131,6 +135,7 @@ namespace Glorg2.Scene
 		{
 			Owner.Resources.Load("SkydomeMaterial", out mat);
 			GenerateDome();
+			init_finished = true;
 		}
 
 		#endregion

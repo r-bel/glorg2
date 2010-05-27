@@ -33,6 +33,8 @@ namespace Glorg2.Physics
 		/// </summary>
 		Vector4 ConstantAngularAcceleration { get; set; }
 
+		void SimulationStep(float frame_time);
+
 		/// <summary>
 		/// Applies a force to an object
 		/// </summary>
