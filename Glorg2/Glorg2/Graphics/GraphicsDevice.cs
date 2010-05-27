@@ -61,6 +61,7 @@ namespace Glorg2.Graphics
 		MatrixState projection_matrix;
 		MatrixState modelview_matrix;
 		MatrixState texture_matrix;
+		MatrixState normal_matrix;
 
 		private Material active_shader;
 
@@ -90,6 +91,7 @@ namespace Glorg2.Graphics
 			modelview_matrix = new MatrixState();
 			projection_matrix = new MatrixState();
 			texture_matrix = new MatrixState();
+			normal_matrix = new MatrixState();
 
 			var err = GL.glGetError();
 			GL.InitGL_1_2(context);
@@ -136,6 +138,7 @@ namespace Glorg2.Graphics
 						projection_matrix.uniform = std.Projection;
 						modelview_matrix.uniform = std.ModelView;
 						texture_matrix.uniform = std.Texture;
+						normal_matrix.uniform = std.Normal;
 					}
 					active_shader.Shader.SetFragmentOutput("out_frag");
 				}
@@ -272,6 +275,7 @@ namespace Glorg2.Graphics
 					modelview_matrix.Update();
 					projection_matrix.Update();
 					texture_matrix.Update();
+					normal_matrix.Update();
 				
 				if (active_shader != null)
 				{
@@ -313,6 +317,7 @@ namespace Glorg2.Graphics
 			set
 			{
 				modelview_matrix.Value = value;
+				normal_matrix.Value = value.Invert().Transpose();
 				
 			}
 		}

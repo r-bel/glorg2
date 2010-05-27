@@ -1,4 +1,21 @@
-﻿using System;
+﻿/*
+Copyright (C) 2010 Henning Moe
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +29,7 @@ namespace Glorg2.Graphics
 		MatrixUniform projection;
 		MatrixUniform modelview;
 		MatrixUniform texture;
+		MatrixUniform normal;
 
 		int pos_attrib;
 		int norm_attrib;
@@ -32,6 +50,7 @@ namespace Glorg2.Graphics
 			projection = Shader.GetUniformType<MatrixUniform, Matrix>("projection_mat");
 			modelview = Shader.GetUniformType<MatrixUniform, Matrix>("modelview_mat");
 			texture = Shader.GetUniformType<MatrixUniform, Matrix>("texture_mat");
+			normal = Shader.GetUniformType<MatrixUniform, Matrix>("normal_mat");
 
 			pos_attrib = Shader.GetAttributeLocation("in_position");
 			norm_attrib = Shader.GetAttributeLocation("in_normal");
@@ -61,6 +80,11 @@ namespace Glorg2.Graphics
 		public MatrixUniform Texture
 		{
 			get { return texture; }
+		}
+
+		public MatrixUniform Normal
+		{
+			get { return normal; }
 		}
 
 		public int PositionAttribute
