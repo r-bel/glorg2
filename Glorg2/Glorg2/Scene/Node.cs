@@ -61,6 +61,8 @@ namespace Glorg2.Scene
 
 		Quaternion orientation;
 
+		[NonSerialized()]
+		internal bool in_use;
 
 		NodeReference<Node> target;
 
@@ -177,11 +179,12 @@ namespace Glorg2.Scene
 		}
 		public virtual void InternalProcess(float time)
 		{
+			in_use = true;
 			Process(time);
 			Matrix old = owner.local_transform;
 			owner.local_transform = owner.local_transform * GetTransform();
 			absolute_transform = owner.local_transform;
-			if(float.IsNaN(absolute_transform.m11))
+			if (float.IsNaN(absolute_transform.m11))
 				System.Diagnostics.Debugger.Break();
 			foreach (var child in children)
 				child.InternalProcess(time);
@@ -205,9 +208,10 @@ namespace Glorg2.Scene
 							if (ph != null)
 								lock (owner.physics)
 									owner.physics.Remove(ph);
-
+							
 							children.Remove(child);
 							owner.items.Remove(child);
+							owner.Owner.ResourceInvoke(new Action(child.Dispose));
 						}
 					}
 				}
@@ -221,25 +225,28 @@ namespace Glorg2.Scene
 					{
 						foreach (var child in add_children)
 						{
-							child.owner = owner;
-							if (child.parent != this)
-								child.parent = this;
-							children.AddLast(child);
-							var rend = child as IRenderable;
-							if (rend != null)
-								lock (owner.renderables)
-									owner.renderables.AddLast(rend);
-							var ph = child as Physics.IPhysicsObject;
-							if (ph != null)
-								lock (owner.physics)
-									owner.physics.AddLast(ph);
-							owner.items.Add(child);
+							lock (child.owner)
+							{
+								child.owner = owner;
+								if (child.parent != this)
+									child.parent = this;
+								children.AddLast(child);
+								var rend = child as IRenderable;
+								if (rend != null)
+									lock (owner.renderables)
+										owner.renderables.AddLast(rend);
+								var ph = child as Physics.IPhysicsObject;
+								if (ph != null)
+									lock (owner.physics)
+										owner.physics.AddLast(ph);
+								owner.items.Add(child);
+							}
 						}
 					}
 				}
 				add_children.Clear();
 			}
-
+			in_use = false;
 		}
 
 		internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
@@ -318,8 +325,8 @@ namespace Glorg2.Scene
 		public void Remove(IEnumerable<Node> nodes)
 		{
 			remove_children.AddRange(nodes);
-			foreach (var node in nodes)
-				node.owner = null;
+			//foreach (var node in nodes)
+				//node.owner = null;
 
 		}
 		/// <summary>
@@ -331,7 +338,7 @@ namespace Glorg2.Scene
 		public void Remove(Node child)
 		{
 			remove_children.Add(child);
-			child.owner = null;
+			//child.owner = null;
 		}
 
 		public override int GetHashCode()
@@ -383,7 +390,7 @@ namespace Glorg2.Scene
 			var mat = Orientation.ToMatrix();
 			mat.m44 = 1;
 			mat = Matrix.Translate(position) * mat;
-			return  mat;
+			return mat;
 		}
 
 		/// <summary>

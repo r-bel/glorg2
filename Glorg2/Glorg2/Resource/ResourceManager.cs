@@ -26,11 +26,10 @@ namespace Glorg2.Resource
 	{
 		List<ResourceImporter> importers;
 		List<Resource> resources;
-
-
-		public ResourceManager()
+		public IEnumerable<Resource> Resources { get { return resources; } }
+		public string Path { get; set; }
+		public void AddAssembly(System.Reflection.Assembly asm)
 		{
-			var asm = System.Reflection.Assembly.GetCallingAssembly();
 			var types = new List<Type>(asm.GetTypes());
 			types.AddRange(System.Reflection.Assembly.GetEntryAssembly().GetTypes());
 			importers = new List<ResourceImporter>();
@@ -43,7 +42,13 @@ namespace Glorg2.Resource
 					importers.Add(item);
 				}
 			}
-			
+		}
+
+		public ResourceManager()
+		{
+			Path = Environment.CurrentDirectory;
+			var asm = System.Reflection.Assembly.GetCallingAssembly();
+			AddAssembly(asm);			
 		}
 		/// <summary>
 		/// Creates a list of objects ready for removal (i.e. has no current references)
@@ -65,7 +70,7 @@ namespace Glorg2.Resource
 
 		private System.IO.Stream GetStream(string res_name, string handler)
 		{
-            string fname = res_name + "." + handler;
+            string fname =System.IO.Path.Combine(Path, res_name + "." + handler);
 			if (System.IO.File.Exists(fname))
 				return new System.IO.FileStream(fname, System.IO.FileMode.Open, System.IO.FileAccess.Read);
 			else
