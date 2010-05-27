@@ -46,6 +46,9 @@ namespace Glorg2.Scene
 		[NonSerialized()]
 		internal float sim_time;
 
+		public IEnumerable<IRenderable> Renderables { get { return renderables; } }
+		public IEnumerable<Physics.IPhysicsObject> PhysicsObjects { get { return physics; } }
+
 		private Vector4 background;
 		public Vector4 Background { get { return background; } set { background = value; } }
 
@@ -134,13 +137,14 @@ namespace Glorg2.Scene
 		{
 			if (this.owner.Device != null)
 			{
-
-				var worldview = camera.Value.GetTransform().Invert();
-				var proj = camera.Value.GetProjectionMatrix();
-				var vp = this.owner.Device.Viewport;
-				var p = (worldview * proj).Invert() * new Vector3(
-					(2 * (pos.x - vp.X) - 1) / vp.Width,
-					(2 * (pos.y - vp.Y) - 1) / vp.Height,
+				var vp = new Vector2(owner.Device.Viewport.Width, owner.Device.Viewport.Height);
+				var screen = (2 * (pos - vp) - new Vector2(1, 1)) / vp;
+				var worldview = camera.Value.absolute_transform;
+				var proj = camera.Value.GetProjectionMatrix().Invert();
+				//var vp = this.owner.Device.Viewport;
+				var p = (worldview * proj) * new Vector3(
+					screen.x,
+					screen.y,
 					2 * z - 1);
 				return p;
 			}

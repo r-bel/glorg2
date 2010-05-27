@@ -148,7 +148,7 @@ namespace Glorg2.Resource
 										(uni as Vector4FloatUniform).val = Vector4Int.Parse(val);
 									break;
 								case "texture2d":
-									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null && !string.IsNullOrEmpty(val))
+									if ((uni = prog.GetUniformType<TextureUniform, Texture>(name)) != null && !string.IsNullOrEmpty(val) && man != null)
 									{
 										man.Load(val, out (uni as TextureUniform).val);
 										if (uni != null)
