@@ -1,4 +1,21 @@
-﻿using System;
+﻿/*
+Copyright (C) 2010 Henning Moe
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +27,11 @@ namespace Glorg2.Resource
     /// <summary>
     /// Loads .3ds files
     /// Reference: 3D Studio File Format 0.97 - January 1997
-    /// Rewritten by Martin van Velsen (email: vvelsen@ronix.ptf.hro.nl )
-    ///and Robin Fercoq ( 3ds-bin + mli )(email: robin@msrwww.fc-net.fr)
-    /// Based on documentation by Jim Pitts ( email: jim@micronetics.com )
+    /// Rewritten by Martin van Velsen (email: xxx@ronix.ptf.hro.nl )
+    ///and Robin Fercoq ( 3ds-bin + mli )(email: xxx@msrwww.fc-net.fr)
+    /// Based on documentation by Jim Pitts ( email: xxx@micronetics.com )
     /// Source update provided by: 
-    /// Albert Szilvasy (email: szilvasy@almos.vein.hu )
+    /// Albert Szilvasy (email: xxx@almos.vein.hu )
     /// 
     /// Also
     /// 3D Studio File Format Information
