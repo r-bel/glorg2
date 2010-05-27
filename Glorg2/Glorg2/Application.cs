@@ -49,7 +49,7 @@ namespace Glorg2
 
 		volatile ThreadReady threads_ready;
 
-		public Scene.Scene Scene { get { return scene; } }
+		public Scene.Scene Scene { get { return scene; } set { scene = value; } }
 
 		/// <summary>
 		/// Retrieves frames per second of the rendering thread
