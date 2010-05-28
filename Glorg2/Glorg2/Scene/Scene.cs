@@ -137,16 +137,32 @@ namespace Glorg2.Scene
 		{
 			if (this.owner.Device != null)
 			{
-				var vp = new Vector2(owner.Device.Viewport.Width, -owner.Device.Viewport.Height);
-				var screen = (2 * (pos - vp) - new Vector2(1, 1)) / vp;
-				var worldview = camera.Value.absolute_transform;
-				var proj = camera.Value.GetProjectionMatrix().Invert();
-				//var vp = this.owner.Device.Viewport;
-				var p = (worldview * proj).Invert() * new Vector3(
-					screen.x,
-					screen.y,
-					2 * z - 1);
-				return p;
+
+				/*Vector2 size = new Vector2(Owner.Device.Viewport.Width, Owner.Device.Viewport.Height);
+				pos += size / 2;
+				pos = (pos / size) * 2;
+				pos.y = size.y - pos.y;
+
+				var ret = (Camera.absolute_transform.Invert() * Camera.GetProjectionMatrix()) * new Vector4(pos.x, pos.y, z);
+
+				return ret.ToVector3();*/
+
+				var final = (Camera.absolute_transform.Invert() * Camera.GetProjectionMatrix()).Invert();
+
+
+				Vector4 inp = new Vector4(pos.x, pos.y, z, 1);
+				inp.x = (inp.x - Owner.Device.Viewport.Left) / Owner.Device.Viewport.Width;
+				inp.y = (inp.y - Owner.Device.Viewport.Top) / Owner.Device.Viewport.Height;
+
+				inp.x = inp.x * 2 - 1;
+				inp.y = inp.y * 2 - 1;
+				inp.z = inp.z * 2 - 1;
+
+				var vec = final * inp;
+				vec = vec / vec.w;
+				return vec.ToVector3();
+				
+ 
 			}
 			else
 				return default(Vector3);
