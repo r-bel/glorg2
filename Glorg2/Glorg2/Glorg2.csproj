@@ -79,6 +79,9 @@
     <Compile Include="Computing\OpenCLConst.cs" />
     <Compile Include="Computing\OpenCLContext.cs" />
     <Compile Include="CyclicRedundancy.cs" />
+    <Compile Include="Debugging\ResourceMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DynamicLinking.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
     <Compile Include="Graphics\Material.cs" />
