@@ -499,7 +499,7 @@ namespace Glorg2.Graphics.OpenGL
 			if(sub.Length >= 3)
 				int.TryParse(sub[0], out revision);
 
-			System.Diagnostics.Debug.WriteLine("OpenGL version " + major + "." + minor + " supported by your system.");
+			Glorg2.Debugging.Debug.WriteLine("OpenGL version " + major + "." + minor + " supported by your system.");
 
 			if (major < 3)
 				throw new NotSupportedException("OpenGL 3 is not supported.");

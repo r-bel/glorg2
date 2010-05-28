@@ -419,9 +419,9 @@ namespace Glorg2
 
 				// Wait until simulation thread has finished with one frame
 				// or else it is not necessary to render the next frame (since nothing has happened)
-				while (!provoke_render && running)
+				//while (!provoke_render && running)
 				{
-					System.Threading.Thread.Sleep(0);
+					//System.Threading.Thread.Sleep(0);
 				}
 				
 				Render(dev, frame_time, total_time);

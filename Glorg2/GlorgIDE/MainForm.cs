@@ -161,7 +161,7 @@ namespace GlorgIDE
 		}
 
 
-		Vector2 pos;
+		Vector2 pos = new Vector2();
 		int mx, my;
 		private void RenderOutput_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -186,8 +186,8 @@ namespace GlorgIDE
 				float mag = vec.Length;
 				if (mag != 0)
 				{
-					pos += vec;
-					file.Scene.Camera.Orientation = Quaternion.FromAxisAngle(pos.x, new Vector3(0, 1, 0)) * Quaternion.FromAxisAngle(pos.y, new Vector3(1, 0, 0)) ;
+					this.pos += vec;
+					file.Scene.Camera.Orientation = Quaternion.FromAxisAngle(this.pos.x, new Vector3(0, 1, 0)) * Quaternion.FromAxisAngle(this.pos.y, new Vector3(1, 0, 0)) ;
 				}
 				mx = e.X;
 				my = e.Y;
@@ -219,10 +219,11 @@ namespace GlorgIDE
 				file.Scene.Camera.Position += (dir * delta).ToVector4();
 				mx = e.X; my = e.Y;
 			}
-			Vector3 near, far;
-			GetMouseRay(new Vector2(e.X, e.Y), out near, out far);
-			file.cursor.Position = far.ToVector4();
-			PositionDisplay.Text = far.ToString();
+			//Vector3 near, far;
+			var pos = file.Scene.Unproject(new Vector2(e.X, e.Y), 1f);
+			//GetMouseRay(new Vector2(e.X, e.Y), out near, out far);
+			file.cursor.Position = pos.ToVector4();
+			PositionDisplay.Text = pos.ToString();
 		
 		}
 
