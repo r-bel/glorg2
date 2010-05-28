@@ -92,12 +92,12 @@ namespace Glorg2.Resource
 					}
 					err.AppendLine("Linker:\n");
 					err.AppendLine(prog.GetLinkLog());
-					System.Diagnostics.Debug.WriteLine(err.ToString());
+					Debugging.Debug.WriteLine(err.ToString());
 				}
 				string log;
 				if (!prog.Validate(out log))
 				{
-					System.Diagnostics.Debug.WriteLine(log);
+					Debugging.Debug.WriteLine(log);
 				}
 				
 				var uniforms = doc.SelectSingleNode(".//Uniforms");

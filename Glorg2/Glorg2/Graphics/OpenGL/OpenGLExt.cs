@@ -103,8 +103,52 @@ namespace Glorg2.Graphics.OpenGL
 
 		}
 
-		
-		
+		#region AMD_debug_output
+
+		public delegate void DebugProc(GLuint id,
+                                                GLenum category,
+                                                GLenum severity,
+                                                GLsizei length,
+                                                IntPtr message,
+                                                IntPtr userParam);
+
+		public delegate void DebugMessageEnableAMD(GLenum category,
+                               GLenum severity,
+                               GLsizei count,
+                               int[] ids,
+                               GLboolean enabled);
+
+    public delegate void DebugMessageInsertAMD(GLenum category,
+                               GLenum severity,
+                               GLuint id,
+                               GLsizei length, 
+                               byte[] buf);
+
+    public delegate void DebugMessageCallbackAMD(DebugProc callback,
+                                 IntPtr userParam);
+    
+    public delegate uint GetDebugMessageLogAMD(GLuint count,
+                               GLsizei bufsize,
+                               ref GLenum categories,
+                               ref GLuint severities,
+                               GLuint[] ids,
+                               GLsizei[] lengths, 
+                               byte[] message);
+
+	public static DebugMessageCallbackAMD glDebugMessageCallbackAMD;
+	public static DebugMessageEnableAMD glDebugMessageEnableAMD;
+	public static DebugMessageInsertAMD glDebugMessageInsertAMD;
+	public static GetDebugMessageLogAMD glGetDebugMessageLogAMD;
+
+	public static void InitDebugOutputAMD(OpenGLContext ctx)
+	{
+		glDebugMessageCallbackAMD = ctx.GetProc<DebugMessageCallbackAMD>("glDebugMessageCallbackAMD");
+		glDebugMessageEnableAMD = ctx.GetProc<DebugMessageEnableAMD>("glDebugMessageEnableAMD");
+		glDebugMessageInsertAMD = ctx.GetProc<DebugMessageInsertAMD>("glDebugMessageInsertAMD");
+		glGetDebugMessageLogAMD = ctx.GetProc<GetDebugMessageLogAMD>("glGetDebugMessageLogAMD");
+	}
+		#endregion
+
 		#region Framebuffer objects
 
 
@@ -179,28 +223,28 @@ namespace Glorg2.Graphics.OpenGL
 		#region OpenGL 1.2
 
 		public delegate void BlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-public delegate void BlendEquation(GLenum mode);
-public delegate void DrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, IntPtr indices);
-public delegate void TexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, IntPtr pixels);
-public delegate void TexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, IntPtr pixels);
-public delegate void CopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+		public delegate void BlendEquation(GLenum mode);
+		public delegate void DrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, IntPtr indices);
+		public delegate void TexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, IntPtr pixels);
+		public delegate void TexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, IntPtr pixels);
+		public delegate void CopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
 
 		public static BlendColor glBlendColor;
-public static BlendEquation glBlendEquation;
-public static DrawRangeElements glDrawRangeElements;
-public static TexImage3D glTexImage3D;
-public static TexSubImage3D glTexSubImage3D;
-public static CopyTexSubImage3D glCopyTexSubImage3D;
+		public static BlendEquation glBlendEquation;
+		public static DrawRangeElements glDrawRangeElements;
+		public static TexImage3D glTexImage3D;
+		public static TexSubImage3D glTexSubImage3D;
+		public static CopyTexSubImage3D glCopyTexSubImage3D;
 
 
 		public static void InitGL_1_2(OpenGLContext ctx)
 		{
-					glBlendColor = ctx.GetProc<BlendColor>("glBlendColor");
-glBlendEquation = ctx.GetProc<BlendEquation>("glBlendEquation");
-glDrawRangeElements = ctx.GetProc<DrawRangeElements>("glDrawRangeElements");
-glTexImage3D = ctx.GetProc<TexImage3D>("glTexImage3D");
-glTexSubImage3D = ctx.GetProc<TexSubImage3D>("glTexSubImage3D");
-glCopyTexSubImage3D = ctx.GetProc<CopyTexSubImage3D>("glCopyTexSubImage3D");
+			glBlendColor = ctx.GetProc<BlendColor>("glBlendColor");
+			glBlendEquation = ctx.GetProc<BlendEquation>("glBlendEquation");
+			glDrawRangeElements = ctx.GetProc<DrawRangeElements>("glDrawRangeElements");
+			glTexImage3D = ctx.GetProc<TexImage3D>("glTexImage3D");
+			glTexSubImage3D = ctx.GetProc<TexSubImage3D>("glTexSubImage3D");
+			glCopyTexSubImage3D = ctx.GetProc<CopyTexSubImage3D>("glCopyTexSubImage3D");
 
 		}
 		#endregion
@@ -242,29 +286,29 @@ glCopyTexSubImage3D = ctx.GetProc<CopyTexSubImage3D>("glCopyTexSubImage3D");
 
 		#region OpenGL 1.4
 		public delegate void BlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
-public delegate void MultiDrawArrays(GLenum mode, GLint[] first, GLsizei[] count, GLsizei primcount);
-public delegate void MultiDrawElements(GLenum mode, GLsizei[] count, GLenum type, IntPtr[] indices, GLsizei primcount);
-public delegate void PointParameterf(GLenum pname, GLfloat param);
-public delegate void PointParameterfv(GLenum pname, GLfloat[] @params);
-public delegate void PointParameteri(GLenum pname, GLint param);
-public delegate void PointParameteriv(GLenum pname, GLint[] @params);
+		public delegate void MultiDrawArrays(GLenum mode, GLint[] first, GLsizei[] count, GLsizei primcount);
+		public delegate void MultiDrawElements(GLenum mode, GLsizei[] count, GLenum type, IntPtr[] indices, GLsizei primcount);
+		public delegate void PointParameterf(GLenum pname, GLfloat param);
+		public delegate void PointParameterfv(GLenum pname, GLfloat[] @params);
+		public delegate void PointParameteri(GLenum pname, GLint param);
+		public delegate void PointParameteriv(GLenum pname, GLint[] @params);
 		public static BlendFuncSeparate glBlendFuncSeparate;
-public static MultiDrawArrays glMultiDrawArrays;
-public static MultiDrawElements glMultiDrawElements;
-public static PointParameterf glPointParameterf;
-public static PointParameterfv glPointParameterfv;
-public static PointParameteri glPointParameteri;
-public static PointParameteriv glPointParameteriv;
+		public static MultiDrawArrays glMultiDrawArrays;
+		public static MultiDrawElements glMultiDrawElements;
+		public static PointParameterf glPointParameterf;
+		public static PointParameterfv glPointParameterfv;
+		public static PointParameteri glPointParameteri;
+		public static PointParameteriv glPointParameteriv;
 
 		public static void InitGL_1_4(OpenGLContext ctx)
 		{
-					glBlendFuncSeparate = ctx.GetProc<BlendFuncSeparate>("glBlendFuncSeparate");
-glMultiDrawArrays = ctx.GetProc<MultiDrawArrays>("glMultiDrawArrays");
-glMultiDrawElements = ctx.GetProc<MultiDrawElements>("glMultiDrawElements");
-glPointParameterf = ctx.GetProc<PointParameterf>("glPointParameterf");
-glPointParameterfv = ctx.GetProc<PointParameterfv>("glPointParameterfv");
-glPointParameteri = ctx.GetProc<PointParameteri>("glPointParameteri");
-glPointParameteriv = ctx.GetProc<PointParameteriv>("glPointParameteriv");
+			glBlendFuncSeparate = ctx.GetProc<BlendFuncSeparate>("glBlendFuncSeparate");
+			glMultiDrawArrays = ctx.GetProc<MultiDrawArrays>("glMultiDrawArrays");
+			glMultiDrawElements = ctx.GetProc<MultiDrawElements>("glMultiDrawElements");
+			glPointParameterf = ctx.GetProc<PointParameterf>("glPointParameterf");
+			glPointParameterfv = ctx.GetProc<PointParameterfv>("glPointParameterfv");
+			glPointParameteri = ctx.GetProc<PointParameteri>("glPointParameteri");
+			glPointParameteriv = ctx.GetProc<PointParameteriv>("glPointParameteriv");
 		}
 		#endregion
 
@@ -620,26 +664,26 @@ glPointParameteriv = ctx.GetProc<PointParameteriv>("glPointParameteriv");
 		#region OpenGL 2.1
 
 		public delegate void UniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
-public delegate void UniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
-public delegate void UniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
-public delegate void UniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
-public delegate void UniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
-public delegate void UniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
+		public delegate void UniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
+		public delegate void UniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
+		public delegate void UniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
+		public delegate void UniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
+		public delegate void UniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, GLfloat[] value);
 		public static UniformMatrix2x3fv glUniformMatrix2x3fv;
-public static UniformMatrix3x2fv glUniformMatrix3x2fv;
-public static UniformMatrix2x4fv glUniformMatrix2x4fv;
-public static UniformMatrix4x2fv glUniformMatrix4x2fv;
-public static UniformMatrix3x4fv glUniformMatrix3x4fv;
-public static UniformMatrix4x3fv glUniformMatrix4x3fv;
+		public static UniformMatrix3x2fv glUniformMatrix3x2fv;
+		public static UniformMatrix2x4fv glUniformMatrix2x4fv;
+		public static UniformMatrix4x2fv glUniformMatrix4x2fv;
+		public static UniformMatrix3x4fv glUniformMatrix3x4fv;
+		public static UniformMatrix4x3fv glUniformMatrix4x3fv;
 
 		public static void InitGL_2_1(OpenGLContext ctx)
 		{
-					glUniformMatrix2x3fv = ctx.GetProc<UniformMatrix2x3fv>("glUniformMatrix2x3fv");
-glUniformMatrix3x2fv = ctx.GetProc<UniformMatrix3x2fv>("glUniformMatrix3x2fv");
-glUniformMatrix2x4fv = ctx.GetProc<UniformMatrix2x4fv>("glUniformMatrix2x4fv");
-glUniformMatrix4x2fv = ctx.GetProc<UniformMatrix4x2fv>("glUniformMatrix4x2fv");
-glUniformMatrix3x4fv = ctx.GetProc<UniformMatrix3x4fv>("glUniformMatrix3x4fv");
-glUniformMatrix4x3fv = ctx.GetProc<UniformMatrix4x3fv>("glUniformMatrix4x3fv");
+			glUniformMatrix2x3fv = ctx.GetProc<UniformMatrix2x3fv>("glUniformMatrix2x3fv");
+			glUniformMatrix3x2fv = ctx.GetProc<UniformMatrix3x2fv>("glUniformMatrix3x2fv");
+			glUniformMatrix2x4fv = ctx.GetProc<UniformMatrix2x4fv>("glUniformMatrix2x4fv");
+			glUniformMatrix4x2fv = ctx.GetProc<UniformMatrix4x2fv>("glUniformMatrix4x2fv");
+			glUniformMatrix3x4fv = ctx.GetProc<UniformMatrix3x4fv>("glUniformMatrix3x4fv");
+			glUniformMatrix4x3fv = ctx.GetProc<UniformMatrix4x3fv>("glUniformMatrix4x3fv");
 		}
 		#endregion
 
@@ -702,7 +746,7 @@ glUniformMatrix4x3fv = ctx.GetProc<UniformMatrix4x3fv>("glUniformMatrix4x3fv");
 		public delegate void ClearBufferuiv(GLenum buffer, GLint drawbuffer, GLuint[] value);
 		public delegate void ClearBufferfv(GLenum buffer, GLint drawbuffer, GLfloat[] value);
 		public delegate void ClearBufferfi(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil);
-		public delegate IntPtr GetStringi (GLenum name, GLuint index);
+		public delegate IntPtr GetStringi(GLenum name, GLuint index);
 		public static ColorMaski glColorMaski;
 		public static GetBooleani_v glGetBooleani_v;
 		public static GetIntegeri_v glGetIntegeri_v;
@@ -827,21 +871,21 @@ glUniformMatrix4x3fv = ctx.GetProc<UniformMatrix4x3fv>("glUniformMatrix4x3fv");
 		#region OpenGL 3.1
 
 		public delegate void DrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
-public delegate void DrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, IntPtr[] indices, GLsizei primcount);
-public delegate void TexBuffer(GLenum target, GLenum internalformat, GLuint buffer);
-public delegate void PrimitiveRestartIndex(GLuint index);
+		public delegate void DrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, IntPtr[] indices, GLsizei primcount);
+		public delegate void TexBuffer(GLenum target, GLenum internalformat, GLuint buffer);
+		public delegate void PrimitiveRestartIndex(GLuint index);
 
 		public static DrawArraysInstanced glDrawArraysInstanced;
-public static DrawElementsInstanced glDrawElementsInstanced;
-public static TexBuffer glTexBuffer;
-public static PrimitiveRestartIndex glPrimitiveRestartIndex;
+		public static DrawElementsInstanced glDrawElementsInstanced;
+		public static TexBuffer glTexBuffer;
+		public static PrimitiveRestartIndex glPrimitiveRestartIndex;
 
 		public static void InitGL_3_1(OpenGLContext ctx)
 		{
-					glDrawArraysInstanced = ctx.GetProc<DrawArraysInstanced>("glDrawArraysInstanced");
-glDrawElementsInstanced = ctx.GetProc<DrawElementsInstanced>("glDrawElementsInstanced");
-glTexBuffer = ctx.GetProc<TexBuffer>("glTexBuffer");
-glPrimitiveRestartIndex = ctx.GetProc<PrimitiveRestartIndex>("glPrimitiveRestartIndex");
+			glDrawArraysInstanced = ctx.GetProc<DrawArraysInstanced>("glDrawArraysInstanced");
+			glDrawElementsInstanced = ctx.GetProc<DrawElementsInstanced>("glDrawElementsInstanced");
+			glTexBuffer = ctx.GetProc<TexBuffer>("glTexBuffer");
+			glPrimitiveRestartIndex = ctx.GetProc<PrimitiveRestartIndex>("glPrimitiveRestartIndex");
 		}
 		#endregion
 

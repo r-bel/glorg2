@@ -219,11 +219,35 @@ namespace GlorgIDE
 				file.Scene.Camera.Position += (dir * delta).ToVector4();
 				mx = e.X; my = e.Y;
 			}
-			var p = file.Scene.Unproject(new Vector2(e.X, e.Y), 32f);
-			file.cursor.Position = p.ToVector4();
-			PositionDisplay.Text = p.ToString();
+			Vector3 near, far;
+			GetMouseRay(new Vector2(e.X, e.Y), out near, out far);
+			file.cursor.Position = far.ToVector4();
+			PositionDisplay.Text = far.ToString();
 		
 		}
+
+		public bool GetMouseRay(Vector2 mpos, out Vector3 near, out Vector3 far)
+		{
+			Vector2 screen = new Vector2();
+			screen.X = ((2f * mpos.X) / RenderOutput.ClientSize.Width) - 1;
+			screen.Y = -((2f * mpos.Y) / RenderOutput.ClientSize.Height) - 1;
+
+			// Inverse View/Proj Matrix
+			Matrix proj = file.Scene.Camera.GetProjectionMatrix().Invert();
+			Matrix view = file.Scene.Camera.GetTransform();
+			Matrix final = proj * view;
+			// Near/Far Point
+			Vector3 near_pos = new Vector3(screen.X, screen.Y, 0);
+			Vector3 far_pos = new Vector3(screen.X, screen.Y, .5f);
+
+
+
+			near = final * near_pos;
+			far = final * far_pos;
+
+			return true;
+		}
+
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
 		}
@@ -320,6 +344,13 @@ namespace GlorgIDE
 		private void ProjectView_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			ObjectProperties.SelectedObject = ProjectView.SelectedNode != null ? ProjectView.SelectedNode.Tag : null;
+		}
+
+		private void DebugTimer_Tick(object sender, EventArgs e)
+		{
+			string v = null;
+			while ((v = Glorg2.Debugging.Debug.ReadLine()) != null)
+				Output.AppendText(v + Environment.NewLine);
 		}
 	}
 }

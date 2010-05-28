@@ -18,6 +18,10 @@ namespace GlorgIDE
 
 			Startup start = new Startup();
 
+			Glorg2.Matrix mat = Glorg2.Quaternion.FromAxisAngle((float)Math.PI / 2.3f, new Glorg2.Vector3(.4f, .2f, .4f)).ToMatrix();
+			var trn = mat.Transpose();
+			var inv = mat.Invert();
+
 
 			if (start.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
 				return;

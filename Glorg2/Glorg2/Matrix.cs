@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using glorg_float = System.Single;
+
 namespace Glorg2
 {
 	/// <sum41 m41 ary>
@@ -378,16 +380,16 @@ namespace Glorg2
 			};
 		}
 
-		public static Matrix Orthographic(float left, float right, float top, float bottom41 , float near, float far)
+		public static Matrix Orthographic(float left, float right, float top, float bottom41, float near, float far)
 		{
 			return new Matrix()
 			{
 				m11 = 2 / (right - left),
-				m22 = 2 / (top - bottom41 ),
+				m22 = 2 / (top - bottom41),
 				m33 = -2 / (far - near),
 				m44 = 1,
 				m14 = (right + left) / (right - left),
-				m24 = (top + bottom41 ) / (top - bottom41 ),
+				m24 = (top + bottom41) / (top - bottom41),
 				m34 = (far + near) / (far - near)
 			};
 		}
@@ -460,8 +462,8 @@ namespace Glorg2
 		}
 		public static Matrix operator *(Matrix a, Matrix b)
 		{
-			// TODO: Increase perform41 ance
-			// I have written it in a sim41 ple m41 anner as m41 anual m41 atrix m41 ultiplication is very error prone.
+			// TODO: Increase performance
+			// I have written it in a simple manner as manual matrix multiplication is very error prone.
 			var va = a.GetRows();
 			var vb = b.GetColumns();
 
@@ -530,73 +532,10 @@ return ret;*/
 
 		public Matrix Invert()
 		{
-			/*
-			//return this * (1 / this.Determ41 inant());
-			Matrix ret = new Matrix();
-			float v = (m11 * m22 * m33 * m44 - m11 * m22 * m34 * m43 - m11 * m23 * m32 * m44 + m11 * m23 * m34 * m42 + m11 * m24 * m32 * m43 - m11 * m24 * m33 * m42 - m12 * m21 * m33
-* m44 + m12 * m21 * m34 * m43 + m12 * m23 * m31 * m44 - m12 * m23 * m34 * m41 - m12 * m24 * m31
-* m43 + m12 * m24 * m33 * m41 + m13 * m21 * m32 * m44 - m13 * m21 * m34 * m42 - m13 * m22 * m31
-* m44 + m13 * m22 * m34 * m41 + m13 * m24 * m31 * m42 - m13 * m24 * m32 * m41 - m14 * m21 * m32
-* m43 + m14 * m21 * m33 * m42 + m14 * m22 * m31 * m43 - m14 * m22 * m33 * m41 - m14 * m23 * m31
-* m42 + m14 * m23 * m32 * m41);
-
-			if (v == 0)
-				throw new DivideByZeroException();
-
-			ret.m11 =
-			(m22 * m33 * m44 + m23 * m34 * m42 + m24 * m32 * m43 - m22 * m34 * m43 - m23 * m32 * m44 - m24 * m33 * m42) /
-				v;
-			ret.m12 =
-			(m12 * m34 * m43 + m13 * m32 * m44 + m14 * m33 * m42 - m12 * m33 * m44 - m13 * m34 * m42
-			- m14 * m32 * m43) / v;
-			ret.m13 =
-			(m12 * m23 * m44 + m13 * m24 * m42 + m14 * m22 * m43 - m12 * m24 * m43 - m13 * m22 * m44
-			- m14 * m23 * m42) / v;
-			ret.m14 =
-			(m12 * m24 * m33 + m13 * m22 * m34 + m14 * m23 * m32 - m12 * m23 * m34 - m13 * m24 * m32
-			- m14 * m22 * m33) / v;
-			ret.m21 =
-			(m21 * m34 * m43 + m24 * m33 * m41 + m23 * m31 * m44 - m21 * m33 * m44 - m23 * m34 * m41
-			- m24 * m31 * m43) / v;
-			ret.m22 =
-			(m11 * m33 * m44 + m13 * m34 * m41 + m14 * m31 * m43 - m11 * m34 * m43 - m13 * m31 * m44
-			- m14 * m33 * m41) / v;
-			ret.m23 =
-			(m11 * m24 * m43 + m13 * m21 * m44 + m14 * m23 * m41 - m11 * m23 * m44 - m13 * m24 * m41
-			- m14 * m21 * m43) / v;
-			ret.m24 =
-			(m11 * m23 * m34 + m13 * m24 * m31 + m14 * m21 * m33 - m11 * m24 * m33 - m13 * m21 * m34
-			- m14 * m23 * m31) / v;
-			ret.m31 =
-			(m21 * m32 * m44 + m22 * m34 * m41 + m24 * m31 * m42 - m21 * m34 * m42 - m22 * m31 * m44
-			- m24 * m32 * m41) / v;
-			ret.m32 =
-			(m11 * m34 * m42 + m12 * m31 * m44 + m14 * m32 * m41 - m11 * m32 * m44 - m12 * m34 * m41
-			- m14 * m31 * m42) / v;
-			ret.m33 =
-			(m11 * m22 * m44 + m12 * m24 * m41 + m14 * m21 * m42 - m11 * m24 * m42 - m12 * m21 * m44
-			- m14 * m22 * m41) / v;
-			ret.m34 =
-			(m11 * m24 * m32 + m12 * m21 * m34 + m14 * m22 * m31 - m11 * m22 * m34 - m12 * m24 * m31
-			- m14 * m21 * m32) / v;
-			ret.m41 =
-			(m21 * m33 * m42 + m22 * m31 * m43 + m23 * m32 * m41 - m21 * m32 * m43 - m22 * m33 * m41
-			- m23 * m31 * m42) / v;
-			ret.m42 =
-			(m11 * m32 * m43 + m12 * m33 * m41 + m13 * m31 * m42 - m11 * m33 * m42 - m12 * m31 * m43
-			- m13 * m32 * m41) / v;
-			ret.m43 =
-			(m11 * m23 * m42 + m12 * m21 * m43 + m13 * m22 * m41 - m11 * m22 * m43 - m12 * m23 * m41
-			- m13 * m21 * m42) / v;
-			ret.m44 =
-			(m11 * m22 * m33 + m12 * m23 * m31 + m13 * m21 * m32 - m11 * m23 * m32 - m12 * m21 * m33
-			- m13 * m22 * m31) / v;
-
-			return ret;*/
 			float det = Determinant();
 			if (det == 0)
 				return Matrix.Identity;
-			else 
+			else
 				return Adjoint() * (1f / det);
 		}
 
@@ -604,44 +543,44 @@ return ret;*/
 		{
 			Matrix ret = new Matrix();
 			ret.m11 =
-			m22 * m33 * m44  + m23 * m34 * m42  + m24 * m32 * m43 - m22 * m34 * m43 - m23 * m32 * m44 - m24 * m33 * m42 ;
+			m22 * m33 * m44 + m23 * m34 * m42 + m24 * m32 * m43 - m22 * m34 * m43 - m23 * m32 * m44 - m24 * m33 * m42;
 			ret.m12 =
-			m21 * m34 * m43  + m24 * m33 * m41  + m23 * m31 * m44 - m21 * m33 * m44 - m23 * m34 * m41 - m24 * m31 * m43 ;
+			m21 * m34 * m43 + m24 * m33 * m41 + m23 * m31 * m44 - m21 * m33 * m44 - m23 * m34 * m41 - m24 * m31 * m43;
 			ret.m13 =
-			m21 * m32 * m44  + m22 * m34 * m41  + m24 * m31 * m42 - m21 * m34 * m42 - m22 * m31 * m44 - m24 * m32 * m41 ;
+			m21 * m32 * m44 + m22 * m34 * m41 + m24 * m31 * m42 - m21 * m34 * m42 - m22 * m31 * m44 - m24 * m32 * m41;
 			ret.m14 =
-			m21 * m33 * m42  + m22 * m31 * m43  + m23 * m32 * m41 - m21 * m32 * m43 - m22 * m33 * m41 - m23 * m31 * m42 ;
+			m21 * m33 * m42 + m22 * m31 * m43 + m23 * m32 * m41 - m21 * m32 * m43 - m22 * m33 * m41 - m23 * m31 * m42;
 			ret.m21 =
-			m12 * m34 * m43  + m13 * m32 * m44  + m14 * m33 * m42 - m12 * m33 * m44 - m13 * m34 * m42 - m14 * m32 * m43 ;
+			m12 * m34 * m43 + m13 * m32 * m44 + m14 * m33 * m42 - m12 * m33 * m44 - m13 * m34 * m42 - m14 * m32 * m43;
 			ret.m22 =
-			m11 * m33 * m44  + m13 * m34 * m41  + m14 * m31 * m43 - m11 * m34 * m43 - m13 * m31 * m44 - m14 * m33 * m41 ;
+			m11 * m33 * m44 + m13 * m34 * m41 + m14 * m31 * m43 - m11 * m34 * m43 - m13 * m31 * m44 - m14 * m33 * m41;
 			ret.m23 =
-			m11 * m34 * m42  + m12 * m31 * m44  + m14 * m32 * m41 - m11 * m32 * m44 - m12 * m34 * m41 - m14 * m31 * m42 ;
+			m11 * m34 * m42 + m12 * m31 * m44 + m14 * m32 * m41 - m11 * m32 * m44 - m12 * m34 * m41 - m14 * m31 * m42;
 			ret.m24 =
-			m11 * m32 * m43  + m12 * m33 * m41  + m13 * m31 * m42 - m11 * m33 * m42 - m12 * m31 * m43 - m13 * m32 * m41 ;
+			m11 * m32 * m43 + m12 * m33 * m41 + m13 * m31 * m42 - m11 * m33 * m42 - m12 * m31 * m43 - m13 * m32 * m41;
 			ret.m31 =
-			m12 * m23 * m44  + m13 * m24 * m42  + m14 * m22 * m43 - m12 * m24 * m43 - m13 * m22 * m44 - m14 * m23 * m42 ;
+			m12 * m23 * m44 + m13 * m24 * m42 + m14 * m22 * m43 - m12 * m24 * m43 - m13 * m22 * m44 - m14 * m23 * m42;
 			ret.m32 =
-			m11 * m24 * m43  + m13 * m21 * m44  + m14 * m23 * m41 - m11 * m23 * m44 - m13 * m24 * m41 - m14 * m21 * m43 ;
+			m11 * m24 * m43 + m13 * m21 * m44 + m14 * m23 * m41 - m11 * m23 * m44 - m13 * m24 * m41 - m14 * m21 * m43;
 			ret.m33 =
-			m11 * m22 * m44  + m12 * m24 * m41  + m14 * m21 * m42 - m11 * m24 * m42 - m12 * m21 * m44 - m14 * m22 * m41 ;
+			m11 * m22 * m44 + m12 * m24 * m41 + m14 * m21 * m42 - m11 * m24 * m42 - m12 * m21 * m44 - m14 * m22 * m41;
 			ret.m34 =
-			m11 * m23 * m42  + m12 * m21 * m43  + m13 * m22 * m41 - m11 * m22 * m43 - m12 * m23 * m41 - m13 * m21 * m42 ;
+			m11 * m23 * m42 + m12 * m21 * m43 + m13 * m22 * m41 - m11 * m22 * m43 - m12 * m23 * m41 - m13 * m21 * m42;
 			ret.m41 =
-			m12 * m24 * m33  + m13 * m22 * m34  + m14 * m23 * m32 - m12 * m23 * m34 - m13 * m24 * m32 - m14 * m22 * m33 ;
+			m12 * m24 * m33 + m13 * m22 * m34 + m14 * m23 * m32 - m12 * m23 * m34 - m13 * m24 * m32 - m14 * m22 * m33;
 			ret.m42 =
-			m11 * m23 * m34  + m13 * m24 * m31  + m14 * m21 * m33 - m11 * m24 * m33 - m13 * m21 * m34 - m14 * m23 * m31 ;
+			m11 * m23 * m34 + m13 * m24 * m31 + m14 * m21 * m33 - m11 * m24 * m33 - m13 * m21 * m34 - m14 * m23 * m31;
 			ret.m43 =
-			m11 * m24 * m32  + m12 * m21 * m34  + m14 * m22 * m31 - m11 * m22 * m34 - m12 * m24 * m31 - m14 * m21 * m32 ;
+			m11 * m24 * m32 + m12 * m21 * m34 + m14 * m22 * m31 - m11 * m22 * m34 - m12 * m24 * m31 - m14 * m21 * m32;
 			ret.m44 =
-			m11 * m22 * m33  + m12 * m23 * m31  + m13 * m21 * m32 - m11 * m23 * m32 - m12 * m21 * m33 - m13 * m22 * m31 ;
+			m11 * m22 * m33 + m12 * m23 * m31 + m13 * m21 * m32 - m11 * m23 * m32 - m12 * m21 * m33 - m13 * m22 * m31;
 			return ret;
 		}
 
 		public float Determinant()
 		{
-			return
-				m14 * m23 * m32 * m41 - m13 * m24 * m32 * m41 -
+
+			return m14 * m23 * m32 * m41 - m13 * m24 * m32 * m41 -
 				m14 * m22 * m33 * m41 + m12 * m24 * m33 * m41 +
 				m13 * m22 * m34 * m41 - m12 * m23 * m34 * m41 -
 				m14 * m23 * m31 * m42 + m13 * m24 * m31 * m42 +
@@ -653,6 +592,20 @@ return ret;*/
 				m13 * m22 * m31 * m44 + m12 * m23 * m31 * m44 +
 				m13 * m21 * m32 * m44 - m11 * m23 * m32 * m44 -
 				m12 * m21 * m33 * m44 + m11 * m22 * m33 * m44;
+
+			/*return
+				m14 * m23 * m32 * m41 - m13 * m24 * m32 * m41 -
+				m14 * m22 * m33 * m41 + m12 * m24 * m33 * m41 +
+				m13 * m22 * m34 * m41 - m12 * m23 * m34 * m41 -
+				m14 * m23 * m31 * m42 + m13 * m24 * m31 * m42 +
+				m14 * m21 * m33 * m42 - m11 * m24 * m33 * m42 -
+				m13 * m21 * m34 * m42 + m11 * m23 * m34 * m42 +
+				m14 * m22 * m31 * m43 - m12 * m24 * m31 * m43 -
+				m14 * m21 * m32 * m43 + m11 * m24 * m32 * m43 +
+				m12 * m21 * m34 * m43 - m11 * m22 * m34 * m43 -
+				m13 * m22 * m31 * m44 + m12 * m23 * m31 * m44 +
+				m13 * m21 * m32 * m44 - m11 * m23 * m32 * m44 -
+				m12 * m21 * m33 * m44 + m11 * m22 * m33 * m44;*/
 		}
 
 		public static Vector4 operator *(Matrix a, Vector4 b)

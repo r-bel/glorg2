@@ -282,7 +282,7 @@ namespace Glorg2
 						}
 					}));
 				}
-				System.Threading.Thread.Sleep(5000);
+				System.Threading.Thread.Sleep(500);
 			}
 			//res_ctx.Dispose();
 			//render_offscreen.DestroyHandle();
@@ -321,6 +321,9 @@ namespace Glorg2
 
 		private void MainLoop()
 		{
+#if DEBUG
+			Glorg2.Debugging.Debug.LogEnabled = true;
+#endif
 			long old_time;
 			Init();
 			old_time = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -363,7 +366,7 @@ namespace Glorg2
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;
-				System.Windows.Forms.Application.DoEvents();
+				System.Threading.Thread.Sleep(0);
 				old_time = new_time;				
 
 			}
@@ -422,7 +425,7 @@ namespace Glorg2
 				}
 				
 				Render(dev, frame_time, total_time);
-
+				System.Threading.Thread.Sleep(0);
 				fps = 1 / time;
 				provoke_render = false;
 				old_time = new_time;

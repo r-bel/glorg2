@@ -104,6 +104,13 @@ namespace Glorg2.Graphics
 			GL.InitGL_3_1(context);
 			GL.InitGL_3_2(context);
 			GL.InitFramebuffers(context);
+			var sp = GL.GetSupportedExtensions();
+			if (sp.Contains("GL_AMD_debug_output"))
+			{
+				GL.InitDebugOutputAMD(context);
+				GL.glDebugMessageCallbackAMD(new OpenGL.OpenGL.DebugProc(DebugProcecure), IntPtr.Zero);
+				GL.glDebugMessageEnableAMD(0, 0, 0, new int[] { }, GL.boolean.TRUE);
+			}
 
 			err = GL.glGetError();
 
@@ -116,6 +123,17 @@ namespace Glorg2.Graphics
 			state.DepthTest = true;
 			
 			
+		}
+
+		public void DebugProcecure(uint id,
+												uint category,
+												uint severity,
+												int length,
+												IntPtr message,
+												IntPtr userParam)
+		{
+			var str = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message, length);
+			Debugging.Debug.WriteLine(str);
 		}
 
 		public void SetActiveMaterial(Graphics.Material material)
@@ -262,25 +280,41 @@ namespace Glorg2.Graphics
 		{
 			Draw(mode, true);
 		}
-
+		bool encountered_draw_error;
 		/// <summary>
 		/// Draw buffers
 		/// </summary>
 		/// <param name="mode">Element type to draw</param>
+		/// <param name="update_values">Specifies if Glorg should update uniforms</param>
 		/// <remarks>This function uses the currently set vertex and index buffer (if any) If no index buffer is set, the function will assume that elements follows each other in the vertex buffer.</remarks>
 		public void Draw(DrawMode mode, bool update_values)
 		{
+			bool found_err = false;
+			OpenGLError err;
+			GL.glGetError();
 			if (update_values)
 			{
 					modelview_matrix.Update();
 					projection_matrix.Update();
 					texture_matrix.Update();
 					normal_matrix.Update();
-				
+
+					 err = (OpenGLError)GL.glGetError();
+					 if (err != OpenGLError.NoError && !encountered_draw_error)
+					 {
+						 Debugging.Debug.WriteLine("Setting standard uniforms: " + err.ToString());
+						 found_err = true;
+					 }
 				if (active_shader != null)
 				{
 					foreach (var u in active_shader.uniforms)
 						u.SetValue();
+					err = (OpenGLError)GL.glGetError();
+					if (err != OpenGLError.NoError && !encountered_draw_error)
+					{
+						Debugging.Debug.WriteLine("Setting uniforms: " + err.ToString());
+						found_err = true;
+					}
 				}
 			}
 			if (vertex_buffer == null)
@@ -289,6 +323,15 @@ namespace Glorg2.Graphics
 				GL.glDrawElements((uint)mode, index_buffer.Count, index_buffer.Type, IntPtr.Zero);
 			else
 				GL.glDrawArrays((uint)mode, 0, vertex_buffer.Count);
+			err = (OpenGLError)GL.glGetError();
+			if (err != OpenGLError.NoError && !encountered_draw_error)
+			{
+				Debugging.Debug.WriteLine("Drawing: " + err.ToString());
+				found_err = true;
+			}
+			if (found_err)
+				encountered_draw_error = true;
+
 		}
 		/// <summary>
 		/// Gets or sets the projection matrix used by OpenGL

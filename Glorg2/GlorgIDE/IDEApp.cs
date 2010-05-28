@@ -56,13 +56,14 @@ namespace GlorgIDE
 
 		protected override void Render(GraphicsDevice dev, float frame_time, float total_time)
 		{
+			var modl = ide_camera.GetTransform().Invert();
 			dev.Clear(ClearFlags.Color | ClearFlags.Depth, Scene.Background);
 			dev.ProjectionMatrix = ide_camera.GetProjectionMatrix();
-			dev.ModelviewMatrix = ide_camera.GetTransform().Invert();
+			dev.ModelviewMatrix = modl;
 			wires.Render(frame_time, dev);
-			dev.ModelviewMatrix *= cursor.GetTransform();
+			dev.ModelviewMatrix = cursor.GetTransform() * modl;
 			cursor.Render(frame_time, dev);
-			dev.ModelviewMatrix = ide_camera.GetTransform().Invert();
+			dev.ModelviewMatrix = modl;
 			var old_color = Scene.Background;
 			Scene.Background = new Vector4(0, 0, 0, 0);
 			base.Render(dev, frame_time, total_time);

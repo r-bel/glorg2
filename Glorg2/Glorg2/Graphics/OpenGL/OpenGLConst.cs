@@ -33,11 +33,35 @@ namespace Glorg2.Graphics.OpenGL
 		GreaterOrEqual = OpenGL.Const.GL_GEQUAL,
 		Always = OpenGL.Const.GL_ALWAYS
 	}
+
+	public enum OpenGLError
+	{
+			NoError = 0,
+			InvalidEnum = 0x0500,
+			InvalidValue = 0x0501,
+			InvalidOperation = 0x0502,
+			OutOfMemory = 0x0505
+	}
+
 	public static partial class OpenGL
 	{
 		public static class Const
 		{
-
+			#region GL_AMD_debug_output
+			public const uint GL_MAX_DEBUG_LOGGED_MESSAGES_AMD = 0x9144;
+			public const uint GL_DEBUG_LOGGED_MESSAGES_AMD = 0x9145;
+			public const uint GL_DEBUG_SEVERITY_HIGH_AMD = 0x9146;
+			public const uint GL_DEBUG_SEVERITY_MEDIUM_AMD = 0x9147;
+			public const uint GL_DEBUG_SEVERITY_LOW_AMD = 0x9148;
+			public const uint GL_DEBUG_CATEGORY_API_ERROR_AMD = 0x9149;
+			public const uint GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD = 0x914A;
+			public const uint GL_DEBUG_CATEGORY_DEPRECATION_AMD = 0x914B;
+			public const uint GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD = 0x914C;
+			public const uint GL_DEBUG_CATEGORY_PERFORMANCE_AMD = 0x914D;
+			public const uint GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD = 0x914E;
+			public const uint GL_DEBUG_CATEGORY_APPLICATION_AMD = 0x914F;
+			public const uint GL_DEBUG_CATEGORY_OTHER_AMD = 0x9150;
+			#endregion
 			#region OpenGL 1.1
 
 			/* AttribMask */
@@ -768,81 +792,81 @@ namespace Glorg2.Graphics.OpenGL
 
 			#region GL_ARB_framebuffer
 			public const uint GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING = 0x8210;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE = 0x8211;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE = 0x8212;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE = 0x8213;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE = 0x8214;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE = 0x8215;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE = 0x8216;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE = 0x8217;
-public const uint GL_FRAMEBUFFER_DEFAULT = 0x8218;
-public const uint GL_FRAMEBUFFER_UNDEFINED = 0x8219;
-public const uint GL_DEPTH_STENCIL_ATTACHMENT = 0x821A;
-public const uint GL_MAX_RENDERBUFFER_SIZE = 0x84E8;
-public const uint GL_DEPTH_STENCIL = 0x84F9;
-public const uint GL_UNSIGNED_INT_24_8 = 0x84FA;
-public const uint GL_DEPTH24_STENCIL8 = 0x88F0;
-public const uint GL_TEXTURE_STENCIL_SIZE = 0x88F1;
-public const uint GL_TEXTURE_RED_TYPE = 0x8C10;
-public const uint GL_TEXTURE_GREEN_TYPE = 0x8C11;
-public const uint GL_TEXTURE_BLUE_TYPE = 0x8C12;
-public const uint GL_TEXTURE_ALPHA_TYPE = 0x8C13;
-public const uint GL_TEXTURE_DEPTH_TYPE = 0x8C16;
-public const uint GL_UNSIGNED_NORMALIZED = 0x8C17;
-public const uint GL_FRAMEBUFFER_BINDING = 0x8CA6;
-public const uint GL_DRAW_FRAMEBUFFER_BINDING = GL_FRAMEBUFFER_BINDING;
-public const uint GL_RENDERBUFFER_BINDING = 0x8CA7;
-public const uint GL_READ_FRAMEBUFFER = 0x8CA8;
-public const uint GL_DRAW_FRAMEBUFFER = 0x8CA9;
-public const uint GL_READ_FRAMEBUFFER_BINDING = 0x8CAA;
-public const uint GL_RENDERBUFFER_SAMPLES = 0x8CAB;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = 0x8CD0;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = 0x8CD1;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = 0x8CD2;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = 0x8CD3;
-public const uint GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER = 0x8CD4;
-public const uint GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
-public const uint GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 0x8CD6;
-public const uint GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7;
-public const uint GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER = 0x8CDB;
-public const uint GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 0x8CDC;
-public const uint GL_FRAMEBUFFER_UNSUPPORTED = 0x8CDD;
-public const uint GL_MAX_COLOR_ATTACHMENTS = 0x8CDF;
-public const uint GL_COLOR_ATTACHMENT0 = 0x8CE0;
-public const uint GL_COLOR_ATTACHMENT1 = 0x8CE1;
-public const uint GL_COLOR_ATTACHMENT2 = 0x8CE2;
-public const uint GL_COLOR_ATTACHMENT3 = 0x8CE3;
-public const uint GL_COLOR_ATTACHMENT4 = 0x8CE4;
-public const uint GL_COLOR_ATTACHMENT5 = 0x8CE5;
-public const uint GL_COLOR_ATTACHMENT6 = 0x8CE6;
-public const uint GL_COLOR_ATTACHMENT7 = 0x8CE7;
-public const uint GL_COLOR_ATTACHMENT8 = 0x8CE8;
-public const uint GL_COLOR_ATTACHMENT9 = 0x8CE9;
-public const uint GL_COLOR_ATTACHMENT10 = 0x8CEA;
-public const uint GL_COLOR_ATTACHMENT11 = 0x8CEB;
-public const uint GL_COLOR_ATTACHMENT12 = 0x8CEC;
-public const uint GL_COLOR_ATTACHMENT13 = 0x8CED;
-public const uint GL_COLOR_ATTACHMENT14 = 0x8CEE;
-public const uint GL_COLOR_ATTACHMENT15 = 0x8CEF;
-public const uint GL_DEPTH_ATTACHMENT = 0x8D00;
-public const uint GL_STENCIL_ATTACHMENT = 0x8D20;
-public const uint GL_FRAMEBUFFER = 0x8D40;
-public const uint GL_RENDERBUFFER = 0x8D41;
-public const uint GL_RENDERBUFFER_WIDTH = 0x8D42;
-public const uint GL_RENDERBUFFER_HEIGHT = 0x8D43;
-public const uint GL_RENDERBUFFER_INTERNAL_FORMAT = 0x8D44;
-public const uint GL_STENCIL_INDEX1 = 0x8D46;
-public const uint GL_STENCIL_INDEX4 = 0x8D47;
-public const uint GL_STENCIL_INDEX8 = 0x8D48;
-public const uint GL_STENCIL_INDEX16 = 0x8D49;
-public const uint GL_RENDERBUFFER_RED_SIZE = 0x8D50;
-public const uint GL_RENDERBUFFER_GREEN_SIZE = 0x8D51;
-public const uint GL_RENDERBUFFER_BLUE_SIZE = 0x8D52;
-public const uint GL_RENDERBUFFER_ALPHA_SIZE = 0x8D53;
-public const uint GL_RENDERBUFFER_DEPTH_SIZE = 0x8D54;
-public const uint GL_RENDERBUFFER_STENCIL_SIZE = 0x8D55;
-public const uint GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = 0x8D56;
-public const uint GL_MAX_SAMPLES = 0x8D57;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE = 0x8211;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE = 0x8212;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE = 0x8213;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE = 0x8214;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE = 0x8215;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE = 0x8216;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE = 0x8217;
+			public const uint GL_FRAMEBUFFER_DEFAULT = 0x8218;
+			public const uint GL_FRAMEBUFFER_UNDEFINED = 0x8219;
+			public const uint GL_DEPTH_STENCIL_ATTACHMENT = 0x821A;
+			public const uint GL_MAX_RENDERBUFFER_SIZE = 0x84E8;
+			public const uint GL_DEPTH_STENCIL = 0x84F9;
+			public const uint GL_UNSIGNED_INT_24_8 = 0x84FA;
+			public const uint GL_DEPTH24_STENCIL8 = 0x88F0;
+			public const uint GL_TEXTURE_STENCIL_SIZE = 0x88F1;
+			public const uint GL_TEXTURE_RED_TYPE = 0x8C10;
+			public const uint GL_TEXTURE_GREEN_TYPE = 0x8C11;
+			public const uint GL_TEXTURE_BLUE_TYPE = 0x8C12;
+			public const uint GL_TEXTURE_ALPHA_TYPE = 0x8C13;
+			public const uint GL_TEXTURE_DEPTH_TYPE = 0x8C16;
+			public const uint GL_UNSIGNED_NORMALIZED = 0x8C17;
+			public const uint GL_FRAMEBUFFER_BINDING = 0x8CA6;
+			public const uint GL_DRAW_FRAMEBUFFER_BINDING = GL_FRAMEBUFFER_BINDING;
+			public const uint GL_RENDERBUFFER_BINDING = 0x8CA7;
+			public const uint GL_READ_FRAMEBUFFER = 0x8CA8;
+			public const uint GL_DRAW_FRAMEBUFFER = 0x8CA9;
+			public const uint GL_READ_FRAMEBUFFER_BINDING = 0x8CAA;
+			public const uint GL_RENDERBUFFER_SAMPLES = 0x8CAB;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = 0x8CD0;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = 0x8CD1;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = 0x8CD2;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = 0x8CD3;
+			public const uint GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER = 0x8CD4;
+			public const uint GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
+			public const uint GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 0x8CD6;
+			public const uint GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7;
+			public const uint GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER = 0x8CDB;
+			public const uint GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 0x8CDC;
+			public const uint GL_FRAMEBUFFER_UNSUPPORTED = 0x8CDD;
+			public const uint GL_MAX_COLOR_ATTACHMENTS = 0x8CDF;
+			public const uint GL_COLOR_ATTACHMENT0 = 0x8CE0;
+			public const uint GL_COLOR_ATTACHMENT1 = 0x8CE1;
+			public const uint GL_COLOR_ATTACHMENT2 = 0x8CE2;
+			public const uint GL_COLOR_ATTACHMENT3 = 0x8CE3;
+			public const uint GL_COLOR_ATTACHMENT4 = 0x8CE4;
+			public const uint GL_COLOR_ATTACHMENT5 = 0x8CE5;
+			public const uint GL_COLOR_ATTACHMENT6 = 0x8CE6;
+			public const uint GL_COLOR_ATTACHMENT7 = 0x8CE7;
+			public const uint GL_COLOR_ATTACHMENT8 = 0x8CE8;
+			public const uint GL_COLOR_ATTACHMENT9 = 0x8CE9;
+			public const uint GL_COLOR_ATTACHMENT10 = 0x8CEA;
+			public const uint GL_COLOR_ATTACHMENT11 = 0x8CEB;
+			public const uint GL_COLOR_ATTACHMENT12 = 0x8CEC;
+			public const uint GL_COLOR_ATTACHMENT13 = 0x8CED;
+			public const uint GL_COLOR_ATTACHMENT14 = 0x8CEE;
+			public const uint GL_COLOR_ATTACHMENT15 = 0x8CEF;
+			public const uint GL_DEPTH_ATTACHMENT = 0x8D00;
+			public const uint GL_STENCIL_ATTACHMENT = 0x8D20;
+			public const uint GL_FRAMEBUFFER = 0x8D40;
+			public const uint GL_RENDERBUFFER = 0x8D41;
+			public const uint GL_RENDERBUFFER_WIDTH = 0x8D42;
+			public const uint GL_RENDERBUFFER_HEIGHT = 0x8D43;
+			public const uint GL_RENDERBUFFER_INTERNAL_FORMAT = 0x8D44;
+			public const uint GL_STENCIL_INDEX1 = 0x8D46;
+			public const uint GL_STENCIL_INDEX4 = 0x8D47;
+			public const uint GL_STENCIL_INDEX8 = 0x8D48;
+			public const uint GL_STENCIL_INDEX16 = 0x8D49;
+			public const uint GL_RENDERBUFFER_RED_SIZE = 0x8D50;
+			public const uint GL_RENDERBUFFER_GREEN_SIZE = 0x8D51;
+			public const uint GL_RENDERBUFFER_BLUE_SIZE = 0x8D52;
+			public const uint GL_RENDERBUFFER_ALPHA_SIZE = 0x8D53;
+			public const uint GL_RENDERBUFFER_DEPTH_SIZE = 0x8D54;
+			public const uint GL_RENDERBUFFER_STENCIL_SIZE = 0x8D55;
+			public const uint GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = 0x8D56;
+			public const uint GL_MAX_SAMPLES = 0x8D57;
 			#endregion
 		}
 	}
