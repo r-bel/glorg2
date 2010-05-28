@@ -82,13 +82,14 @@
 			this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.resourcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showLoadedResourcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.ResourcesMaps = new System.Windows.Forms.ToolStripMenuItem();
+			this.ResourcesMapsNew = new System.Windows.Forms.ToolStripMenuItem();
+			this.ResourcesMapsAdd = new System.Windows.Forms.ToolStripMenuItem();
+			this.ResourcesMapsOpen = new System.Windows.Forms.ToolStripMenuItem();
 			this.Tooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.SaveFile = new System.Windows.Forms.SaveFileDialog();
 			this.OpenFile = new System.Windows.Forms.OpenFileDialog();
-			this.ResourcesMaps = new System.Windows.Forms.ToolStripMenuItem();
-			this.ResourcesMapsNew = new System.Windows.Forms.ToolStripMenuItem();
-			this.ResourcesMapsOpen = new System.Windows.Forms.ToolStripMenuItem();
-			this.ResourcesMapsAdd = new System.Windows.Forms.ToolStripMenuItem();
+			this.DebugTimer = new System.Windows.Forms.Timer(this.components);
 			this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
 			this.toolStripContainer1.ContentPanel.SuspendLayout();
 			this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -564,13 +565,13 @@
 			// runToolStripMenuItem
 			// 
 			this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-			this.runToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.runToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
 			this.runToolStripMenuItem.Text = "Run";
 			// 
 			// stopToolStripMenuItem
 			// 
 			this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-			this.stopToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.stopToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
 			this.stopToolStripMenuItem.Text = "Stop";
 			// 
 			// resourcesToolStripMenuItem
@@ -602,20 +603,25 @@
 			// ResourcesMapsNew
 			// 
 			this.ResourcesMapsNew.Name = "ResourcesMapsNew";
-			this.ResourcesMapsNew.Size = new System.Drawing.Size(152, 22);
+			this.ResourcesMapsNew.Size = new System.Drawing.Size(139, 22);
 			this.ResourcesMapsNew.Text = "New map";
-			// 
-			// ResourcesMapsOpen
-			// 
-			this.ResourcesMapsOpen.Name = "ResourcesMapsOpen";
-			this.ResourcesMapsOpen.Size = new System.Drawing.Size(152, 22);
-			this.ResourcesMapsOpen.Text = "Open";
 			// 
 			// ResourcesMapsAdd
 			// 
 			this.ResourcesMapsAdd.Name = "ResourcesMapsAdd";
-			this.ResourcesMapsAdd.Size = new System.Drawing.Size(152, 22);
+			this.ResourcesMapsAdd.Size = new System.Drawing.Size(139, 22);
 			this.ResourcesMapsAdd.Text = "Add existing";
+			// 
+			// ResourcesMapsOpen
+			// 
+			this.ResourcesMapsOpen.Name = "ResourcesMapsOpen";
+			this.ResourcesMapsOpen.Size = new System.Drawing.Size(139, 22);
+			this.ResourcesMapsOpen.Text = "Open";
+			// 
+			// DebugTimer
+			// 
+			this.DebugTimer.Interval = 500;
+			this.DebugTimer.Tick += new System.EventHandler(this.DebugTimer_Tick);
 			// 
 			// MainForm
 			// 
@@ -723,6 +729,7 @@
 		private System.Windows.Forms.ToolStripMenuItem ResourcesMapsNew;
 		private System.Windows.Forms.ToolStripMenuItem ResourcesMapsAdd;
 		private System.Windows.Forms.ToolStripMenuItem ResourcesMapsOpen;
+		private System.Windows.Forms.Timer DebugTimer;
 
 	}
 }

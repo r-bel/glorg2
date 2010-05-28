@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.ComponentModel;
+
 namespace Glorg2.Scene
 {
 	[Serializable()]
@@ -59,10 +61,31 @@ namespace Glorg2.Scene
 		float near;
 		float far;
 
+		[Browsable(false)]
 		public float FieldOfView { get { return fov; } set { fov = value; Invalidated = true;} }
+		[DefaultValue(1f)]
 		public float Aspect { get { return aspect; } set { aspect = value; Invalidated = true; } }
+		[DefaultValue(.0001f)]
 		public float Near { get { return near; } set { near = value; Invalidated = true; } }
+		[DefaultValue(1f)]
 		public float Far { get { return far; } set { far = value; Invalidated = true; } }
+
+		[DisplayName("Field of view")]
+		[DefaultValue(90f)]
+		[Description("Sets the field of view in degrees")]
+		public float FieldOfViewDegrees
+		{
+			get { return fov / (float)(Math.PI / 180); }
+			set { fov = value * (float)(Math.PI / 180); }
+		}
+
+		public PerspectiveCamera()
+		{
+			fov = (float)Math.PI / 2;
+			near = .0001f;
+			far = 1f;
+			aspect = 1f;
+		}
 
 		protected override Matrix BuildCamera()
 		{

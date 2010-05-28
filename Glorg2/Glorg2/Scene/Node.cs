@@ -19,10 +19,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.ComponentModel;
 namespace Glorg2.Scene
 {
 	[Serializable()]
+	[TypeConverter(typeof(ExpandableObjectConverter))]
+	[DefaultProperty("Name")]
 	public class Node : IDisposable
 	{
 
@@ -49,6 +51,7 @@ namespace Glorg2.Scene
 
 		private Guid identifier;
 
+		[Browsable(false)]
 		public Guid Guid { get { return identifier; } }
 
 		internal int hash_code;
@@ -80,6 +83,7 @@ namespace Glorg2.Scene
 		/// <summary>
 		/// The up vector for this node. This is used by the PerformLookAt() function.
 		/// </summary>
+		[DefaultValue("0, 1, 0")]
 		public Vector3 Up { get { return up; } set { up = value; } }
 
 		public virtual bool HitTest(Ray ray, out Vector3 pos)
@@ -400,6 +404,7 @@ namespace Glorg2.Scene
 		/// Names must be strings of at least two characters. 
 		/// Note that names does not necessarily have to be unique.
 		/// This function also generates a hash code which can be obtained from the GetHashCode function</remarks>
+		
 		public string Name
 		{
 			get
@@ -416,6 +421,11 @@ namespace Glorg2.Scene
 				else
 					hash_code = 0;
 			}
+		}
+
+		public override string ToString()
+		{
+			return Name + " (" + GetType().Name + ")";
 		}
 	}
 }

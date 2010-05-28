@@ -23,6 +23,8 @@ using System.Text.RegularExpressions;
 using Glorg2.Graphics;
 using Glorg2.Graphics.OpenGL;
 
+using Glorg2.Design;
+using System.ComponentModel;
 
 namespace Glorg2
 {
@@ -30,6 +32,7 @@ namespace Glorg2
 	/// Represents a vector in 2D space
 	/// </summary>
 	[Serializable()]
+	[TypeConverter(typeof(Vector2Converter))]
 	public struct Vector2
 	{
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
@@ -37,6 +40,10 @@ namespace Glorg2
 		  ElementType.Position | ElementType.TwoDimension | ElementType.Float | ElementType.Bits32
 		}, typeof(Vector2));
 		public float x, y;
+
+		public float X { get { return x; } set { x = value; } }
+		public float Y { get { return y; } set { y = value; } }
+
 		public Vector2(float x, float y)
 		{
 			this.x = x; this.y = y;
@@ -50,8 +57,8 @@ namespace Glorg2
         {
             return new Vector2(Math.Abs(x), Math.Abs(y));
         }
-		internal static readonly string float_reg = @"-?([0-9]*\.[0-9]+)|([0-9]+(\.[0-9]+))";
-		private static readonly Regex vec_reg = new Regex("{" + string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*", float_reg) + "}");
+		internal static readonly string float_reg = @"-?([0-9]*\.[0-9]+)|([0-9]+(\.[0-9]+)?)";
+		private static readonly Regex vec_reg = new Regex(string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*", float_reg));
 
 		public static Vector2 Parse(string input, System.IFormatProvider prov)
 		{
@@ -69,8 +76,8 @@ namespace Glorg2
 			var x = m.Groups["X"].Value;
 			var y = m.Groups["Y"].Value;
 			Vector2 ret = new Vector2();
-			ret.x = float.Parse(x);
-			ret.y = float.Parse(y);
+			ret.x = float.Parse(x, System.Globalization.NumberFormatInfo.InvariantInfo);
+			ret.y = float.Parse(y, System.Globalization.NumberFormatInfo.InvariantInfo);
 			return ret;
 
 		}
@@ -90,8 +97,8 @@ namespace Glorg2
 			var x = m.Groups["X"].Value;
 			var y = m.Groups["Y"].Value;
 			ret = new Vector2();
-			if (float.TryParse(x, out ret.x))
-				return float.TryParse(y, out ret.y);
+			if (float.TryParse(x, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.x))
+				return float.TryParse(y, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.y);
 			else return false;
 		}
 
@@ -144,7 +151,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "[" + x.ToString() + ", " + y.ToString() + "]";
+			return x.ToString() + ", " + y.ToString();
 		}
 		public float this[int index]
 		{
@@ -173,6 +180,7 @@ namespace Glorg2
 	/// Represents a vector in 3D space
 	/// </summary>
 	[Serializable()]
+	[TypeConverter(typeof(Vector3Converter))]
 	public struct Vector3
 	{
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
@@ -182,7 +190,9 @@ namespace Glorg2
 
 		public float x, y, z;
 
-
+		public float X { get { return x; } set { x = value; } }
+		public float Y { get { return y; } set { y = value; } }
+		public float Z { get { return z; } set { z = value; } }
 
 		public static readonly Vector3 Up = new Vector3(0, 1, 0);
 		public static readonly Vector3 Down = new Vector3(0, -1, 0);
@@ -200,7 +210,7 @@ namespace Glorg2
         {
             return new Vector3(Math.Abs(x), Math.Abs(y), Math.Abs(z));
         }
-		private static readonly Regex vec_reg = new Regex("{" + string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*,\s*(?<Z>{0})\s*", Vector2.float_reg) + "}");
+		private static readonly Regex vec_reg = new Regex(string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*,\s*(?<Z>{0})\s*", Vector2.float_reg));
 
 		public static Vector3 Parse(string input, System.IFormatProvider prov)
 		{
@@ -221,9 +231,9 @@ namespace Glorg2
 			var y = m.Groups["Y"].Value;
 			var z = m.Groups["Z"].Value;
 			Vector3 ret = new Vector3();
-			ret.x = float.Parse(x);
-			ret.y = float.Parse(y);
-			ret.z = float.Parse(z);
+			ret.x = float.Parse(x, System.Globalization.NumberFormatInfo.InvariantInfo);
+			ret.y = float.Parse(y, System.Globalization.NumberFormatInfo.InvariantInfo);
+			ret.z = float.Parse(z, System.Globalization.NumberFormatInfo.InvariantInfo);
 			return ret;
 
 		}
@@ -247,9 +257,9 @@ namespace Glorg2
 			var y = m.Groups["Y"].Value;
 			var z = m.Groups["Z"].Value;
 			ret = new Vector3();
-			if (float.TryParse(x, out ret.x))
-				if (float.TryParse(y, out ret.y))
-					return float.TryParse(z, out ret.z);
+			if (float.TryParse(x, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.x))
+				if (float.TryParse(y, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.y))
+					return float.TryParse(z, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.z);
 				else return false;
 			else return false;
 		}
@@ -339,7 +349,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + "]";
+			return x.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
 		}
 		public float this[int index]
 		{
@@ -371,6 +381,7 @@ namespace Glorg2
 	/// Represents a vector in 4D space
 	/// </summary>
 	[Serializable()]
+	[TypeConverter(typeof(Vector4Converter))]
 	public struct Vector4
 	{
 		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(new ElementType[]
@@ -380,6 +391,10 @@ namespace Glorg2
 
 		public float x, y, z, w;
 
+		public float X { get { return x; } set { x = value; } }
+		public float Y { get { return y; } set { y = value; } }
+		public float Z { get { return z; } set { z = value; } }
+		public float W { get { return w; } set { w = value; } }
 
 		public Vector4(float x, float y, float z)
 		{
@@ -398,7 +413,7 @@ namespace Glorg2
         {
             return new Vector4(Math.Abs(x), Math.Abs(y), Math.Abs(z), Math.Abs(w));
         }
-		private static readonly Regex vec_reg = new Regex("{" + string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*,\s*(?<Z>{0})\s*,\s*(?<W>{0})\s*", Vector2.float_reg) + "}");
+		private static readonly Regex vec_reg = new Regex(string.Format(@"\s*(?<X>{0})\s*,\s*(?<Y>{0})\s*,\s*(?<Z>{0})\s*,\s*(?<W>{0})\s*", Vector2.float_reg));
 		public static Vector4 Parse(string input, System.IFormatProvider prov)
 		{
 			var m = vec_reg.Match(input);
@@ -422,10 +437,10 @@ namespace Glorg2
 			var z = m.Groups["Z"].Value;
 			var w = m.Groups["W"].Value;
 			Vector4 ret = new Vector4();
-			ret.x = float.Parse(x);
-			ret.y = float.Parse(y);
-			ret.z = float.Parse(z);
-			ret.w = float.Parse(w);
+			ret.x = float.Parse(x, System.Globalization.NumberFormatInfo.InvariantInfo);
+			ret.y = float.Parse(y, System.Globalization.NumberFormatInfo.InvariantInfo);
+			ret.z = float.Parse(z, System.Globalization.NumberFormatInfo.InvariantInfo);
+			ret.w = float.Parse(w, System.Globalization.NumberFormatInfo.InvariantInfo);
 			return ret;
 		}
 		public static bool TryParse(string input, System.Globalization.NumberStyles styles, IFormatProvider prov, out Vector4 ret)
@@ -452,10 +467,10 @@ namespace Glorg2
 			var z = m.Groups["Z"].Value;
 			var w = m.Groups["W"].Value;
 			ret = new Vector4();
-			if (float.TryParse(x, out ret.x))
-				if (float.TryParse(y, out ret.y))
-					if (float.TryParse(z, out ret.z))
-						return float.TryParse(w, out ret.w);
+			if (float.TryParse(x, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.x))
+				if (float.TryParse(y, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.y))
+					if (float.TryParse(z, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.z))
+						return float.TryParse(w, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out ret.w);
 					else return false;
 				else return false;
 			else return false;
@@ -515,7 +530,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString() + "]";
+			return x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString();
 		}
 		public float this[int index]
 		{
