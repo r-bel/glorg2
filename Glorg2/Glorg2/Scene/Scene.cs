@@ -143,7 +143,7 @@ namespace Glorg2.Scene
 				pos = (pos / size) * 2;
 				pos.y = size.y - pos.y;
 
-				var ret = (Camera.absolute_transform.Invert() * Camera.GetProjectionMatrix()).Invert() * new Vector4(pos.x, pos.y, z);
+				var ret = (Camera.absolute_transform * Camera.GetProjectionMatrix().Invert()).Invert() * new Vector4(pos.x, pos.y, z);
 				ret /= ret.w;
 				return ret.ToVector3();
 
