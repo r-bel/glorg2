@@ -527,7 +527,7 @@ m11 * m32 * m24 + m21 * m12 * m34 + m31 * m22 * m14  - m11 * m22 * m34 - m21 * m
 ret.m44 =
 m11 * m22 * m33 + m21 * m32 * m13 + m31 * m12 * m23 - m11 * m32 * m23 - m21 * m12 * m33 - m31 * m22 * m13;
 return ret;*/
-			return Cofactor().Transpose();
+			return Transpose().Cofactor();
 		}
 
 		public Matrix Invert()

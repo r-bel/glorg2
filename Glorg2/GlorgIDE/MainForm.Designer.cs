@@ -620,6 +620,7 @@
 			// 
 			// DebugTimer
 			// 
+			this.DebugTimer.Enabled = true;
 			this.DebugTimer.Interval = 500;
 			this.DebugTimer.Tick += new System.EventHandler(this.DebugTimer_Tick);
 			// 
