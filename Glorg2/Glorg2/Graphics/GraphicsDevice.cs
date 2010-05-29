@@ -363,7 +363,9 @@ namespace Glorg2.Graphics
 			set
 			{
 				modelview_matrix.Value = value;
-				normal_matrix.Value = value.Invert().Transpose();
+				Matrix nrm;
+				value.Invert(out nrm);
+				normal_matrix.Value = nrm.Transpose();
 				
 			}
 		}

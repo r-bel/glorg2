@@ -379,6 +379,9 @@ namespace Glorg2.Graphics.OpenGL
 		}
 		public void ApplyStdMaterial(StdMaterial mat)
 		{
+			OpenGL.glBindVertexArray(vertex_array);
+			MakeCurrent();
+			this.mat = mat;
 			for(int i = 0; i < elements.Count; i++)
 			{
 				ElementType t = (ElementType)(((int)desc.types[i] & 0xf) | ((int)desc.types[i] & 0x0f000000));
@@ -414,10 +417,9 @@ namespace Glorg2.Graphics.OpenGL
 					case ElementType.Color | (ElementType)0x03000000:
 						elements[i].attribute = (uint)mat.Color3Attribute;
 						break;
-
-
 				}
 			}
+			AssignPointers();
 		}
 
 		protected override void Cleanup()
@@ -427,6 +429,8 @@ namespace Glorg2.Graphics.OpenGL
 		}
 		public void ApplyMaterial(Material mat, Dictionary<ElementType, string> bindings)
 		{
+			OpenGL.glBindVertexArray(vertex_array);
+			MakeCurrent();
 			for (int i = 0; i < elements.Count; i++)
 			{
 				ElementType t = (ElementType)(((int)desc.types[i] & 0xf) | ((int)desc.types[i] & 0x0f000000));
@@ -436,8 +440,9 @@ namespace Glorg2.Graphics.OpenGL
 					elements[i].attribute = (uint)mat.Shader.GetAttributeLocation(s);
 				}
 			}
+			AssignPointers();
 		}
-
+		private StdMaterial mat;
 		private VertexBufferDescriptor desc;
 		/// <summary>
 		/// Standard constructor for vertex buffers
@@ -530,31 +535,30 @@ namespace Glorg2.Graphics.OpenGL
 			}
 		}
 
-		
-		public override void MakeCurrent()
+		private void AssignPointers()
 		{
-			OpenGL.glBindVertexArray(vertex_array);
-			base.MakeCurrent();
-
 			for (int i = 0; i < elements.Count; i++)
 			{
 				if (elements[i].attribute != 0xffffffff)
 				{
 					OpenGL.glEnableVertexAttribArray(elements[i].attribute);
-					if(elements[i].gl_type == OpenGL.Const.GL_INT)
+					if (elements[i].gl_type == OpenGL.Const.GL_INT)
 						OpenGL.glVertexAttribIPointer(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, size_of_t, elements[i].offset_value);
-					else 
+					else
 						OpenGL.glVertexAttribPointer(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
 				}
 			}
+		}
+		
+		public override void MakeCurrent()
+		{
+			base.MakeCurrent();
+			OpenGL.glBindVertexArray(vertex_array);
 		}
 		public override void MakeNonCurrent()
 		{
 			OpenGL.glBindVertexArray(0);
 			base.MakeNonCurrent();
-			for(int i = 0; i < elements.Count; i++)
-				if(elements[i].attribute != 0xffffffff)
-					OpenGL.glDisableVertexAttribArray(elements[i].attribute);
 		}
 	}
 	public sealed class IndexBuffer<T> : BufferObject<T>, IIndexBuffer

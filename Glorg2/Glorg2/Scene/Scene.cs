@@ -147,8 +147,12 @@ namespace Glorg2.Scene
 				var ret = (Camera.absolute_transform * Camera.GetProjectionMatrix().Invert()).Invert() * new Vector4(pos.x, pos.y, z);
 				ret /= ret.w;
 				return ret.ToVector3();*/
-
-				var final = (Camera.absolute_transform * Camera.GetProjectionMatrix().Invert()).Invert();
+				Matrix proj;
+				if (!Camera.GetProjectionMatrix().Invert(out proj))
+					return new Vector3();
+				Matrix final;
+				if (!(Camera.absolute_transform * proj).Invert(out final))
+					return new Vector3();
 
 
 				Vector4 inp = new Vector4(pos.x, pos.y, z, 1);

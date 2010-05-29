@@ -232,7 +232,8 @@ namespace GlorgIDE
 			screen.Y = -((2f * mpos.Y) / RenderOutput.ClientSize.Height) - 1;
 
 			// Inverse View/Proj Matrix
-			Matrix proj = file.Scene.Camera.GetProjectionMatrix().Invert();
+			Matrix proj;
+			file.Scene.Camera.GetProjectionMatrix().Invert(out proj);
 			Matrix view = file.Scene.Camera.GetTransform();
 			Matrix final = proj * view;
 			// Near/Far Point

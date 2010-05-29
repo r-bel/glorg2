@@ -356,7 +356,9 @@ namespace Glorg2
 				}
 				if (scene.Camera != null)
 				{
-					scene.camera_mat = scene.Camera.absolute_transform.Invert();
+					if (!scene.Camera.absolute_transform.Invert(out scene.camera_mat))
+						throw new Exception("WTF! Invert failed!");
+					
 					scene.sim_time += frame_time;
 				}
 				else
@@ -368,7 +370,7 @@ namespace Glorg2
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;
-				//System.Threading.Thread.Sleep(0);
+				System.Threading.Thread.Sleep(0);
 				old_time = new_time;				
 
 			}
@@ -463,7 +465,6 @@ namespace Glorg2
 			lock (scene.renderables)
 			{
 				foreach (var n in scene.renderables)
-
 					(n as Scene.Node).InternalRender(frame_time, dev);
 			}
 			dev.Present();

@@ -12,8 +12,8 @@ namespace Glorg2.Scene
 
 		public class TerrainBlock : IDisposable
 		{
-			List<TerrainBlock> children;
-			private BoundingBox bounds;
+			internal List<TerrainBlock> children;
+			internal BoundingBox bounds;
 			internal IndexBuffer<int> ib;
 
 			public BoundingBox Bounds { get { return bounds; } }
@@ -28,7 +28,7 @@ namespace Glorg2.Scene
 					ib.Dispose();
 			}
 
-			public TerrainBlock(Terrain owner, List<int> indices, BoundingBox box, int subdivision)
+			internal TerrainBlock(Terrain owner, List<int> indices, BoundingBox box, int subdivision)
 			{
 				bounds = box;
 
@@ -76,7 +76,53 @@ namespace Glorg2.Scene
 					ib.BufferData(VboUsage.GL_STATIC_DRAW);
 					//mil.Clear();
 				}
+			}
 
+			internal TerrainBlock(int x_start, int y_start, int x_count, int y_count,  BoundingBox box, int subdivision, Terrain owner)
+			{
+				bounds = box;
+				if (subdivision < owner.Subdivisions)
+				{
+					x_count /= 2;
+					y_count /= 2;
+					Vector3 new_size = box.Size / 2;
+					new_size.y = box.Size.y;
+					float offset = box.Size.x / 4;
+
+					children = new List<TerrainBlock>();
+
+					children.Add(new TerrainBlock(x_start, y_start, x_count, y_count, new BoundingBox() { Size = new_size, Position = box.Position + new Vector3(-offset, 0, offset) }, subdivision + 1, owner));
+					children.Add(new TerrainBlock(x_start + x_count, y_start, x_count, y_count, new BoundingBox() { Size = new_size, Position = box.Position + new Vector3(offset, 0, offset) }, subdivision + 1, owner));
+					children.Add(new TerrainBlock(x_start + x_count, y_start + y_count, x_count, y_count, new BoundingBox() { Size = new_size, Position = box.Position + new Vector3(offset, 0, -offset) }, subdivision + 1, owner));
+					children.Add(new TerrainBlock(x_start, y_start + y_count, x_count, y_count, new BoundingBox() { Size = new_size, Position = box.Position + new Vector3(-offset, 0, -offset) }, subdivision + 1, owner));
+				}
+				else
+				{
+					ib = new IndexBuffer<int>();
+					ib.Allocate(6 * (x_count - 1) * (y_count - 1));
+					int index = 0;
+					for (int i = 0; i < y_count - 1; i++)
+					{
+						for (int j = 0; j < x_count - 1; j++)
+						{
+							int i1 = (y_start + i) * owner.heightmap.Width + x_start + j;
+							int i2 = (y_start + i) * owner.heightmap.Width + x_start + j + 1;
+							int i3 = (y_start + i + 1) * owner.heightmap.Width + x_start + j + 1;
+							int i4 = (y_start + i + 1) * owner.heightmap.Width + x_start + j;
+
+							ib[index++] = i1;
+							ib[index++] = i3;
+							ib[index++] = i2;
+
+							ib[index++] = i1;
+							ib[index++] = i3;
+							ib[index++] = i4;
+						}
+					}
+					ib.BufferData(VboUsage.GL_STATIC_DRAW);
+					ib.FreeClientData();
+				}
+				
 			}
 
 		}
@@ -157,7 +203,7 @@ namespace Glorg2.Scene
 		}
 		private void RenderBlock(TerrainBlock block, GraphicsDevice dev)
 		{
-			if (Owner.Camera.IsBoxVisible(block.Bounds) != Intersection.None)
+			//if (Owner.Camera.IsBoxVisible(block.Bounds) != Intersection.None)
 			{
 				if (block.ib != null)
 				{
@@ -180,8 +226,9 @@ namespace Glorg2.Scene
 				mat.Dispose();
 			if (vb != null)
 				vb.Dispose();
-			foreach (var child in blocks)
-				child.Dispose();
+			if(blocks != null)
+				foreach (var child in blocks)
+					child.Dispose();
 		}
 
 		public virtual void InitializeGraphics()
@@ -196,7 +243,8 @@ namespace Glorg2.Scene
 			if (heightmap.Width != heightmap.Height)
 				throw new NotSupportedException("Must be rectangular heightmap");
 			int num_vertices = (heightmap.Width + 1) * (heightmap.Height + 1);
-
+			if (vb != null)
+				DoDispose();
 
 			vb = new VertexBuffer<VertexPositionTexCoordNormal>(VertexPositionTexCoordNormal.Descriptor);
 			vb.Allocate(num_vertices);
@@ -222,61 +270,34 @@ namespace Glorg2.Scene
 					norms[i, j] = n.Normalize();
 				}
 			}
-
-			List<int> indices = new List<int>(6 * heightmap.Width * heightmap.Height);
-			for (int i = 0; i < heightmap.Height; i++)
-			{
-				xx = -s2;
-				for (int j = 0; j < heightmap.Width; j++, vi++)
-				{
-					// Only add indices within the terrain
-					if(i < heightmap.Height - 1 && j < heightmap.Width - 1)
-					{
-						indices.Add(vi);
-						indices.Add(vi + heightmap.Width + 1);
-						indices.Add(vi + 1);
-
-						indices.Add(vi);
-						indices.Add(vi + heightmap.Width);
-						indices.Add(vi + heightmap.Width + 1);
-					}
-					vb[vi] = new VertexPositionTexCoordNormal()
-					{
-						Position = new Vector3(xx, heightmap[i, j] * Height, yy),
-						Normal = norms[i, j]
-					};
-					xx += CellSize;
-				}
-				yy += CellSize;
-			}
-
 			float offset = s2 / 2;
 			
+			int x_count = heightmap.Width / 2;
+			int y_count = heightmap.Height / 2;
+
 			var new_size = new Vector3(s2, size / 8, s2);
 			blocks = new TerrainBlock[4];
-			blocks[0] = new TerrainBlock(this, indices, new BoundingBox()
+			blocks[0] = new TerrainBlock(0, 0, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(-offset, 0, offset)
-			}, 0);
-			blocks[1] = new TerrainBlock(this, indices, new BoundingBox()
+			}, 0, this);
+			blocks[1] = new TerrainBlock(x_count, 0, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(offset, 0, offset)
-			}, 0);
+			}, 0, this);
 
-			blocks[2] = new TerrainBlock(this, indices, new BoundingBox()
+			blocks[2] = new TerrainBlock(x_count, y_count, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(offset, 0, -offset)
-			}, 0);
-			blocks[3] = new TerrainBlock(this, indices, new BoundingBox()
+			}, 0, this);
+			blocks[3] = new TerrainBlock(0, y_count, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(-offset, 0, -offset)
-			}, 0);
-			indices.Clear();
-
+			}, 0, this);
 
 			vb.BufferData(VboUsage.GL_STATIC_DRAW);
 			vb.FreeClientData();
