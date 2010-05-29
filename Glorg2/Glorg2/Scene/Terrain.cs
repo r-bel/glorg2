@@ -99,11 +99,11 @@ namespace Glorg2.Scene
 				else
 				{
 					ib = new IndexBuffer<int>();
-					ib.Allocate(6 * (x_count - 1) * (y_count - 1));
+					ib.Allocate(6 * (x_count) * (y_count));
 					int index = 0;
-					for (int i = 0; i < y_count - 1; i++)
+					for (int i = 0; i < y_count; i++)
 					{
-						for (int j = 0; j < x_count - 1; j++)
+						for (int j = 0; j < x_count; j++)
 						{
 							int i1 = (y_start + i) * owner.heightmap.Width + x_start + j;
 							int i2 = (y_start + i) * owner.heightmap.Width + x_start + j + 1;
@@ -115,8 +115,8 @@ namespace Glorg2.Scene
 							ib[index++] = i2;
 
 							ib[index++] = i1;
-							ib[index++] = i3;
 							ib[index++] = i4;
+							ib[index++] = i3;
 						}
 					}
 					ib.BufferData(VboUsage.GL_STATIC_DRAW);
@@ -270,6 +270,22 @@ namespace Glorg2.Scene
 					norms[i, j] = n.Normalize();
 				}
 			}
+
+			for (int i = 0; i < heightmap.Height; i++)
+			{
+				xx = -s2;
+				for (int j = 0; j < heightmap.Width; j++, vi++)
+				{
+					vb[vi] = new VertexPositionTexCoordNormal()
+					{
+						Position = new Vector3(xx, heightmap[i, j] * Height, yy),
+						Normal = norms[i, j]
+					};
+					xx += CellSize;
+				}
+				yy += CellSize;
+			}
+
 			float offset = s2 / 2;
 			
 			int x_count = heightmap.Width / 2;
