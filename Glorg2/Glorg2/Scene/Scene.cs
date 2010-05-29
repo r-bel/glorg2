@@ -138,16 +138,16 @@ namespace Glorg2.Scene
 			if (this.owner.Device != null)
 			{
 
-				Vector2 size = new Vector2(Owner.Device.Viewport.Width, Owner.Device.Viewport.Height);
+				/*Vector2 size = new Vector2(Owner.Device.Viewport.Width, Owner.Device.Viewport.Height);
 				pos += size / 2;
 				pos = (pos / size) * 2;
 				pos.y = size.y - pos.y;
 
 				var ret = (Camera.absolute_transform * Camera.GetProjectionMatrix().Invert()).Invert() * new Vector4(pos.x, pos.y, z);
 				ret /= ret.w;
-				return ret.ToVector3();
+				return ret.ToVector3();*/
 
-				var final = (Camera.absolute_transform.Invert() * Camera.GetProjectionMatrix()).Invert();
+				var final = (Camera.absolute_transform * Camera.GetProjectionMatrix().Invert()).Invert();
 
 
 				Vector4 inp = new Vector4(pos.x, pos.y, z, 1);

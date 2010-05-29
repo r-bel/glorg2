@@ -183,9 +183,9 @@ namespace Glorg2.Graphics
 				vertex_buffer.MakeNonCurrent();
 			if (vert != null)
 			{
+				vert.MakeCurrent();
 				if(active_shader != null && active_shader is StdMaterial)
 					vert.ApplyStdMaterial(active_shader as StdMaterial);
-				vert.MakeCurrent();
 			}
 			vertex_buffer = vert;
 		}
