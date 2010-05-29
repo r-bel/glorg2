@@ -56,7 +56,9 @@ namespace GlorgIDE
 
 		protected override void Render(GraphicsDevice dev, float frame_time, float total_time)
 		{
-			var modl = ide_camera.GetTransform().Invert();
+			Matrix modl;
+			ide_camera.GetTransform().Invert(out modl);
+
 			dev.Clear(ClearFlags.Color | ClearFlags.Depth, Scene.Background);
 			dev.ProjectionMatrix = ide_camera.GetProjectionMatrix();
 			dev.ModelviewMatrix = modl;

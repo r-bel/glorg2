@@ -63,5 +63,10 @@ namespace GlorgIDE
 				Close();
 			}
 		}
+
+		private void ActionList_DoubleClick(object sender, EventArgs e)
+		{
+			Okay.PerformClick();
+		}
 	}
 }

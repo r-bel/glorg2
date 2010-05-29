@@ -65,9 +65,17 @@ namespace Glorg2.Scene
 		Quaternion orientation;
 
 		[NonSerialized()]
-		internal bool in_use;
+		internal bool transformed;
 
 		NodeReference<Node> target;
+
+
+		// Cahced values so that objects does not move without being processed by the logic thread first
+		// this is done to prevent objects to hickup.
+		[NonSerialized()]
+		Vector4 new_pos;
+		[NonSerialized()]
+		Quaternion new_orientation;
 
 		/// <summary>
 		/// Defines an object which this node will look at
@@ -163,6 +171,8 @@ namespace Glorg2.Scene
 
 		public Node()
 		{
+			new_pos = new Vector4(0, 0, 0, 1);
+			new_orientation = Quaternion.Identity;
 			position = new Vector4(0, 0, 0, 1);
 			absolute_transform = Matrix.Identity;
 			up = Vector3.Up;
@@ -172,6 +182,7 @@ namespace Glorg2.Scene
 			children = new LinkedList<Node>();
 			remove_children = new List<Node>();
 			add_children = new List<Node>();
+			transformed = true;
 		}
 
 		protected virtual void Process(float time)
@@ -185,12 +196,19 @@ namespace Glorg2.Scene
 		public virtual void InternalProcess(float time)
 		{
 			Process(time);
-			Matrix old = owner.local_transform;
-			owner.local_transform = owner.local_transform * GetTransform();
-			absolute_transform = owner.local_transform;
+			if (transformed)
+			{
+				position = new_pos;
+				orientation = new_orientation;
+
+				if (parent != null)
+					absolute_transform = parent.absolute_transform * GetTransform();
+				else
+					absolute_transform = GetTransform();
+			}
 			foreach (var child in children)
 				child.InternalProcess(time);
-			owner.local_transform = old;
+
 
 			if (remove_children.Count > 0)
 			{
@@ -376,15 +394,14 @@ namespace Glorg2.Scene
 				}
 			}
 		}
-
 		/// <summary>
 		/// Gets or sets the position of this node
 		/// </summary>
-		public virtual Vector4 Position { get { return position; } set { position = value; } }
+		public virtual Vector4 Position { get { return new_pos; } set { new_pos = value; transformed = true; } }
 		/// <summary>
 		/// Gets or sets the orientation of this node
 		/// </summary>
-		public virtual Quaternion Orientation { get { return orientation; } set { orientation = value; } }
+		public virtual Quaternion Orientation { get { return new_orientation; } set { new_orientation = value; transformed = true; } }
 		/// <summary>
 		/// Gets or sets the velocity of this node
 		/// </summary>
@@ -408,7 +425,7 @@ namespace Glorg2.Scene
 		/// Names must be strings of at least two characters. 
 		/// Note that names does not necessarily have to be unique.
 		/// This function also generates a hash code which can be obtained from the GetHashCode function</remarks>
-		
+		[Description("Name used to identify this object.\nNames does not have to be unique.")]
 		public string Name
 		{
 			get

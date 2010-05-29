@@ -33,8 +33,8 @@
 			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Open existing project", 1);
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Startup));
 			this.ActionList = new System.Windows.Forms.ListView();
-			this.Okay = new System.Windows.Forms.Button();
 			this.ProjectImages = new System.Windows.Forms.ImageList(this.components);
+			this.Okay = new System.Windows.Forms.Button();
 			this.Cancel = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
@@ -52,6 +52,15 @@
 			this.ActionList.TabIndex = 2;
 			this.ActionList.UseCompatibleStateImageBehavior = false;
 			this.ActionList.SelectedIndexChanged += new System.EventHandler(this.ActionList_SelectedIndexChanged);
+			this.ActionList.DoubleClick += new System.EventHandler(this.ActionList_DoubleClick);
+			// 
+			// ProjectImages
+			// 
+			this.ProjectImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ProjectImages.ImageStream")));
+			this.ProjectImages.TransparentColor = System.Drawing.Color.Transparent;
+			this.ProjectImages.Images.SetKeyName(0, "042b_AddCategory_48x48_72.png");
+			this.ProjectImages.Images.SetKeyName(1, "075b_UpFolder_48x48_72.png");
+			this.ProjectImages.Images.SetKeyName(2, "1403_Globe.png");
 			// 
 			// Okay
 			// 
@@ -62,14 +71,6 @@
 			this.Okay.Text = "OK";
 			this.Okay.UseVisualStyleBackColor = true;
 			this.Okay.Click += new System.EventHandler(this.Okay_Click);
-			// 
-			// ProjectImages
-			// 
-			this.ProjectImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ProjectImages.ImageStream")));
-			this.ProjectImages.TransparentColor = System.Drawing.Color.Transparent;
-			this.ProjectImages.Images.SetKeyName(0, "042b_AddCategory_48x48_72.png");
-			this.ProjectImages.Images.SetKeyName(1, "075b_UpFolder_48x48_72.png");
-			this.ProjectImages.Images.SetKeyName(2, "1403_Globe.png");
 			// 
 			// Cancel
 			// 
