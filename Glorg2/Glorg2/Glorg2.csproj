@@ -94,6 +94,7 @@
     <Compile Include="Graphics\MeshBuilders\MeshBuilder.cs" />
     <Compile Include="Graphics\MeshBuilders\SphereBuilder.cs" />
     <Compile Include="Graphics\Model.cs" />
+    <Compile Include="Graphics\OctreeMesh.cs" />
     <Compile Include="Graphics\OpenGL\BufferObject.cs" />
     <Compile Include="Graphics\OpenGL\FrameBuffer.cs" />
     <Compile Include="Graphics\OpenGL\OpenGL.cs" />
@@ -118,9 +119,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Graphics\Heightmap.cs" />
+    <Compile Include="Resource\RawHeightmapImporter.cs" />
     <Compile Include="Scene\DynamicMesh.cs" />
     <Compile Include="Scene\DynamicNode.cs" />
     <Compile Include="Scene\SkyDome.cs" />
+    <Compile Include="Scene\Terrain.cs" />
     <Compile Include="VectorInt.cs" />
     <Compile Include="Graphics\OpenGL\WglContext.cs" />
     <Compile Include="Graphics\OpenGL\glXContext.cs" />

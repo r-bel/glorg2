@@ -25,6 +25,8 @@ namespace Glorg2.Scene
 
 		public bool GraphicsInitialized { get { return init_finished; } internal set { init_finished = value; } }
 
+		public bool GraphicsInvalidated { get; set; }
+
 		public Graphics.Model Model { get { return model; } }
 
 		public string MaterialName { get { return material_name; } set { material_name = value; Owner.Owner.GraphicInvoke(new Action(InitializeGraphics)); } }

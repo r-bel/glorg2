@@ -37,6 +37,8 @@ namespace Glorg2.Scene
 
 		public Graphics.Model Model { get { return model; } }
 
+		public bool GraphicsInvalidated { get; set; }
+
 		public virtual void InitializeGraphics()
 		{
 			init_finished = true;

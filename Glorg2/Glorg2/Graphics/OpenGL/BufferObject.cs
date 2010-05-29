@@ -134,7 +134,6 @@ namespace Glorg2.Graphics.OpenGL
 		/// <seealso cref="Glorg2.Graphics.OpenGL.OpenGL.VboUsage"/>
 		public void BufferData(VboUsage usage)
 		{
-			
 			OpenGL.glBindBuffer(target, handle);
 			var h = System.Runtime.InteropServices.GCHandle.Alloc(internal_array, System.Runtime.InteropServices.GCHandleType.Pinned);
 			OpenGL.glBufferData(target, new IntPtr(size_of_t * internal_array.Length), h.AddrOfPinnedObject(), (uint)usage);
@@ -154,7 +153,7 @@ namespace Glorg2.Graphics.OpenGL
 		{
 			OpenGL.glBindBuffer(target, 0);
 		}
-		protected void Cleanup()
+		protected virtual void Cleanup()
 		{
 			if (handle != 0)
 			{
@@ -355,6 +354,7 @@ namespace Glorg2.Graphics.OpenGL
 		internal List<ElementInfo> elements;
 		internal List<Action<ElementInfo>> initialize;
 		internal List<uint> types;
+		uint vertex_array;
 
 		/// <summary>
 		/// Buffers a part of the client data
@@ -419,6 +419,12 @@ namespace Glorg2.Graphics.OpenGL
 				}
 			}
 		}
+
+		protected override void Cleanup()
+		{
+			base.Cleanup();
+			OpenGL.glDeleteVertexArrays(1, new uint[1] { vertex_array });
+		}
 		public void ApplyMaterial(Material mat, Dictionary<ElementType, string> bindings)
 		{
 			for (int i = 0; i < elements.Count; i++)
@@ -442,6 +448,9 @@ namespace Glorg2.Graphics.OpenGL
 		public VertexBuffer(VertexBufferDescriptor desc)
 			: base()
 		{
+			uint[] arr = new uint[1];
+			OpenGL.glGenVertexArrays(1, arr);
+			vertex_array = arr[0];
 			target = (uint)VboTarget.GL_ARRAY_BUFFER;
 			if (typeof(T) != desc.Type)
 				throw new InvalidCastException("Vertex buffer descriptor does not describe contained type");
@@ -488,7 +497,8 @@ namespace Glorg2.Graphics.OpenGL
 					dimensions = dim,
 					gl_type = gl_datatype,
 					offset_value = new IntPtr(offset),
-					channel = ch
+					channel = ch,
+					attribute = 0xffffffff
 				});
 
 				/*switch (type)
@@ -519,8 +529,11 @@ namespace Glorg2.Graphics.OpenGL
 				offset += size;
 			}
 		}
+
+		
 		public override void MakeCurrent()
 		{
+			OpenGL.glBindVertexArray(vertex_array);
 			base.MakeCurrent();
 
 			for (int i = 0; i < elements.Count; i++)
@@ -528,12 +541,16 @@ namespace Glorg2.Graphics.OpenGL
 				if (elements[i].attribute != 0xffffffff)
 				{
 					OpenGL.glEnableVertexAttribArray(elements[i].attribute);
-					OpenGL.glVertexAttribPointer(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
+					if(elements[i].gl_type == OpenGL.Const.GL_INT)
+						OpenGL.glVertexAttribIPointer(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, size_of_t, elements[i].offset_value);
+					else 
+						OpenGL.glVertexAttribPointer(elements[i].attribute, elements[i].dimensions, elements[i].gl_type, OpenGL.boolean.FALSE, size_of_t, elements[i].offset_value);
 				}
 			}
 		}
 		public override void MakeNonCurrent()
 		{
+			OpenGL.glBindVertexArray(0);
 			base.MakeNonCurrent();
 			for(int i = 0; i < elements.Count; i++)
 				if(elements[i].attribute != 0xffffffff)

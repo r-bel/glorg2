@@ -25,7 +25,7 @@ namespace Glorg2.Resource
 	public class ResourceManager
 	{
 		List<ResourceImporter> importers;
-		List<Resource> resources;
+		internal List<Resource> resources;
 		public IEnumerable<Resource> Resources { get { return resources; } }
 		public string Path { get; set; }
 		public void AddAssembly(System.Reflection.Assembly asm)

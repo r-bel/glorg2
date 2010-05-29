@@ -74,6 +74,8 @@ namespace Glorg2.Scene
 			dev.State.DepthTest = true;
 		}
 
+		public bool GraphicsInvalidated { get; set; }
+
 		private const int Segments = 32;
 
 		private void GenerateDome()

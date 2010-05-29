@@ -27,5 +27,6 @@ namespace Glorg2.Scene
 		void Render(float time, Graphics.GraphicsDevice dev);
 		void InitializeGraphics();
 		bool GraphicsInitialized { get; }
+		bool GraphicsInvalidated { get; set; }
 	}
 }

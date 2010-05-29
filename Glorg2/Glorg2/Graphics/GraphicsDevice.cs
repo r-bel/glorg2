@@ -104,6 +104,7 @@ namespace Glorg2.Graphics
 			GL.InitGL_3_1(context);
 			GL.InitGL_3_2(context);
 			GL.InitFramebuffers(context);
+			GL.InitVertexArrayObjects(context);
 			var sp = GL.GetSupportedExtensions();
 			if (sp.Contains("GL_AMD_debug_output"))
 			{
@@ -183,9 +184,11 @@ namespace Glorg2.Graphics
 				vertex_buffer.MakeNonCurrent();
 			if (vert != null)
 			{
-				vert.MakeCurrent();
+				// Apply shader attributes for this vertex buffer
 				if(active_shader != null && active_shader is StdMaterial)
 					vert.ApplyStdMaterial(active_shader as StdMaterial);
+				// Bind vertex buffer
+				vert.MakeCurrent();
 			}
 			vertex_buffer = vert;
 		}
