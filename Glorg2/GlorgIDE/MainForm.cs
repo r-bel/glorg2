@@ -220,10 +220,10 @@ namespace GlorgIDE
 				mx = e.X; my = e.Y;
 			}
 			//Vector3 near, far;
-			var pos = file.Scene.Unproject(new Vector2(e.X, e.Y), 1f);
+			//var pos = file.Scene.Unproject(new Vector2(e.X, e.Y), 1f);
 			//GetMouseRay(new Vector2(e.X, e.Y), out near, out far);
-			file.cursor.Position = pos.ToVector4();
-			PositionDisplay.Text = pos.ToString();
+			//file.cursor.Position = pos.ToVector4();
+			//PositionDisplay.Text = pos.ToString();
 		
 		}
 
