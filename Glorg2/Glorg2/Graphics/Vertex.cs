@@ -47,19 +47,19 @@ namespace Glorg2.Graphics
 	/// Defines a common vertex format with three dimensional vector for position and color, and two dimensional vector for texture coordinates.
 	/// </summary>
 	[Serializable()]
-	public struct VertexPositionTexCoordNormal
-	{
-		public Vector3 Position;
-		public Vector3 Normal;
-		public Vector2 TexCoord;
+public struct VertexPositionTexCoordNormal
+{
+	public Vector3 Position;
+	public Vector3 Normal;
+	public Vector2 TexCoord;
 
-		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(
-			new ElementType[] 
-			{
-				ElementType.Position3Float,
-				ElementType.Normal3Float,
-				ElementType.TexCoord2Float
-			}, typeof(VertexPositionTexCoordNormal));
+	public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(
+		new ElementType[] 
+		{
+			ElementType.Position3Float,
+			ElementType.Normal3Float,
+			ElementType.TexCoord2Float
+		}, typeof(VertexPositionTexCoordNormal));
 
-	}
+}
 }

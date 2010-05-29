@@ -38,6 +38,8 @@ namespace Tutorial
 
 		}
 
+		public bool GraphicsInvalidated { get; set; }
+
 		public bool GraphicsInitialized
 		{
 			get { return model != null && mat != null; }

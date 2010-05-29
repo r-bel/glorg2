@@ -247,7 +247,7 @@ namespace Glorg2
 			res_ctx = Graphics.OpenGL.OpenGLContext.GetContext();
 			res_ctx.CreateContext(render_offscreen.Handle, IntPtr.Zero, dev.Context);*/
 			threads_ready |= ThreadReady.ResourceThread;
-
+			return;
 			while (threads_ready != ThreadReady.All)
 				Thread.Sleep(0);
 
@@ -276,7 +276,7 @@ namespace Glorg2
 						{
 							r.DoDispose();
 						}
-						lock (scene.Resources)
+						lock (scene.Resources.resources)
 						{
 							scene.Resources.Remove(res);
 						}
@@ -295,6 +295,7 @@ namespace Glorg2
 				Thread.Sleep(0);
 
 			long old_time = System.Diagnostics.Stopwatch.GetTimestamp();
+			return;
 			while (running)
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -308,14 +309,15 @@ namespace Glorg2
 						item();
 					}
 				}
-
-				lock (scene.physics)
-				{
+				if (scene.physics.Count == 0)
+					System.Threading.Thread.Sleep(50);
+				else
 					foreach (var obj in scene.physics)
 					{
 						obj.SimulationStep(frame_time);
 					}
-				}
+				
+			
 			}
 		}
 
@@ -366,7 +368,7 @@ namespace Glorg2
 				scene.ParentNode.InternalProcess(frame_time);
 				total_time += frame_time;
 				provoke_render = true;
-				System.Threading.Thread.Sleep(0);
+				//System.Threading.Thread.Sleep(0);
 				old_time = new_time;				
 
 			}
@@ -416,16 +418,27 @@ namespace Glorg2
 							act();
 					}
 				}
-
+				var res = scene.Resources.Janitorial();
+				if (res.Count > 0)
+				{
+					foreach (var item in res)
+					{
+						item.Dispose();	
+					}
+					lock (scene.Resources.resources)
+					{
+						scene.Resources.Remove(res);
+					}
+				}
 				// Wait until simulation thread has finished with one frame
 				// or else it is not necessary to render the next frame (since nothing has happened)
-				//while (!provoke_render && running)
+				while (!provoke_render && running)
 				{
-					//System.Threading.Thread.Sleep(0);
+					System.Threading.Thread.Sleep(0);
 				}
 				
 				Render(dev, frame_time, total_time);
-				System.Threading.Thread.Sleep(0);
+				//System.Threading.Thread.Sleep(0);
 				fps = 1 / time;
 				provoke_render = false;
 				old_time = new_time;
@@ -450,6 +463,7 @@ namespace Glorg2
 			lock (scene.renderables)
 			{
 				foreach (var n in scene.renderables)
+
 					(n as Scene.Node).InternalRender(frame_time, dev);
 			}
 			dev.Present();

@@ -30,6 +30,8 @@ namespace GlorgIDE
 		public Vector4 MinorColor { get; set; }
 		public Vector4 MajorColor { get; set; }
 
+		public bool GraphicsInvalidated { get; set; }
+
 		#region IRenderable Members
 
 		public void Render(float time, GraphicsDevice dev)

@@ -464,6 +464,7 @@
 			this.FileExit.Name = "FileExit";
 			this.FileExit.Size = new System.Drawing.Size(167, 22);
 			this.FileExit.Text = "E&xit";
+			this.FileExit.Click += new System.EventHandler(this.FileExit_Click);
 			// 
 			// EditMenu
 			// 

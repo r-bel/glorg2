@@ -40,6 +40,7 @@ namespace Glorg2.Scene
 
 		internal NodeReference<Camera> camera;
 		[NonSerialized()]
+
 		private Resource.ResourceManager res;
 		[NonSerialized()]
 		internal Matrix local_transform;

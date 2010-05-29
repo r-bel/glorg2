@@ -25,13 +25,24 @@ namespace Glorg2
 	[Serializable()]
 	public struct Plane
 	{
-		public Vector3 Normal;
-		public Vector3 Position;
-		public float Distance;
+		public Vector3 Normal { get; set; }
+		public Vector3 Position { get; set; }
+		public float Distance { get { return Position.Length; } set { Position = Normal * value; } }
 
 		public float GetDistance(Vector3 p)
 		{
-			return Vector3.Dot(p, Normal) - Distance;
+			return Vector3.Dot(p - Position, Normal);
+		}
+
+		public static Plane FromPoints(Vector3 p1, Vector3 p2, Vector3 p3)
+		{
+			var normal = Vector3.Cross(p2 - p1, p3 - p1);
+			var pos = (p1 + p2 + p3) / 3;
+			return new Plane()
+			{
+				Normal = normal,
+				Position = pos,
+			};
 		}
 	}
 }

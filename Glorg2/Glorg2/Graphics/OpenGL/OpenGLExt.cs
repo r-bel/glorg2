@@ -106,47 +106,47 @@ namespace Glorg2.Graphics.OpenGL
 		#region AMD_debug_output
 
 		public delegate void DebugProc(GLuint id,
-                                                GLenum category,
-                                                GLenum severity,
-                                                GLsizei length,
-                                                IntPtr message,
-                                                IntPtr userParam);
+												GLenum category,
+												GLenum severity,
+												GLsizei length,
+												IntPtr message,
+												IntPtr userParam);
 
 		public delegate void DebugMessageEnableAMD(GLenum category,
-                               GLenum severity,
-                               GLsizei count,
-                               int[] ids,
-                               GLboolean enabled);
+							   GLenum severity,
+							   GLsizei count,
+							   int[] ids,
+							   GLboolean enabled);
 
-    public delegate void DebugMessageInsertAMD(GLenum category,
-                               GLenum severity,
-                               GLuint id,
-                               GLsizei length, 
-                               byte[] buf);
+		public delegate void DebugMessageInsertAMD(GLenum category,
+								   GLenum severity,
+								   GLuint id,
+								   GLsizei length,
+								   byte[] buf);
 
-    public delegate void DebugMessageCallbackAMD(DebugProc callback,
-                                 IntPtr userParam);
-    
-    public delegate uint GetDebugMessageLogAMD(GLuint count,
-                               GLsizei bufsize,
-                               ref GLenum categories,
-                               ref GLuint severities,
-                               GLuint[] ids,
-                               GLsizei[] lengths, 
-                               byte[] message);
+		public delegate void DebugMessageCallbackAMD(DebugProc callback,
+									 IntPtr userParam);
 
-	public static DebugMessageCallbackAMD glDebugMessageCallbackAMD;
-	public static DebugMessageEnableAMD glDebugMessageEnableAMD;
-	public static DebugMessageInsertAMD glDebugMessageInsertAMD;
-	public static GetDebugMessageLogAMD glGetDebugMessageLogAMD;
+		public delegate uint GetDebugMessageLogAMD(GLuint count,
+								   GLsizei bufsize,
+								   ref GLenum categories,
+								   ref GLuint severities,
+								   GLuint[] ids,
+								   GLsizei[] lengths,
+								   byte[] message);
 
-	public static void InitDebugOutputAMD(OpenGLContext ctx)
-	{
-		glDebugMessageCallbackAMD = ctx.GetProc<DebugMessageCallbackAMD>("glDebugMessageCallbackAMD");
-		glDebugMessageEnableAMD = ctx.GetProc<DebugMessageEnableAMD>("glDebugMessageEnableAMD");
-		glDebugMessageInsertAMD = ctx.GetProc<DebugMessageInsertAMD>("glDebugMessageInsertAMD");
-		glGetDebugMessageLogAMD = ctx.GetProc<GetDebugMessageLogAMD>("glGetDebugMessageLogAMD");
-	}
+		public static DebugMessageCallbackAMD glDebugMessageCallbackAMD;
+		public static DebugMessageEnableAMD glDebugMessageEnableAMD;
+		public static DebugMessageInsertAMD glDebugMessageInsertAMD;
+		public static GetDebugMessageLogAMD glGetDebugMessageLogAMD;
+
+		public static void InitDebugOutputAMD(OpenGLContext ctx)
+		{
+			glDebugMessageCallbackAMD = ctx.GetProc<DebugMessageCallbackAMD>("glDebugMessageCallbackAMD");
+			glDebugMessageEnableAMD = ctx.GetProc<DebugMessageEnableAMD>("glDebugMessageEnableAMD");
+			glDebugMessageInsertAMD = ctx.GetProc<DebugMessageInsertAMD>("glDebugMessageInsertAMD");
+			glGetDebugMessageLogAMD = ctx.GetProc<GetDebugMessageLogAMD>("glGetDebugMessageLogAMD");
+		}
 		#endregion
 
 		#region Framebuffer objects
@@ -905,6 +905,25 @@ namespace Glorg2.Graphics.OpenGL
 			glGetBufferParameteri64v = ctx.GetProc<GetBufferParameteri64v>("glGetBufferParameteri64v");
 			glProgramParameteri = ctx.GetProc<ProgramParameteri>("glProgramParameteri");
 			glFramebufferTexture = ctx.GetProc<FramebufferTexture>("glFramebufferTexture");
+		}
+		#endregion
+
+		#region GL_vertex_array_objects
+		public delegate void BindVertexArray(GLuint array);
+		public delegate void DeleteVertexArrays(GLsizei n, GLuint[] arrays);
+		public delegate void GenVertexArrays(GLsizei n, GLuint[] arrays);
+		public delegate GLboolean IsVertexArray(GLuint array);
+		public static BindVertexArray glBindVertexArray;
+		public static DeleteVertexArrays glDeleteVertexArrays;
+		public static GenVertexArrays glGenVertexArrays;
+		public static IsVertexArray glIsVertexArray;
+		
+		public static void InitVertexArrayObjects(OpenGLContext ctx)
+		{
+			glBindVertexArray = ctx.GetProc<BindVertexArray>("glBindVertexArray");
+			glDeleteVertexArrays = ctx.GetProc<DeleteVertexArrays>("glDeleteVertexArrays");
+			glGenVertexArrays = ctx.GetProc<GenVertexArrays>("glGenVertexArrays");
+			glIsVertexArray = ctx.GetProc<IsVertexArray>("glIsVertexArray");
 		}
 		#endregion
 	}

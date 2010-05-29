@@ -35,8 +35,8 @@ namespace Glorg2
 	[Serializable()]
 	public struct BoundingBox
 	{
-		public Vector3 Position;
-		public Vector3 Size;
+		public Vector3 Position {get; set; }
+		public Vector3 Size { get; set; }
 
 
 		public BoundingBox Scale(float scale)
@@ -56,7 +56,13 @@ namespace Glorg2
 			};
 		}
 
-		
+		public bool Contains(Vector3 point)
+		{
+			Vector3 p1 = Position - Size / 2;
+			Vector3 p2 = Position + Size / 2;
+			return (point.x >= p1.y && point.y >= p1.y && point.z >= p1.z) &&
+				(point.x <= p2.x && point.x <= p2.y && point.z <= p2.z);
+		}
 
 		public List<Vector3> Points
 		{

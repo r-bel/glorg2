@@ -178,18 +178,16 @@ namespace Glorg2.Scene
 		{
 			//position += velocity * time;
 			//velocity += acceleration * time;
-			PerformLookAt();
+			if(Target != null)
+				PerformLookAt();
 
 		}
 		public virtual void InternalProcess(float time)
 		{
-			in_use = true;
 			Process(time);
 			Matrix old = owner.local_transform;
 			owner.local_transform = owner.local_transform * GetTransform();
 			absolute_transform = owner.local_transform;
-			if (float.IsNaN(absolute_transform.m11))
-				System.Diagnostics.Debugger.Break();
 			foreach (var child in children)
 				child.InternalProcess(time);
 			owner.local_transform = old;
@@ -250,15 +248,21 @@ namespace Glorg2.Scene
 				}
 				add_children.Clear();
 			}
-			in_use = false;
 		}
 
 		internal virtual void InternalRender(float time, Graphics.GraphicsDevice dev)
 		{
 			dev.ModelviewMatrix = owner.camera_mat * absolute_transform;
 			var r = this as IRenderable;
+
+			if (r.GraphicsInvalidated)
+			{
+				r.InitializeGraphics();
+				r.GraphicsInvalidated = false;
+			}
 			if (r != null && r.GraphicsInitialized)
 				r.Render(time, dev);
+
 		}
 
 		public IEnumerable<Node> Find(Predicate<Node> pred)

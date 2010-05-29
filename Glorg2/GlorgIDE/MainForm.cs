@@ -194,8 +194,6 @@ namespace GlorgIDE
 			}
 			else if (e.Button == System.Windows.Forms.MouseButtons.Middle)
 			{
-				
-				
 				int dx = e.X - mx;
 				int dy = e.Y - my;
 				var vec = new Vector2();
@@ -352,6 +350,11 @@ namespace GlorgIDE
 			string v = null;
 			while ((v = Glorg2.Debugging.Debug.ReadLine()) != null)
 				Output.AppendText(v + Environment.NewLine);
+		}
+
+		private void FileExit_Click(object sender, EventArgs e)
+		{
+			Close();
 		}
 	}
 }
