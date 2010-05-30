@@ -49,7 +49,7 @@ namespace Glorg2.Scene
 		private bool init_finished;
 
 		public bool GraphicsInitialized { get { return init_finished; } }
-
+		public int Priority { get; set; }
 		public override void DoDispose()
 		{
 			mat.Dispose();

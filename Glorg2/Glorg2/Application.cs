@@ -320,7 +320,11 @@ namespace Glorg2
 			
 			}
 		}
-
+		volatile bool sort_render_list;
+		public void SortRenderingList()
+		{
+			sort_render_list = true;
+		}
 		private void MainLoop()
 		{
 #if DEBUG
@@ -419,6 +423,10 @@ namespace Glorg2
 						if (act != null)
 							act();
 					}
+				}
+				if (sort_render_list)
+				{
+					
 				}
 				var res = scene.Resources.Janitorial();
 				if (res.Count > 0)
