@@ -24,7 +24,7 @@ namespace Glorg2.Scene
 		string model_name;
 
 		public bool GraphicsInitialized { get { return init_finished; } internal set { init_finished = value; } }
-
+		public int Priority { get; set; }
 		public bool GraphicsInvalidated { get; set; }
 
 		public Graphics.Model Model { get { return model; } }

@@ -28,5 +28,6 @@ namespace Glorg2.Scene
 		void InitializeGraphics();
 		bool GraphicsInitialized { get; }
 		bool GraphicsInvalidated { get; set; }
+		int Priority { get; set; }
 	}
 }

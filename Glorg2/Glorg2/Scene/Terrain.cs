@@ -134,6 +134,7 @@ namespace Glorg2.Scene
 		public float Size { get { return size; } }
 		public int Subdivisions { get; set; }
 		public bool GraphicsInvalidated { get; set; }
+		public int Priority { get; set; }
 		/// <summary>
 		/// Number of vertices needed for further subdivision
 		/// </summary>
