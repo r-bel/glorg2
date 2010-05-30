@@ -552,8 +552,8 @@ namespace Glorg2.Graphics.OpenGL
 		
 		public override void MakeCurrent()
 		{
-			base.MakeCurrent();
 			OpenGL.glBindVertexArray(vertex_array);
+			base.MakeCurrent();			
 		}
 		public override void MakeNonCurrent()
 		{
