@@ -240,9 +240,9 @@ namespace Glorg2.Scene
 			if (heightmap == null)
 				owner.Resources.Load(Heightmap, out heightmap);
 
-			if (heightmap.Width != heightmap.Height)
-				throw new NotSupportedException("Must be rectangular heightmap");
-			int num_vertices = (heightmap.Width + 1) * (heightmap.Height + 1);
+			//if (heightmap.Width != heightmap.Height)
+				//throw new NotSupportedException("Must be rectangular heightmap");
+			int num_vertices = (heightmap.Width) * (heightmap.Height);
 			if (vb != null)
 				DoDispose();
 
@@ -264,9 +264,9 @@ namespace Glorg2.Scene
 				for (int j = 0; j < heightmap.Width; j++)
 				{
 					Vector3 n = new Vector3();
-					n.x = heightmap[i - 1, j] - heightmap[i + 1, j];
-					n.y = heightmap[i, j - 1] - heightmap[i, j + 1];
-					n.z = 2.0f / (heightmap.Width + 1) + 2.0f / (heightmap.Height + 1);
+					n.x = (heightmap[i - 1, j] - heightmap[i + 1, j]) * Height;
+					n.y = (heightmap[i, j - 1] - heightmap[i, j + 1]) * Height;
+					n.z = 2.0f / (heightmap.Width + 1) / CellSize + 2.0f / (heightmap.Height + 1) / CellSize;
 					norms[i, j] = n.Normalize();
 				}
 			}
@@ -298,18 +298,18 @@ namespace Glorg2.Scene
 				Size = new_size,
 				Position = new Vector3(-offset, 0, offset)
 			}, 0, this);
-			blocks[1] = new TerrainBlock(x_count, 0, x_count, y_count, new BoundingBox()
+			blocks[1] = new TerrainBlock(x_count-1, 0, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(offset, 0, offset)
 			}, 0, this);
 
-			blocks[2] = new TerrainBlock(x_count, y_count, x_count, y_count, new BoundingBox()
+			blocks[2] = new TerrainBlock(x_count-1, y_count-1, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(offset, 0, -offset)
 			}, 0, this);
-			blocks[3] = new TerrainBlock(0, y_count, x_count, y_count, new BoundingBox()
+			blocks[3] = new TerrainBlock(0, y_count-1, x_count, y_count, new BoundingBox()
 			{
 				Size = new_size,
 				Position = new Vector3(-offset, 0, -offset)
