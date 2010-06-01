@@ -143,6 +143,37 @@ namespace GlorgIDE
 			}
 		}
 
+		public void LoadProject()
+		{
+			var bin = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			using (var sr = System.IO.File.OpenRead(filename))
+			{
+				try
+				{
+					var project = bin.Deserialize(sr) as GlorgProject;
+					current_project = project;
+					if(string.IsNullOrEmpty(current_project.ActiveMap) && current_project.Maps.Count > 0)
+						current_project.ActiveMap = current_project.Maps[0];
+				}
+				catch (System.Runtime.Serialization.SerializationException)
+				{
+					MessageBox.Show("Unable to load project.", "IO Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				catch (ArgumentNullException)
+				{
+					MessageBox.Show("Unable to open file.", "IO Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				try
+				{
+					if(string.IsNullOrEmpty(current_project.ActiveMap))
+						LoadMap(current_project.ActiveMap);
+				}
+				catch (Exception)
+				{
+					MessageBox.Show("Unable to open map '" + current_project.ActiveMap + "'", "IO Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
 		public void AddNode(TreeNode node, Node nd)
 		{
 			if (node != null)
@@ -356,6 +387,11 @@ namespace GlorgIDE
 		private void FileExit_Click(object sender, EventArgs e)
 		{
 			Close();
+		}
+
+		private void ResourcesMapsNew_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

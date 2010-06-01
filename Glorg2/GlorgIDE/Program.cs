@@ -38,7 +38,16 @@ namespace GlorgIDE
 				}
 				new_file = dlg.FileName;
 			}
-			MainForm main = new MainForm();
+			MainForm main;
+			try
+			{
+				main = new MainForm();
+			}
+			catch (NotSupportedException)
+			{
+				MessageBox.Show("Your system is not supported by Glorg.", "Fatal error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			if (!string.IsNullOrEmpty(new_file))
 				main.NewProject(new_file);
 			else

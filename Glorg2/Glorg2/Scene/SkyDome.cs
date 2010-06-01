@@ -15,6 +15,7 @@ Copyright (C) 2010 Henning Moe
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,7 @@ namespace Glorg2.Scene
 
 		public void Render(float time, GraphicsDevice dev)
 		{
+
 			dev.State.DepthTest = false;
 			dev.SetActiveMaterial(mat);
 			dev.SetVertexBuffer(vb);

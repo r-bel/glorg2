@@ -20,6 +20,7 @@ namespace GlorgIDE
 		public GlorgClass GameClass { get { return game_class; } }
 		public List<string> References { get { return references; } }
 		public List<GlorgClass> Classes { get { return classes; } }
+		public string ActiveMap { get; set; }
 		public GlorgProject()
 		{
 			references = new List<string>();

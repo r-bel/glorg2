@@ -87,6 +87,7 @@
     <Compile Include="Design\Vector3Converter.cs" />
     <Compile Include="Design\Vector4Converter.cs" />
     <Compile Include="DynamicLinking.cs" />
+    <Compile Include="GlorgLinkedList.cs" />
     <Compile Include="Graphics\GraphicsDevice.cs" />
     <Compile Include="Graphics\Material.cs" />
     <Compile Include="Graphics\MeshBuilders\BoxBuilder.cs" />
@@ -113,6 +114,9 @@
     <Compile Include="Graphics\OpenGL\Shaders\UniformBase.cs" />
     <Compile Include="Graphics\OpenGL\Texture.cs" />
     <Compile Include="Graphics\StdMaterial.cs" />
+    <Compile Include="Line.cs" />
+    <Compile Include="Physics\PhysicsMath.cs" />
+    <Compile Include="Physics\RigidBody2D.cs" />
     <Compile Include="Physics\Force.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

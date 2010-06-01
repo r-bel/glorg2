@@ -604,19 +604,20 @@
 			// ResourcesMapsNew
 			// 
 			this.ResourcesMapsNew.Name = "ResourcesMapsNew";
-			this.ResourcesMapsNew.Size = new System.Drawing.Size(139, 22);
+			this.ResourcesMapsNew.Size = new System.Drawing.Size(152, 22);
 			this.ResourcesMapsNew.Text = "New map";
+			this.ResourcesMapsNew.Click += new System.EventHandler(this.ResourcesMapsNew_Click);
 			// 
 			// ResourcesMapsAdd
 			// 
 			this.ResourcesMapsAdd.Name = "ResourcesMapsAdd";
-			this.ResourcesMapsAdd.Size = new System.Drawing.Size(139, 22);
+			this.ResourcesMapsAdd.Size = new System.Drawing.Size(152, 22);
 			this.ResourcesMapsAdd.Text = "Add existing";
 			// 
 			// ResourcesMapsOpen
 			// 
 			this.ResourcesMapsOpen.Name = "ResourcesMapsOpen";
-			this.ResourcesMapsOpen.Size = new System.Drawing.Size(139, 22);
+			this.ResourcesMapsOpen.Size = new System.Drawing.Size(152, 22);
 			this.ResourcesMapsOpen.Text = "Open";
 			// 
 			// DebugTimer

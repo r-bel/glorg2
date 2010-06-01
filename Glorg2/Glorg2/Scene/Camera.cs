@@ -22,28 +22,33 @@ using System.Text;
 
 using System.ComponentModel;
 
+using Glorg2.Graphics;
+using Glorg2.Graphics.OpenGL;
+using Glorg2.Graphics.OpenGL.Shaders;
+
 namespace Glorg2.Scene
 {
 	[Serializable()]
 	public abstract class Camera : Node
 	{
 		Matrix projection;
-        
+
 		protected bool invalidated;
 
 		protected abstract Matrix BuildCamera();
 
-        public void SetActive()
-        {
+		public void SetActive()
+		{
 			owner.camera.Value = this;
-        }
+		}
 
 		public bool Invalidated
 		{
-			get { return invalidated; }set { invalidated = value; }
+			get { return invalidated; }
+			set { invalidated = value; }
 		}
 
-		public  Matrix GetProjectionMatrix()
+		public Matrix GetProjectionMatrix()
 		{
 			if (invalidated)
 			{
@@ -53,22 +58,22 @@ namespace Glorg2.Scene
 			return projection;
 		}
 
-		public virtual Intersection IsBoxVisible(BoundingBox box)
+		public virtual Intersection IsVisible(BoundingBox box)
 		{
 			return Intersection.Contains;
 		}
-		public virtual Intersection IsPointVisible(Vector3 point)
+		public virtual Intersection IsVisible(Vector3 point)
 		{
 			return Intersection.Contains;
 		}
-		public virtual Intersection IsSphereVisible(BoundingSphere sphere)
+		public virtual Intersection IsVisible(BoundingSphere sphere)
 		{
 			return Intersection.Contains;
 		}
-		
+
 	}
 	[Serializable()]
-	public class PerspectiveCamera : Camera
+	public class PerspectiveCamera : Camera//, IRenderable
 	{
 		protected float fov;
 		protected float aspect;
@@ -76,7 +81,7 @@ namespace Glorg2.Scene
 		float far;
 
 		[Browsable(false)]
-		public float FieldOfView { get { return fov; } set { fov = value; Invalidated = true;} }
+		public float FieldOfView { get { return fov; } set { fov = value; Invalidated = true; } }
 		[DefaultValue(1f)]
 		public float Aspect { get { return aspect; } set { aspect = value; Invalidated = true; } }
 		[DefaultValue(.0001f)]
@@ -135,16 +140,19 @@ namespace Glorg2.Scene
 		private const int FRONT = 4;
 		private const int BACK = 5;
 
+		Vector3[] points;
+		Vector4[] frustum = new Vector4[6];
 		private void ComputeFrustumInfo()
 		{
+			/*ComputeProjectionInfo();
 			Vector3 l;
 			Vector3 p = position.ToVector3();
 			if (Target != null)
 				l = Target.Position.ToVector3();
 			else
-				l = Orientation.ToNormal();
+				l = p + Orientation.ToNormal();
 
-			Vector3 dir, nc, fc, X, Y, Z;
+			Vector3 nc, fc, X, Y, Z;
 
 			// compute the Z axis of camera
 			// this axis points in the opposite direction from 
@@ -153,7 +161,7 @@ namespace Glorg2.Scene
 
 			// X axis of camera with given "up" vector and Z axis
 			X = (Up * Z).Normalize();
-			
+
 
 			// the real "up" vector is the cross product of Z and X
 			Y = Z * X;
@@ -174,6 +182,8 @@ namespace Glorg2.Scene
 			Vector3 fbl = fc - Y * far_height - X * far_width;
 			Vector3 fbr = fc - Y * far_height + X * far_width;
 
+			points = new Vector3[] { ntl, ntr, nbr, nbl, ftl, ftr, fbr, fbl };
+
 			// compute the six planes
 			// the function set3Points assumes that the points
 			// are given in counter clockwise order
@@ -182,64 +192,113 @@ namespace Glorg2.Scene
 			planes[LEFT] = Plane.FromPoints(ntl, nbl, fbl);
 			planes[RIGHT] = Plane.FromPoints(nbr, ntr, fbr);
 			planes[BACK] = Plane.FromPoints(ntl, ntr, nbr);
-			planes[FRONT] = Plane.FromPoints(ftr, ftl, fbl);
+			planes[FRONT] = Plane.FromPoints(ftr, ftl, fbl);*/
+			Matrix modl = GetTransform();// = absolute_transform;
+			modl.Invert(out modl);
+			//absolute_transform.Invert(out modl);
+			Matrix clip = GetProjectionMatrix() * modl;
+			
+			/* Extract the numbers for the RIGHT plane */
+			
+			frustum[0].x = clip.m14 - clip.m11;
+			frustum[0][1] = clip.m24 - clip.m21;
+			frustum[0][2] = clip.m34 - clip.m31;
+			frustum[0][3] = clip.m44 - clip.m41;
+
+			/* Normalize the result */
+			frustum[0] = frustum[0].Normalize();
+
+			/* Extract the numbers for the LEFT plane */
+			frustum[1].x = clip.m14 + clip.m11;
+			frustum[1].y = clip.m24 + clip.m21;
+			frustum[1].z = clip.m34 + clip.m31;
+			frustum[1].w = clip.m44 + clip.m41;
+
+			/* Normalize the result */
+			frustum[1] = frustum[1].Normalize();
+
+			/* Extract the BOTTOM plane */
+			frustum[2].x = clip.m14 + clip.m12;
+			frustum[2].y = clip.m24 + clip.m22;
+			frustum[2].z = clip.m34 + clip.m32;
+			frustum[2].w = clip.m44 + clip.m42;
+
+			/* Normalize the result */
+			frustum[2] = frustum[2].Normalize();
+
+			/* Extract the TOP plane */
+			frustum[3].x = clip.m14 - clip.m12;
+			frustum[3].y = clip.m24 - clip.m22;
+			frustum[3].z = clip.m34 - clip.m32;
+			frustum[3].w = clip.m44 - clip.m42;
+
+			/* Normalize the result */
+			frustum[3] = frustum[3].Normalize();
+
+			/* Extract the FAR plane */
+			frustum[4].x = clip.m14 - clip.m13;
+			frustum[4].y = clip.m24- clip.m23;
+			frustum[4].z = clip.m34 - clip.m33;
+			frustum[4].w = clip.m44 - clip.m43;
+
+			/* Normalize the result */
+			frustum[4] = frustum[4].Normalize();
+
+			/* Extract the NEAR plane */
+			frustum[5].x = clip.m14 + clip.m13;
+			frustum[5].y = clip.m24 + clip.m23;
+			frustum[5].z = clip.m34 + clip.m33;
+			frustum[5].w = clip.m44 + clip.m43;
+
+			/* Normalize the result */
+			frustum[5] = frustum[5].Normalize();
 		}
 
-		public override Intersection IsPointVisible(Vector3 p)
+		public override Intersection IsVisible(Vector3 p)
 		{
 			for (int i = 0; i < 6; i++)
-				if (planes[i].GetDistance(p) < 0)
+				if (frustum[i].x * p.x + frustum[i].y * p.y + frustum[i].z * p.z + frustum[i].w <= 0)
 					return Intersection.None;
 			return Intersection.Contains;
 		}
 
-		public override Intersection IsSphereVisible(BoundingSphere sphere)
+		public override Intersection IsVisible(BoundingSphere sphere)
 		{
-			float distance;
-			Intersection result = Intersection.Contains;
+			for (int i = 0; i < 6; i++)
+				if (frustum[i].x * sphere.Position.x + frustum[i].y * sphere.Position.y + frustum[i].z * sphere.Position.z + frustum[i].w <= -sphere.Radius)
+					return  Intersection.None;
+			return Intersection.Contains;
+		}
 
+		public override Intersection IsVisible(BoundingBox box)
+		{
+			var size = box.Size / 2;
+			// for each plane do ...
 			for (int i = 0; i < 6; i++)
 			{
-				distance = planes[i].GetDistance(sphere.Position);
-				if (distance < -sphere.Radius)
-					return Intersection.None;
-				else if (distance < sphere.Radius)
-					result = Intersection.Intersect;
+				if (frustum[i].x * (box.Position.x - size.x) + frustum[i].y * (box.Position.y - size.y) + frustum[i].z * (box.Position.z - size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x + size.x) + frustum[i].y * (box.Position.y - size.y) + frustum[i].z * (box.Position.z - size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x - size.x) + frustum[i].y * (box.Position.y + size.y) + frustum[i].z * (box.Position.z - size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x + size.x) + frustum[i].y * (box.Position.y + size.y) + frustum[i].z * (box.Position.z - size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x - size.x) + frustum[i].y * (box.Position.y - size.y) + frustum[i].z * (box.Position.z + size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x + size.x) + frustum[i].y * (box.Position.y - size.y) + frustum[i].z * (box.Position.z + size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x - size.x) + frustum[i].y * (box.Position.y + size.y) + frustum[i].z * (box.Position.z + size.z) + frustum[i].w > 0)
+					continue;
+				if (frustum[i].x * (box.Position.x + size.x) + frustum[i].y * (box.Position.y + size.y) + frustum[i].z * (box.Position.z + size.z) + frustum[i].w > 0)
+					continue;
+				return Intersection.None;
 			}
-			return result;
+			return Intersection.Contains;
 		}
-
-		public override Intersection IsBoxVisible(BoundingBox box)
+		public override void DoDispose()
 		{
-			Intersection result = Intersection.Contains;
-			int outside,inside;
-			// for each plane do ...
-			for(int i=0; i < 6; i++) {
-
-				// reset counters for corners in and out
-				outside=0;inside=0;
-				// for each corner of the box do ...
-				// get out of the cycle as soon as a box as corners
-				// both inside and out of the frustum
-				for (int k = 0; k < 8 && (inside==0 || outside==0); k++) {
-		
-					// is the corner outside or inside
-					var pts = box.Points;
-					if (planes[i].GetDistance(pts[k]) < 0)
-						outside++;
-					else
-						inside++;
-				}
-				//if all corners are out
-				if (inside == 0)
-					return Intersection.None;
-				// if some corners are out and others are in	
-				else if (outside != 0)
-					result = Intersection.Intersect;
-			}
-			return(result);
 		}
-
 		public PerspectiveCamera()
 		{
 			planes = new Plane[6];
@@ -255,5 +314,102 @@ namespace Glorg2.Scene
 			return Matrix.Perspective(fov, aspect, near, far);
 		}
 
+
+		#region IRenderable Members
+
+		VertexBuffer<VertexPositionColor> vb;
+		IndexBuffer<uint> ib;
+		StdMaterial mat;
+
+		public void Render(float time, Graphics.GraphicsDevice dev)
+		{
+			dev.SetActiveMaterial(mat);
+			dev.SetVertexBuffer(vb);
+			dev.SetIndexBuffer(ib);
+			dev.Draw(DrawMode.Lines);
+			dev.SetActiveMaterial(null);
+			dev.SetVertexBuffer(null);
+			dev.SetIndexBuffer(null);
+		}
+
+		public void InitializeGraphics()
+		{
+			if(mat == null)
+				owner.Resources.Load("shaders\\Grid", out mat);
+			if (vb == null)
+			{
+				vb = new VertexBuffer<VertexPositionColor>(VertexPositionColor.Descriptor);
+				vb.Allocate(8);
+			}
+			if (ib == null)
+			{
+				ib = new IndexBuffer<uint>();
+				ib.Allocate(24);
+				ib[0] = 0;
+				ib[1] = 1;
+				ib[2] = 1;
+				ib[3] = 2;
+				ib[4] = 2;
+				ib[5] = 3;
+				ib[6] = 3;
+				ib[7] = 0;
+
+				ib[8] = 4;
+				ib[9] = 5;
+				ib[10] = 5;
+				ib[11] = 6;
+				ib[12] = 6;
+				ib[13] = 7;
+				ib[14] = 4;
+
+				ib[15] = 0;
+				ib[16] = 4;
+
+				ib[17] = 1;
+				ib[18] = 5;
+
+				ib[19] = 2;
+				ib[20] = 6;
+
+				ib[21] = 3;
+				ib[22] = 7;
+				ib.BufferData(VboUsage.GL_STATIC_DRAW);
+			}
+
+			if (points != null)
+			{
+				for (int i = 0; i < 8; i++)
+				{
+					vb[i] = new VertexPositionColor() { Position = points[i], Color = Colors.Yellow };
+				}
+			}
+
+			vb.BufferData(VboUsage.GL_DYNAMIC_DRAW);
+		}
+
+		public bool GraphicsInitialized
+		{
+			get { return vb != null && mat != null; }
+		}
+
+		public bool GraphicsInvalidated
+		{
+			get;
+			set;
+		}
+
+		public int Priority
+		{
+			get
+			{
+				return 0;
+			}
+			set
+			{
+
+			}
+		}
+
+		#endregion
 	}
 }
