@@ -296,7 +296,7 @@ namespace Glorg2
 				Thread.Sleep(0);
 
 			long old_time = System.Diagnostics.Stopwatch.GetTimestamp();
-			return;
+
 			while (running)
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
@@ -317,6 +317,8 @@ namespace Glorg2
 					{
 						obj.SimulationStep(frame_time);
 					}
+				System.Threading.Thread.Sleep(0);
+				
 				
 			
 			}
