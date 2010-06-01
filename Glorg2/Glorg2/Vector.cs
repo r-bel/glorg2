@@ -151,7 +151,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return x.ToString() + ", " + y.ToString();
+			return x.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
 		}
 		public float this[int index]
 		{
@@ -530,7 +530,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString();
+			return x.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + w.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
 		}
 		public float this[int index]
 		{
@@ -592,7 +592,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString() + "]";
+			return x.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + w.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
 		}
 
 	}
@@ -620,7 +620,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "[" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + "]";
+			return x.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + z.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "]";
 		}
 
 
@@ -648,7 +648,7 @@ namespace Glorg2
 		}
 		public override string ToString()
 		{
-			return "[" + x.ToString() + ", " + y.ToString() + "]";
+			return x.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ", " + y.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + "]";
 		}
 	}
 }

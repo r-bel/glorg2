@@ -97,24 +97,11 @@ namespace Glorg2.Scene
 		{
 			accumulator += time;
 			// If we are lagging to much, we need to speed up.
-			if (accumulator > .2f)
-			{
-				Physics.Integration.RK4Integrate(ref linear_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-				Physics.Integration.RK4Integrate(ref angular_state, sim_time, accumulator, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
-			}
-			else
-			{
-				while (accumulator >= dt)
-				{
-					Physics.Integration.RK4Integrate(ref linear_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
-					Physics.Integration.RK4Integrate(ref angular_state, sim_time, dt, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
-					sim_time += dt;
-					accumulator -= dt;
-				}
-				interp = accumulator / dt;
+			//if (accumulator > .2f)
+				Physics.Integration.RK4Integrate(ref linear_state, sim_time, time, new Func<Glorg2.Physics.ObjectState, float, Vector4>(LinearAcceleratiom));
+				Physics.Integration.RK4Integrate(ref angular_state, sim_time, time, new Func<Glorg2.Physics.ObjectState, float, Vector4>(AngularAcceleration));
 
-			}
-			position += linear_state.Velocity;
+			Position += linear_state.Velocity;
 			Quaternion spin = .5f * new Quaternion(angular_state.Velocity.x, angular_state.Velocity.y, angular_state.Velocity.z, 0) * Orientation;
 			Orientation += spin;
 		}

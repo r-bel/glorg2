@@ -220,6 +220,10 @@ namespace Glorg2
 		{
 			return ((float)this).ToString();
 		}
+		public string ToString(IFormatProvider provider)
+		{
+			return ((float)this).ToString(provider);
+		}
 
 	}
 }

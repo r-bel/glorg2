@@ -126,6 +126,10 @@ namespace Glorg2
 		{
 			return new Vector2Int((int)vec.x, (int)vec.y);
 		}
+		public override string ToString()
+		{
+			return x.ToString() + ", " + y.ToString();
+		}
 	}
 
 	public struct Vector3Int
@@ -233,6 +237,11 @@ namespace Glorg2
 		public static explicit operator Vector3Int(Vector3 vec)
 		{
 			return new Vector3Int((int)vec.x, (int)vec.y, (int)vec.z);
+		}
+
+		public override string ToString()
+		{
+			return x.ToString() + ", " + y.ToString() + ", " + z.ToString();
 		}
 	}
 	public struct Vector4Int
@@ -342,6 +351,10 @@ namespace Glorg2
 		public static explicit operator Vector4Int(Vector4 vec)
 		{
 			return new Vector4Int((int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w);
+		}
+		public override string ToString()
+		{
+			return x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ", " + w.ToString();
 		}
 	}
 }
