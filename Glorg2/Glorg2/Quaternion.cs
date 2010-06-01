@@ -28,6 +28,7 @@ namespace Glorg2
 	/// <remarks>Inspired by the article Rotations in Three Dimension Part Five: Quaternions by Confuted. 
 	/// http://www.cprogramming.com/tutorial/3d/quaternions.html</remarks>
 	[Serializable()]
+	[System.ComponentModel.TypeConverter(typeof(System.ComponentModel.ExpandableObjectConverter))]
 	public struct Quaternion
 	{
 		public float x, y, z, w;
@@ -63,6 +64,97 @@ namespace Glorg2
 		{
 			float l = x * x + y * y + z * z + w * w;
 			return new Quaternion(-x / l, -y / l, -z / l, w / l);
+		}
+		/// <summary>
+		/// Gets or set sthe angle of the quaternion in degrees
+		/// Note: This is intened to be used by component designers.
+		/// </summary>
+		public float Angle
+		{
+			get
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				return ang / (float)(Math.PI / 180);
+			}
+			set
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				var q = FromAxisAngle(value, axis);
+				x = q.x; y = q.y; z = q.z; w = q.z;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the x component of a axis angle quaternion
+		/// Note: This is intened to be used by component designers.
+		/// </summary>
+		public float X
+		{
+			get
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				return axis.x;
+			}
+			set
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				axis.x = value;
+				var q = FromAxisAngle(ang, axis);
+				x = q.x; y = q.y; z = q.z; w = q.z;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the y component of a axis angle quaternion
+		/// Note: This is intened to be used by component designers.
+		/// </summary>
+		public float Y
+		{
+			get
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				return axis.y;
+			}
+			set
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				axis.y = value;
+				var q = FromAxisAngle(ang, axis);
+				x = q.x; y = q.y; z = q.z; w = q.z;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the z component of a axis angle quaternion
+		/// Note: This is intened to be used by component designers.
+		/// </summary>
+		public float Z
+		{
+			get
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				return axis.z;
+			}
+			set
+			{
+				float ang = 0;
+				Vector3 axis;
+				ToAxisAngle(out ang, out axis);
+				axis.z = value;
+				var q = FromAxisAngle(ang, axis);
+				x = q.x; y = q.y; z = q.z; w = q.z;
+			}
 		}
 
 		/// <summary>
@@ -233,7 +325,7 @@ namespace Glorg2
 			float angle = 0;
 			Vector3 axis;
 			ToAxisAngle(out angle, out axis);
-			return "{" + angle.ToString() + ", {" + axis.x.ToString() + ", " + axis.y.ToString() + ", " + axis.z.ToString() + "}}";
+			return angle.ToString() + ", {" + axis.x.ToString() + ", " + axis.y.ToString() + ", " + axis.z.ToString() + "}";
 		}
 	}
 }
