@@ -51,6 +51,10 @@ namespace Glorg2
 
 		public Scene.Scene Scene { get { return scene; } set { scene = value; } }
 
+		public void CloseScene()
+		{
+		}
+
 		/// <summary>
 		/// Retrieves frames per second of the rendering thread
 		/// Note that this value is a measurment of performance, and is calculated per frame and is therefore not statisticly reliable.
@@ -93,9 +97,6 @@ namespace Glorg2
 			RenderThread.Name = "Rendering thread";
 			target.Show();
 			target.HandleDestroyed += (sender, e) => { running = false; System.Windows.Forms.Application.Exit(); };
-			//target.Resize += (sender, e) => GraphicInvoke(new Action(InternalSizeChanged));
-			//GraphicInvoke(new Action(InternalSizeChanged));
-			
 			Scene.ParentNode.InternalPostSerialize();
 		}
 		public void Start(System.Windows.Forms.Control target)
@@ -415,15 +416,17 @@ namespace Glorg2
 			{
 				long new_time = System.Diagnostics.Stopwatch.GetTimestamp();
 				float time =  (new_time - old_time) / ((float)System.Diagnostics.Stopwatch.Frequency);
-				lock (graphic_invoke)
-				{
 					while (graphic_invoke.Count > 0)
 					{
-						var act = graphic_invoke.Dequeue();
+						Action act = null;
+						lock (graphic_invoke)
+						{
+							act = graphic_invoke.Dequeue();
+						}
 						if (act != null)
 							act();
 					}
-				}
+
 				if (sort_render_list)
 				{
 					

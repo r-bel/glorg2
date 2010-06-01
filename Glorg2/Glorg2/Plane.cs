@@ -31,7 +31,7 @@ namespace Glorg2
 
 		public float GetDistance(Vector3 p)
 		{
-			return Vector3.Dot(p - Position, Normal);
+			return Vector3.Dot(p, Normal) - Distance;
 		}
 
 		public static Plane FromPoints(Vector3 p1, Vector3 p2, Vector3 p3)

@@ -18,7 +18,7 @@ namespace GlorgIDE
 		protected override void Init()
 		{
 			cursor = new CursorIcon();
-			Scene.Background = Colors.DodgerBlue;
+			Scene.Background = Colors.FireBrick;
 			ide_camera = new PerspectiveCamera()
 			{
 				Position = new Vector4(0, 2f, 0),

@@ -204,7 +204,7 @@ namespace Glorg2.Scene
 		}
 		private void RenderBlock(TerrainBlock block, GraphicsDevice dev)
 		{
-			//if (Owner.Camera.IsBoxVisible(block.Bounds) != Intersection.None)
+			if (Owner.Camera.IsVisible(block.bounds) != Intersection.None)
 			{
 				if (block.ib != null)
 				{

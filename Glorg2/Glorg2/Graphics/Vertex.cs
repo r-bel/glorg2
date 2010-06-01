@@ -62,4 +62,16 @@ public struct VertexPositionTexCoordNormal
 		}, typeof(VertexPositionTexCoordNormal));
 
 }
+	public struct VertexPositionColor
+	{
+		public Vector3 Position;
+		public Vector4 Color;
+
+		public static readonly VertexBufferDescriptor Descriptor = new VertexBufferDescriptor(
+			new ElementType[]
+			{
+				ElementType.Position3Float,
+				ElementType.Color4Floats
+			}, typeof(VertexPositionColor));
+	}
 }
